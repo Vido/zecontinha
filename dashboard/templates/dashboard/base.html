@@ -1,0 +1,109 @@
+{% load static %}
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>A Vox do Cu</title>
+
+        <style>
+            .description{
+                padding-left: 10px;
+                padding-right: 30px;
+            }
+        </style>
+        {% block extrastyle %}{% endblock %}
+
+        {% block extrascripts %}
+            <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+        {% endblock %}
+    </head>
+
+    <body>
+        <div style="width: 100%;">
+            <div style="width: 150px; float:left;">
+                <img src="{% static 'vozdocu/logo_min.jpg' %}">
+            </div>
+
+            <div style="width: 60%; float:left">
+                <h1>A Vox do Cu</h1>
+                <p class="description">Esse sistema é uma prova de conceito sobre PairTrading, Long and Short, baseado em Cointegração. Nenhuma recomendação de compra ou venda é feita neste sistema. Não garantimos que os dados apresentados estão corretos. Não me responsabilizo pelo mal uso das informações.<p>
+
+                {% block nav-global %}
+
+                {% endblock %}
+
+                {% block content %}
+
+                {% block form_analise %}
+                <h2>Analise de Pares</h2>
+                    <form action="" method="POST">
+                        {% csrf_token %}
+                        <div style="float:left">
+                        <table>
+                        {{ form.as_table }}
+                        </table>
+                        </div>
+                        <div style="margin-left:20px; float:left">
+                        <div class="g-recaptcha" data-sitekey="6LdXsq4UAAAAAKlcpCUX-v52ZpQp_RrzKR5s-n8j"></div>
+                        <br/>
+                        <input type="submit" value="Submit">
+                        </div>
+                    </form>
+                {% endblock form_analise %}
+                <!-- -->
+                {% block result_analise %}
+                {% if resultados %}
+                <div style="clear:both"></div>
+                <hr>
+                <h2>Resultados</h2>
+                    {% include 'dashboard/adf.html'%}
+                    {% include 'dashboard/ols.html'%}
+                {% endif %}
+                {% endblock result_analise %}
+                <!-- -->
+                {% endblock content %}
+
+            </div>
+
+            <div style="float:left; width: 25%;">
+
+                <h2>Acesso</h2>
+                <p class="description">
+                    A Vox do Cu é um serviço gratuíto.
+                    Cadastre-se
+                </p>
+                <ul>
+                    {% if not user.is_authenticated %}
+                    <li><a href="#">Login</a></li>
+                    {% else %}
+                    <li><a href="#">Logout</a>: {{ user }}</li>
+                    {% endif %}
+                    <li><a href="#">Cadastro</a></li>
+                    <li><a href="#">Minha Conta</a></li>
+
+                </ul>
+                {% block doacoes %}
+                    {% include 'dashboard/doacoes.html'%}
+                {% endblock %}
+            </div>
+
+            <div style="clear:both"></div>
+
+        </div>
+        </div> <!-- ? bug -->
+
+        <div style="clear:both"></div>
+
+        {% block footer %}
+        </div>
+        <div id="footer" style="width: 100%;">
+            <hr>
+            <div style="float:left; width: 147px;">
+            </div>
+            <div style="float:right; width: 89%;">
+                <p>Esse sistema é uma prova de conceito sobre PairTrading, Long and Short, baseado em Cointegração. Nenhuma recomendação de compra ou venda é feita neste sistema. Não garantimos que os dados apresentados estão corretos. Não me responsabilizo pelo mal uso das informações.<p>
+            </div>
+        </div>
+        {% endblock %}
+
+    </body>
+</html>
