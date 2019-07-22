@@ -47,7 +47,9 @@ class InputForm(forms.Form):
         residuals_plot = cointegration.get_residuals_plot(
             test_params['OLS'])
         #
-        raw_plot = cointegration.get_raw_plot(series_x, series_y)
+        raw_plot = cointegration.get_raw_plot(series_x, series_y,
+        	xlabel=ativo_x, ylabel=ativo_y)
+        #
         context.update(test_params)
         context.update({
             'ativo_x': ativo_x,

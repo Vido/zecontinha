@@ -76,10 +76,12 @@ def get_residuals_plot(ols):
     mplt.hlines([-3*stddev, 3*stddev], xmin, xmax, color='red')
     return asBase64(mplt)
 
-def get_raw_plot(series_x, series_y):
+def get_raw_plot(series_x, series_y, xlabel='', ylabel=''):
     # limpa o canvas
     mplt.clf()
     mplt.cla()
-    mplt.plot(series_x, color='orange')
-    mplt.plot(series_y,color='purple')
+    mplt.plot(series_x, color='orange', label=xlabel)
+    mplt.plot(series_y, color='purple', label=ylabel)
+    mplt.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
+           ncol=2, borderaxespad=0.)
     return asBase64(mplt)
