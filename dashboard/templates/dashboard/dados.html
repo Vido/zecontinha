@@ -1,0 +1,20 @@
+<img src="data:image/png;base64, {{raw_plot}}"/>
+<h3>Dados</h3>
+<table id="dados" style="width: 100%">
+    <thead>
+    <tr>
+        <th>Timestamp</th>
+        <th>{{ ativo_x }} (X)</th>
+        <th>{{ ativo_y }} (Y)</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for row in raw_data %}
+    <tr>
+        <td>{{ row.0|date:"c" }}</td>
+        <td>{{ row.1|floatformat:2 }}</td>
+        <td>{{ row.2|floatformat:2 }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
