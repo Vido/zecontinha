@@ -82,6 +82,9 @@ def get_raw_plot(series_x, series_y, xlabel='', ylabel=''):
     mplt.cla()
     mplt.plot(series_x, color='orange', label=xlabel)
     mplt.plot(series_y, color='purple', label=ylabel)
+    mplt.xticks(rotation=90)
+
     mplt.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
            ncol=2, borderaxespad=0.)
+    
     return asBase64(mplt)
