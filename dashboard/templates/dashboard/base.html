@@ -100,7 +100,7 @@
                 <h2>Acesso</h2>
                 <p class="description">
                     A Vox do Cu é um serviço gratuíto.
-                    Cadastre-se
+                    Cadastre-se.
                 </p>
                 <ul>
                     {% if not user.is_authenticated %}
@@ -110,7 +110,11 @@
                     {% endif %}
                     <li><a href="#">Cadastro</a></li>
                     <li><a href="#">Minha Conta</a></li>
-
+                </ul>
+                <h2>Mercados</h2>
+                <ul>
+                    <li><a href="#">B3 (Ações)</a></li>
+                    <li>Coinbase (Crypto) - WIP</li>
                 </ul>
                 {% block doacoes %}
                     {% include 'dashboard/doacoes.html'%}
