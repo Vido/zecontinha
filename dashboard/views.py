@@ -21,29 +21,41 @@ PERIODO_CHOICE = zip(PERIODO_YFINANCE, PERIODO_YFINANCE)
 INTERVALO_CHOICE = zip(INTERVALO_YFINANCE, INTERVALO_YFINANCE)
 
 class InputForm(forms.Form):
-    ativo_a = forms.ChoiceField(choices=ATIVOS_CHOICE)
-    ativo_b = forms.ChoiceField(choices=ATIVOS_CHOICE)
+    ativo_x = forms.ChoiceField(choices=ATIVOS_CHOICE)
+    ativo_y = forms.ChoiceField(choices=ATIVOS_CHOICE)
     periodo = forms.ChoiceField(choices=PERIODO_CHOICE)
     intervalo = forms.ChoiceField(choices=INTERVALO_CHOICE)
 
     def get_context(self):
         context = {}
-        ativo_a = self.cleaned_data['ativo_a']
-        ativo_b = self.cleaned_data['ativo_b']
+        ativo_x = self.cleaned_data['ativo_x']
+        ativo_y = self.cleaned_data['ativo_y']
         data = cointegration.get_market_data(
-            ativo_a,
-            ativo_b,
+            ativo_x,
+            ativo_y,
             self.cleaned_data['periodo'],
             self.cleaned_data['intervalo']
         )
-        series_a = data[('Close', ativo_a)]
-        series_b = data[('Close', ativo_b)]
-        test_params = cointegration.coint_model(series_a, series_b)
-
+        series_x = data[('Close', ativo_x)]
+        series_y = data[('Close', ativo_y)]
+        test_params = cointegration.coint_model(series_x, series_y)
+        #
+        scatter_plot = cointegration.get_scatter_plot(
+            series_x, series_y, test_params['OLS'],
+            xlabel=ativo_x, ylabel=ativo_y)
+        #
+        residuals_plot = cointegration.get_residuals_plot(
+            test_params['OLS'])
+        #
+        raw_plot = cointegration.get_raw_plot(series_x, series_y)
         context.update(test_params)
         context.update({
-            'series_a': series_a,
-            'series_b': series_b,
+            'ativo_x': ativo_x,
+            'ativo_y': ativo_y,
+            'raw_data': zip(series_x.index, series_x, series_y),
+            'scatter_plot': scatter_plot.decode("utf-8"),
+            'residuals_plot': residuals_plot.decode("utf-8"),
+            'raw_plot': raw_plot.decode("utf-8"),
             'resultados': True,
         })
         return context

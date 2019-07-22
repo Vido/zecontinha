@@ -1,5 +1,10 @@
+import base64
+from io import StringIO
+from io import BytesIO
+
+import numpy as np
 import yfinance as yf
-#import matplotlib.pyplot as mplt
+import matplotlib.pyplot as mplt
 import statsmodels.api as sm
 from statsmodels.tsa.stattools import adfuller
 
@@ -16,10 +21,10 @@ def get_market_data(ticker_a, ticker_b, period, interval):
     )
     return data
 
-def coint_model(series_a, series_b):
+def coint_model(series_x, series_y):
     try:
-        X = sm.add_constant(series_a.values)
-        mod = sm.OLS(series_b, X)
+        X = sm.add_constant(series_x.values)
+        mod = sm.OLS(series_y, X)
         results = mod.fit()
         #from IPython import embed; embed()
 
@@ -34,3 +39,47 @@ def coint_model(series_a, series_b):
     except:
         raise
         #from IPython import embed; embed()
+
+def asBase64(my_plt):
+    _buffer = BytesIO()
+    my_plt.savefig(_buffer, format='png', bbox_inches='tight')
+    _buffer.seek(0)
+    return base64.encodestring(_buffer.read())
+
+def get_scatter_plot(series_x, series_y, ols, xlabel='', ylabel=''):
+    x = np.arange(series_x.min(), series_x.max())
+    # limpa o canvas
+    mplt.clf()
+    mplt.cla()
+    #mplt.close()
+    mplt.scatter(series_x, series_y)
+    mplt.plot(x, ols.params.const + ols.params.x1 * x, color='red')
+    mplt.xlabel(xlabel)
+    mplt.ylabel(ylabel)
+    return asBase64(mplt)
+
+def get_residuals_plot(ols):
+    # TODO: descobrir qual é correto
+    stddev = ols.resid.std()
+    xmin = ols.resid.index.min()
+    xmax = ols.resid.index.max()
+
+    # limpa o canvas
+    mplt.clf()
+    mplt.cla()
+    #mplt.close()
+    mplt.plot(ols.resid)
+    mplt.xticks(rotation=90)
+
+    mplt.hlines([-1*stddev, 1*stddev], xmin, xmax, color='gray')
+    mplt.hlines([-2*stddev, 2*stddev], xmin, xmax, color='black')
+    mplt.hlines([-3*stddev, 3*stddev], xmin, xmax, color='red')
+    return asBase64(mplt)
+
+def get_raw_plot(series_x, series_y):
+    # limpa o canvas
+    mplt.clf()
+    mplt.cla()
+    mplt.plot(series_x, color='orange')
+    mplt.plot(series_y,color='purple')
+    return asBase64(mplt)

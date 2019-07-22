@@ -1,26 +1,52 @@
 {% load static %}
-<html>
+<!DOCTYPE html>
     <head>
         <meta charset="utf-8">
         <title>A Vox do Cu</title>
 
         <style>
-            .description{
-                padding-left: 10px;
-                padding-right: 30px;
-            }
+        .description{
+            padding-left: 10px;
+            padding-right: 30px;
+        }
+        td {
+            text-align: center;
+        } 
         </style>
-        {% block extrastyle %}{% endblock %}
+
+        {% block extrastyle %}
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.18/datatables.min.css"/>
+        {% endblock %}
+
 
         {% block extrascripts %}
-            <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+        <!-- Recaptcha-->
+        <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
+        <!-- Datatables-->
+        <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+        <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+        <script src="https://cdn.datatables.net/buttons/1.5.6/js/dataTables.buttons.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+        <script src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.html5.min.js"></script>
+
+        <script>
+            $(document).ready(function() {
+                $('#dados').DataTable( {
+                    dom: 'Bfrtip',
+                    buttons: [
+                        'copy', 'csv', 'excel'
+                    ]
+                } );
+            } );
+        </script>
         {% endblock %}
     </head>
 
     <body>
         <div style="width: 100%;">
             <div style="width: 150px; float:left;">
-                <img src="{% static 'vozdocu/logo_min.jpg' %}">
+                <img alt="A Vox do Cu" src="{% static 'vozdocu/logo_min.jpg' %}">
             </div>
 
             <div style="width: 60%; float:left">
@@ -55,8 +81,9 @@
                 <div style="clear:both"></div>
                 <hr>
                 <h2>Resultados</h2>
-                    {% include 'dashboard/adf.html'%}
                     {% include 'dashboard/ols.html'%}
+                    {% include 'dashboard/adf.html'%}
+                    {% include 'dashboard/dados.html'%}
                 {% endif %}
                 {% endblock result_analise %}
                 <!-- -->

@@ -1,15 +1,17 @@
-<h3>Regressão Linear simples</h3>    
+<img src="data:image/png;base64, {{scatter_plot}}"/>
+<h3>Regressão Linear simples</h3>
 <table style="width: 100%">
     <tr>
-        <th>Coeficente</th>
         <th>Intercepto</th>
-        <th>Std.Dev</th>
+        <th>Coeficente (β<sub>1</sub>)</th>
+        <th>BSE - const</th>
+        <th>BSE - x1</th>
     </tr>
     <tr>
         <td>{{ OLS.params.const|floatformat:2 }}</td>
         <td>{{ OLS.params.x1|floatformat:2 }}</td>
         <!-- Acho que o bse.x1 é o desvio -->
+        <td>{{ OLS.bse.const|floatformat:4 }}</td>
         <td>{{ OLS.bse.x1|floatformat:4 }}</td>
     </tr>
 </table>
-<img src="">
