@@ -8,9 +8,9 @@ import matplotlib.pyplot as mplt
 import statsmodels.api as sm
 from statsmodels.tsa.stattools import adfuller
 
-def get_market_data(ticker_a, ticker_b, period, interval):
+def get_market_data(tickers, period, interval):
     data = yf.download(
-        tickers = "%s %s" % (ticker_a, ticker_b),
+        tickers = " ".join(tickers),
         period = period,
         interval = interval,
         #group_by = 'ticker',

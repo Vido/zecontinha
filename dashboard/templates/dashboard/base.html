@@ -2,7 +2,7 @@
 <!DOCTYPE html>
     <head>
         <meta charset="utf-8">
-        <title>A Vox do Cu</title>
+        <title>Zé Continha</title>
 
         <style>
         .description{
@@ -35,6 +35,12 @@
                 $("#form_btn").prop("disabled", false);
             }
 
+            function copyFunction() {
+              var copyText = $("#btcInput");
+              copyText.select();
+              document.execCommand("copy");
+            }
+
             $(document).ready(function() {
                 $('#dados').DataTable( {
                     dom: 'Bfrtip',
@@ -50,12 +56,12 @@
     <body>
         <div style="width: 100%;">
             <div style="width: 150px; float:left;">
-                <img alt="A Vox do Cu" src="{% static 'vozdocu/logo_min.jpg' %}">
+                <img alt="Zé Continha" src="{% static 'vozdocu/tyche_min.jpg' %}" style="margin-top: 30px;">
             </div>
 
             <div style="width: 60%; float:left">
-                <h1>A Vox do Cu</h1>
-                <p class="description">Esse sistema é uma prova de conceito sobre PairTrading, Long and Short, baseado em Cointegração. Nenhuma recomendação de compra ou venda é feita neste sistema. Não garantimos que os dados apresentados estão corretos. Não me responsabilizo pelo mal uso das informações.<p>
+                <h1>Zé Continha</h1>
+                <p class="description">Esse sistema é uma prova de conceito sobre PairTrading (a.k.a Long and Short) baseado em Cointegração. Nenhuma recomendação de compra ou venda é feita neste sistema. Não garantimos que os dados apresentados estão corretos. Não me responsabilizo pelo mal uso das informações.<p>
 
                 {% block nav-global %}
 
@@ -99,17 +105,17 @@
 
                 <h2>Acesso</h2>
                 <p class="description">
-                    A Vox do Cu é um serviço gratuíto.
+                    Zé Continha é um serviço gratuíto.
                     Cadastre-se.
                 </p>
                 <ul>
                     {% if not user.is_authenticated %}
-                    <li><a href="#">Login</a></li>
+                    <li><a href="#">Login</a> - WIP</li>
                     {% else %}
-                    <li><a href="#">Logout</a>: {{ user }}</li>
+                    <li><a href="#">Logout</a>: {{ user }} - WIP</li>
                     {% endif %}
-                    <li><a href="#">Cadastro</a></li>
-                    <li><a href="#">Minha Conta</a></li>
+                    <li><a href="#">Cadastro</a> - WIP</li>
+                    <li><a href="#">Minha Conta</a> - WIP</li>
                 </ul>
                 <h2>Mercados</h2>
                 <ul>
@@ -135,7 +141,7 @@
             <div style="float:left; width: 147px;">
             </div>
             <div style="float:right; width: 89%;">
-                <p>Esse sistema é uma prova de conceito sobre PairTrading, Long and Short, baseado em Cointegração. Nenhuma recomendação de compra ou venda é feita neste sistema. Não garantimos que os dados apresentados estão corretos. Não me responsabilizo pelo mal uso das informações.<p>
+                <p>Esse sistema é uma prova de conceito sobre PairTrading (a.k.a Long and Short), baseado em Cointegração. Nenhuma recomendação de compra ou venda é feita neste sistema. Não garantimos que os dados apresentados estão corretos. Não me responsabilizo pelo mal uso das informações.<p>
             </div>
         </div>
         {% endblock %}

@@ -20,6 +20,7 @@ ATIVOS_CHOICE = list(zip(TICKERS_YFINANCE, ibov.CARTEIRA_IBOV))
 PERIODO_CHOICE = zip(PERIODO_YFINANCE, PERIODO_YFINANCE)
 INTERVALO_CHOICE = zip(INTERVALO_YFINANCE, INTERVALO_YFINANCE)
 
+
 class InputForm(forms.Form):
     ativo_x = forms.ChoiceField(choices=ATIVOS_CHOICE)
     ativo_y = forms.ChoiceField(choices=ATIVOS_CHOICE)
@@ -31,8 +32,7 @@ class InputForm(forms.Form):
         ativo_x = self.cleaned_data['ativo_x']
         ativo_y = self.cleaned_data['ativo_y']
         data = cointegration.get_market_data(
-            ativo_x,
-            ativo_y,
+            [ativo_x, ativo_y],
             self.cleaned_data['periodo'],
             self.cleaned_data['intervalo']
         )
@@ -47,8 +47,9 @@ class InputForm(forms.Form):
         residuals_plot = cointegration.get_residuals_plot(
             test_params['OLS'])
         #
+        # TODO: Usar HighCharts
         raw_plot = cointegration.get_raw_plot(series_x, series_y,
-        	xlabel=ativo_x, ylabel=ativo_y)
+            xlabel=ativo_x, ylabel=ativo_y)
         #
         context.update(test_params)
         context.update({
@@ -79,7 +80,40 @@ class Index(FormView):
         if not response_payload['success']:
             return redirect('https://www.youtube.com/watch?v=QH2-TGUlwu4')
 
-        context = form.get_context()
-        context['form'] = form
+        context = {}
+        if form.cleaned_data['ativo_x'] != form.cleaned_data['ativo_y']:
+            context = form.get_context()
 
+        context['form'] = form
+        return self.render_to_response(context)
+
+
+class FilterForm(forms.Form):
+    ticker = forms.ChoiceField(choices=ATIVOS_CHOICE)
+    pvalue = forms.ChoiceField()
+    success = forms.BooleanField()
+
+
+class BovespaListView(FormView):
+    template_name = 'dashboard/bovespa_list.html'
+    form_class = FilterForm
+    success_url = '/'
+
+    def form_valid(self, form):
+
+        response = requests.post('https://www.google.com/recaptcha/api/siteverify',
+                data = {'secret':'6LdXsq4UAAAAAGEzZfUt9XtpE0URlMSXK2VJ94ix',
+                        'remoteip': self.request.META.get('REMOTE_ADDR', ''),
+                        'response': self.request.POST.get('g-recaptcha-response', '')})
+
+        response_payload = json.loads(response.text)
+
+        if not response_payload['success']:
+            return redirect('https://www.youtube.com/watch?v=QH2-TGUlwu4')
+
+        context = {}
+        if self.cleaned_data['ativo_x'] != self.cleaned_data['ativo_y']:
+            context = form.get_context()
+
+        context['form'] = form
         return self.render_to_response(context)
