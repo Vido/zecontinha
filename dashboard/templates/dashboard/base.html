@@ -4,6 +4,8 @@
         <meta charset="utf-8">
         <title>Zé Continha</title>
 
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.18/datatables.min.css"/>
+
         <style>
         .description{
             padding-left: 10px;
@@ -15,11 +17,9 @@
         </style>
 
         {% block extrastyle %}
-        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.18/datatables.min.css"/>
         {% endblock %}
 
 
-        {% block extrascripts %}
         <!-- Recaptcha-->
         <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
@@ -30,6 +30,7 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
         <script src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.html5.min.js"></script>
 
+        {% block extrascripts %}
         <script>
             function enableBtn(){
                 $("#form_btn").prop("disabled", false);
@@ -56,16 +57,17 @@
     <body>
         <div style="width: 100%;">
             <div style="width: 150px; float:left;">
+                {% block logotipo  %}
                 <img alt="Zé Continha" src="{% static 'vozdocu/tyche_min.jpg' %}" style="margin-top: 30px;">
+                {% endblock logotipo  %}
             </div>
 
             <div style="width: 60%; float:left">
                 <h1>Zé Continha</h1>
-                <p class="description">Esse sistema é uma prova de conceito sobre PairTrading (a.k.a Long and Short) baseado em Cointegração. Nenhuma recomendação de compra ou venda é feita neste sistema. Não garantimos que os dados apresentados estão corretos. Não me responsabilizo pelo mal uso das informações.<p>
 
-                {% block nav-global %}
-
-                {% endblock %}
+                {% block descricao %}
+                <p class="description">Esse sistema é uma prova de conceito sobre PairTrading (a.k.a Long and Short) baseado em Cointegração. Nenhuma recomendação de compra ou venda é feita neste sistema. Os dados são obtidos com 15 minutos de atraso. Não garantimos que os dados apresentados estão corretos. Não me responsabilizo pelo mal uso das informações.<p>
+                {% endblock descricao %}
 
                 {% block content %}
 
@@ -86,9 +88,10 @@
                     </form>
                 {% endblock form_analise %}
                 <!-- -->
+                <div style="clear:both"></div>
+                
                 {% block result_analise %}
                 {% if resultados %}
-                <div style="clear:both"></div>
                 <hr>
                 <h2>Resultados</h2>
                     {% include 'dashboard/ols.html'%}
@@ -102,7 +105,8 @@
             </div>
 
             <div style="float:left; width: 25%;">
-
+        
+                {% block nav-global %}
                 <h2>Acesso</h2>
                 <p class="description">
                     Zé Continha é um serviço gratuíto.
@@ -119,16 +123,26 @@
                 </ul>
                 <h2>Mercados</h2>
                 <ul>
-                    <li><a href="#">B3 (Ações)</a></li>
-                    <li>Coinbase (Crypto) - WIP</li>
+                    <li><b>B3 (Ações)</b></li>
+                    <li><ul>
+                        <li><a href="{% url 'index' %}">Analise</a></li>
+                        <li><a href="{% url 'b3-pairs' %}">Ranking</a></li>
+                        <li><a href="#">Backtest - WIP</a></li>
+                    </ul></li>
+                    <li><b>Coinbase (Crypto) - WIP</b></li>
+                    <li><ul>
+                        <li><a href="#">Analise - WIP</a></li>
+                        <li><a href="#">Ranking - WIP</a></li>
+                    </ul></li>
                 </ul>
                 {% block doacoes %}
                     {% include 'dashboard/doacoes.html'%}
-                {% endblock %}
+                {% endblock doacoes%}
+
+                {% endblock nav-global %}
             </div>
-
             <div style="clear:both"></div>
-
+            
         </div>
         </div> <!-- ? bug -->
 

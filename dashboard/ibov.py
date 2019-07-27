@@ -1,5 +1,5 @@
 CARTEIRA_IBOV = [
-    'BOVA11',
+    #'BOVA11',
     'ITUB4',
     'VALE3',
     'BBDC4',
@@ -39,7 +39,7 @@ CARTEIRA_IBOV = [
     'HYPE3',
     'CSNA3',
     'ELET3',
-    'ESTC3',
+    'YDUQ3',
     'TIMP3',
     'NATU3',
     'KLBN11',

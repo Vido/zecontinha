@@ -6,6 +6,7 @@ class CointParams(models.Model):
 
     adf_pvalue = models.FloatField(null=True, blank=True)
     resid_std = models.FloatField(null=True, blank=True)
+    zscore = models.FloatField(null=True, blank=True)
     ang_coef = models.FloatField(null=True, blank=True)
     intercept = models.FloatField(null=True, blank=True)
     last_resid = models.FloatField(null=True, blank=True)
@@ -34,11 +35,13 @@ class PairStats(CointParams):
         default='N/A',
     )
 
-    ticker_x = models.CharField(max_length=32, unique=True)
-    ticker_y = models.CharField(max_length=32, unique=True)
+    ticker_x = models.CharField(max_length=32)
+    ticker_y = models.CharField(max_length=32)
     x_quote = models.FloatField(null=True, blank=True)
     y_quote = models.FloatField(null=True, blank=True)
 
+    def display_pair(self):
+        return self.pair.replace('.SA', '').replace(' ', 'x')
 
 class Trade(CointParams):
 

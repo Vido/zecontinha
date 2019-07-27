@@ -2,18 +2,44 @@ import json
 import requests
 
 from django import forms
-from django.views.generic.edit import FormView
+from django.views.generic.edit import FormView, FormMixin
+from django.views.generic.list import ListView
 from django.shortcuts import redirect, render_to_response
+from django.db.models import Q
+
+from dashboard.models import PairStats
 
 from . import ibov
 from . import cointegration
+
+
+class FormListView(ListView, FormMixin):
+    def get(self, request, *args, **kwargs):
+        # From ProcessFormMixin
+        form_class = self.get_form_class()
+        self.form = self.get_form(form_class)
+
+        # From BaseListView
+        self.object_list = self.get_queryset(form=self.form)
+
+        context = self.get_context_data(object_list=self.object_list, form=self.form)
+        return self.render_to_response(context)
+
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+        if form.is_valid():
+            self.form_valid(form)
+        else:
+            self.form_invalid(form)
+
+        return self.get(request, *args, **kwargs)
 
 
 #PERIODO_YFINANCE = ['1d', '5d', '1mo', '3mo', '6mo', '1y', '2y', '5y', '10y', 'ytd', 'max']
 PERIODO_YFINANCE = ['1mo', '3mo', '6mo', '1y']
 # DADOS INTRADAY VEM COM NAN POR CAUSA DO LEILAO
 #INTERVALO_YFINANCE = ['1m', '2m', '5m', '15m', '30m', '60m', '90m', '1h', '1d', '5d', '1wk', '1mo', '3mo']
-INTERVALO_YFINANCE = ['1d']
+INTERVALO_YFINANCE = ['1h', '1d']
 TICKERS_YFINANCE = [t+'.SA' for t in ibov.CARTEIRA_IBOV]
 
 ATIVOS_CHOICE = list(zip(TICKERS_YFINANCE, ibov.CARTEIRA_IBOV))
@@ -22,7 +48,9 @@ INTERVALO_CHOICE = zip(INTERVALO_YFINANCE, INTERVALO_YFINANCE)
 
 
 class InputForm(forms.Form):
+    # Todo fazer autocomplete
     ativo_x = forms.ChoiceField(choices=ATIVOS_CHOICE)
+    # Todo fazer autocomplete
     ativo_y = forms.ChoiceField(choices=ATIVOS_CHOICE)
     periodo = forms.ChoiceField(choices=PERIODO_CHOICE)
     intervalo = forms.ChoiceField(choices=INTERVALO_CHOICE)
@@ -63,6 +91,7 @@ class InputForm(forms.Form):
         })
         return context
 
+
 class Index(FormView):
     template_name = 'dashboard/base.html'
     form_class = InputForm
@@ -89,15 +118,64 @@ class Index(FormView):
 
 
 class FilterForm(forms.Form):
-    ticker = forms.ChoiceField(choices=ATIVOS_CHOICE)
-    pvalue = forms.ChoiceField()
-    success = forms.BooleanField()
+    # Todo fazer autocomplete
+    ticker = forms.ChoiceField(
+        label='Ativo',
+        required=True,
+        choices=[('TODOS', 'Todos')]+ATIVOS_CHOICE)
+    pvalue = forms.FloatField(
+        label='ADF P-Valor (max)',
+        #default=0.1,
+        required=True,
+        max_value=1,
+        min_value=0,
+        initial=0.1,
+        widget=forms.NumberInput(attrs={'id': 'form_pavalue', 'step': "0.01"})
+        )
+    zscore = forms.FloatField(
+        label='|Z-Score|',
+        #default=0.1,
+        required=True,
+        max_value=6,
+        min_value=0,
+        initial=2.0,
+        widget=forms.NumberInput(attrs={'id': 'form_pavalue', 'step': "0.01"})
+        )
+    success = forms.BooleanField(
+        label='Calc. c/ Sucesso',
+        required=False,
+        initial=True)
 
 
-class BovespaListView(FormView):
+class BovespaListView(FormListView):
     template_name = 'dashboard/bovespa_list.html'
     form_class = FilterForm
     success_url = '/'
+    queryset = PairStats.objects.none()
+
+    def get_queryset(self, **kwargs):
+
+        form=kwargs['form']
+        if not form.is_valid():
+            return PairStats.objects.none()
+
+        success = form.cleaned_data['success']
+        pvalue = form.cleaned_data['pvalue']
+        ticker = form.cleaned_data['ticker']
+        zscore = form.cleaned_data['zscore']
+        print(success, pvalue, ticker)
+
+        qs = PairStats.objects.filter(success=success)
+
+        if success:
+            qs = qs.filter(adf_pvalue__lte=pvalue)
+            qs = qs.filter(Q(zscore__gte=zscore) | Q(zscore__lte=-zscore)) 
+
+        if ticker != 'TODOS':
+            qs = qs.filter(pair__icontains=ticker)
+
+        print(qs)
+        return qs
 
     def form_valid(self, form):
 
@@ -110,10 +188,3 @@ class BovespaListView(FormView):
 
         if not response_payload['success']:
             return redirect('https://www.youtube.com/watch?v=QH2-TGUlwu4')
-
-        context = {}
-        if self.cleaned_data['ativo_x'] != self.cleaned_data['ativo_y']:
-            context = form.get_context()
-
-        context['form'] = form
-        return self.render_to_response(context)
