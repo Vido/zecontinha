@@ -43,10 +43,11 @@ def create_object(success, pair, series_x=pd.Series([]), series_y=pd.Series([]),
             obj.last_resid = test_params['OLS'].resid.iloc[-1]
             obj.ang_coef = test_params['OLS'].params.x1
             obj.intercept = test_params['OLS'].params.const
-            obj.n_observ = test_params['OLS'].resid.df[0].count()
+            obj.n_observ = len(test_params['OLS'].resid)
             obj.zscore = obj.last_resid / obj.resid_std
 
-    except Exception:
+    except Exception as e:
+        print(e)
         obj.success = False
 
     return obj
@@ -86,7 +87,7 @@ def calc_ibovespa():
         except MissingDataError:
             print('FAIL - MissingDataError')
             obj = create_object(success, pair)
-            
+
         obj_buffer.append(obj)
 
     PairStats.objects.bulk_create(obj_buffer)
