@@ -9,9 +9,11 @@ import django
 #from django.utils import timezone
 import pandas as pd
 
-from statsmodels.tools.sm_exceptions import MissingDataError
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "vozdocu.settings")
 django.setup()
+
+from statsmodels.tools.sm_exceptions import MissingDataError
+from django.db.models import Q
 
 from dashboard.ibov import CARTEIRA_IBOV
 from dashboard.cointegration import get_market_data, coint_model
@@ -41,6 +43,7 @@ def create_object(success, pair, series_x=pd.Series([]), series_y=pd.Series([]),
             obj.last_resid = test_params['OLS'].resid.iloc[-1]
             obj.ang_coef = test_params['OLS'].params.x1
             obj.intercept = test_params['OLS'].params.const
+            obj.n_observ = test_params['OLS'].resid.df[0].count()
             obj.zscore = obj.last_resid / obj.resid_std
 
     except Exception:
@@ -88,5 +91,17 @@ def calc_ibovespa():
 
     PairStats.objects.bulk_create(obj_buffer)
 
+def enter_trades():
+    trade_list()
+    qs = PairStats.objects.filter(success=True)
+    qs = qs.filter(Q(adf_pvalue__lte=0.05) & (Q(zscore__gte=2.0) | Q(zscore__lte=-2.0)))
+    #for obj in q:
+    #    Trade()
+    # TODO
+
+def exit_trades():
+    pass
+
 if __name__ == '__main__':
     calc_ibovespa()
+
