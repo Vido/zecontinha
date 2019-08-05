@@ -75,4 +75,12 @@
 
     </tbody>
 </table>
+
+{% if n_observ %}
+    <ul>
+        <li></b>Timestamp do Calculo:</b>{{ timestamp_calc }}</li>
+        <li><b>Número de Periodos: </b>{{ n_observ }}</li>
+    </ul>
+{% endif %}
+
 {% endblock result_analise %}

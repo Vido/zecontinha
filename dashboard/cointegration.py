@@ -26,11 +26,6 @@ def coint_model(series_x, series_y):
         X = sm.add_constant(series_x.values)
         mod = sm.OLS(series_y, X)
         results = mod.fit()
-        #from IPython import embed; embed()
-
-        #print(results.summary())
-        #mplt.plot(results.resid)
-        #mplt.show()
         adfTest = adfuller(results.resid, autolag='AIC')
         return {
             'OLS': results,
@@ -38,7 +33,6 @@ def coint_model(series_x, series_y):
         }
     except:
         raise
-        #from IPython import embed; embed()
 
 def asBase64(my_plt):
     _buffer = BytesIO()

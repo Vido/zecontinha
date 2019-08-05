@@ -45,6 +45,7 @@ TICKERS_YFINANCE = [t+'.SA' for t in ibov.CARTEIRA_IBOV]
 ATIVOS_CHOICE = list(zip(TICKERS_YFINANCE, ibov.CARTEIRA_IBOV))
 PERIODO_CHOICE = zip(PERIODO_YFINANCE, PERIODO_YFINANCE)
 INTERVALO_CHOICE = zip(INTERVALO_YFINANCE, INTERVALO_YFINANCE)
+PERIODOS_CHOICE = zip(range(20, 260, 20), range(20, 260, 20))
 
 
 class InputForm(forms.Form):
@@ -123,6 +124,11 @@ class FilterForm(forms.Form):
         label='Ativo',
         required=True,
         choices=[('TODOS', 'Todos')]+ATIVOS_CHOICE)
+    periodo = forms.ChoiceField(
+        label='Periodos',
+        required=True,
+        choices=PERIODOS_CHOICE
+        )
     pvalue = forms.FloatField(
         label='ADF P-Valor (max)',
         #default=0.1,
@@ -163,9 +169,9 @@ class BovespaListView(FormListView):
         pvalue = form.cleaned_data['pvalue']
         ticker = form.cleaned_data['ticker']
         zscore = form.cleaned_data['zscore']
-        print(success, pvalue, ticker)
+        periodo = form.cleaned_data['periodo']
 
-        qs = PairStats.objects.filter(success=success)
+        qs = PairStats.objects.filter(success=success, n_observ=periodo)
 
         if success:
             qs = qs.filter(adf_pvalue__lte=pvalue)
@@ -174,8 +180,18 @@ class BovespaListView(FormListView):
         if ticker != 'TODOS':
             qs = qs.filter(pair__icontains=ticker)
 
-        print(qs)
         return qs
+
+    def get_context_data(self, **kwargs):
+        context = super(BovespaListView, self).get_context_data(**kwargs)
+        if context['object_list'].exists():
+            obj = context['object_list'].latest('timestamp_calc')
+            more_context = {
+                'n_observ': obj.n_observ,
+                'timestamp_calc': obj.timestamp_calc,
+            }
+            context.update(more_context)
+        return context
 
     def form_valid(self, form):
 

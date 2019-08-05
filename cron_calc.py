@@ -75,20 +75,22 @@ def calc_ibovespa():
     # Faz o calculo
     obj_buffer = []
     for idx, pair in enumerate(set_pairs):
-        print(idx, pair)
-        series_x = data[('Close', pair[0])]
-        series_y = data[('Close', pair[1])]
-        success = False
+        for periodo in range(20, 260, 20):
 
-        try:
-            test_params = coint_model(series_x, series_y)
-            success = True
-            obj = create_object(success, pair, series_x, series_y, test_params)
-        except MissingDataError:
-            print('FAIL - MissingDataError')
-            obj = create_object(success, pair)
+                print(idx, pair)
+                series_x = data[('Close', pair[0])][-periodo:]
+                series_y = data[('Close', pair[1])][-periodo:]
+                success = False
 
-        obj_buffer.append(obj)
+                try:
+                    test_params = coint_model(series_x, series_y)
+                    success = True
+                    obj = create_object(success, pair, series_x, series_y, test_params)
+                except MissingDataError:
+                    print('FAIL - MissingDataError')
+                    obj = create_object(success, pair)
+
+                obj_buffer.append(obj)
 
     PairStats.objects.bulk_create(obj_buffer)
 

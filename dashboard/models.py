@@ -28,7 +28,7 @@ class PairStats(CointParams):
         Essa tabela é recalculado todos os dias com os dados de fechamento
     """
 
-    pair = models.CharField(max_length=32, unique=True)
+    pair = models.CharField(max_length=32)
     success = models.BooleanField(default=False)
     market = models.CharField(
         max_length=32,
@@ -41,8 +41,12 @@ class PairStats(CointParams):
     x_quote = models.FloatField(null=True, blank=True)
     y_quote = models.FloatField(null=True, blank=True)
 
+    class Meta:
+        unique_together = ('pair', 'n_observ',)
+
     def display_pair(self):
         return self.pair.replace('.SA', '').replace(' ', 'x')
+
 
 class Trade(CointParams):
 
