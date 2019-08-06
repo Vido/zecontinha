@@ -17,7 +17,7 @@ from django.db.models import Q
 
 from dashboard.ibov import CARTEIRA_IBOV
 from dashboard.cointegration import get_market_data, coint_model
-from dashboard.models import PairStats
+from dashboard.models import PairStats, PERIODOS_CALCULO
 
 
 def create_object(success, pair, series_x=pd.Series([]), series_y=pd.Series([]), test_params={}):
@@ -76,7 +76,7 @@ def calc_ibovespa():
     obj_buffer = []
     for idx, pair in enumerate(set_pairs):
         # Limite do Heroku: 10K rows
-        for periodo in [100, 240]:
+        for periodo in PERIODOS_CALCULO:
             print(idx, pair)
             series_x = data[('Close', pair[0])][-periodo:]
             series_y = data[('Close', pair[1])][-periodo:]

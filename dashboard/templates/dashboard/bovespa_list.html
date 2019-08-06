@@ -23,7 +23,7 @@
 {% endblock logotipo  %}
 
 {% block descricao %}
-<p class="description">Esse ranking é calculado com dos dados de fechamento. Diariamente uma rotina roda o calculo para todos os pares do IBOV. É utilizado o periodo de <b>01 ANO</b>, a partir da data do calculo. Portanto o número de periodos pode variar. Se houver falha no download dos dados ou na calculo, não serão exibidos os parametros (<i>checkbox Calc. c/ Sucesso</i>). Não garantimos que os dados apresentados estão corretos.<p>
+<p class="description">Esse ranking é calculado com dos dados de fechamento. Diariamente uma rotina roda o calculo para todos os pares do IBOV. É utilizado o periodo de <b>01 ANO</b>, a partir da data do calculo. Devido a limitação do Heroku (limite de 10mil registros Postgres), calculamos para apenas 2 periodos: 100 e 240. Se houver falha no download dos dados ou na calculo, não serão exibidos os parametros (<i>checkbox Calc. c/ Sucesso</i>). Não garantimos que os dados apresentados estão corretos.<p>
 {% endblock descricao %}
 
 {% block form_analise %}

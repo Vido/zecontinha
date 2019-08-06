@@ -45,7 +45,8 @@ TICKERS_YFINANCE = [t+'.SA' for t in ibov.CARTEIRA_IBOV]
 ATIVOS_CHOICE = list(zip(TICKERS_YFINANCE, ibov.CARTEIRA_IBOV))
 PERIODO_CHOICE = zip(PERIODO_YFINANCE, PERIODO_YFINANCE)
 INTERVALO_CHOICE = zip(INTERVALO_YFINANCE, INTERVALO_YFINANCE)
-PERIODOS_CHOICE = zip(range(20, 260, 20), range(20, 260, 20))
+PERIODOS_CALCULO = [100, 240]
+PERIODOS_CHOICE = zip(PERIODOS_CALCULO, PERIODOS_CALCULO)
 
 
 class InputForm(forms.Form):
@@ -204,3 +205,15 @@ class BovespaListView(FormListView):
 
         if not response_payload['success']:
             return redirect('https://www.youtube.com/watch?v=QH2-TGUlwu4')
+
+
+class PairStatsListView(ListView):
+    template_name = 'dashboard/pair_stats.html'
+    # form_class = FilterForm
+    success_url = '/'
+    queryset = PairStats.objects.none()
+
+    # TODO
+    def get_queryset(self, **kwargs):
+        #from IPython import embed; embed()
+        qs = PairStats.objects.filter(success=True)
