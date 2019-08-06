@@ -75,22 +75,22 @@ def calc_ibovespa():
     # Faz o calculo
     obj_buffer = []
     for idx, pair in enumerate(set_pairs):
-        for periodo in range(20, 260, 20):
+        # Limite do Heroku: 10K rows
+        for periodo in [100, 240]:
+            print(idx, pair)
+            series_x = data[('Close', pair[0])][-periodo:]
+            series_y = data[('Close', pair[1])][-periodo:]
+            success = False
 
-                print(idx, pair)
-                series_x = data[('Close', pair[0])][-periodo:]
-                series_y = data[('Close', pair[1])][-periodo:]
-                success = False
+            try:
+                test_params = coint_model(series_x, series_y)
+                success = True
+                obj = create_object(success, pair, series_x, series_y, test_params)
+            except MissingDataError:
+                print('FAIL - MissingDataError')
+                obj = create_object(success, pair)
 
-                try:
-                    test_params = coint_model(series_x, series_y)
-                    success = True
-                    obj = create_object(success, pair, series_x, series_y, test_params)
-                except MissingDataError:
-                    print('FAIL - MissingDataError')
-                    obj = create_object(success, pair)
-
-                obj_buffer.append(obj)
+        obj_buffer.append(obj)
 
     PairStats.objects.bulk_create(obj_buffer)
 
