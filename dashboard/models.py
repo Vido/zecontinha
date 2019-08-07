@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.contrib.postgres.fields import JSONField
 
 
 class CointParams(models.Model):
@@ -23,12 +24,12 @@ MARKET_CHOICES = (
 )
 
 
-class PairStats(CointParams):
+class PairStats(models.Model):
     """
         Essa tabela é recalculado todos os dias com os dados de fechamento
     """
 
-    pair = models.CharField(max_length=32)
+    pair = models.CharField(max_length=32, unique=True)
     success = models.BooleanField(default=False)
     market = models.CharField(
         max_length=32,
@@ -41,14 +42,13 @@ class PairStats(CointParams):
     x_quote = models.FloatField(null=True, blank=True)
     y_quote = models.FloatField(null=True, blank=True)
 
-    class Meta:
-        unique_together = ('pair', 'n_observ',)
+    model_params = JSONField(default={})
 
     def display_pair(self):
         return self.pair.replace('.SA', '').replace(' ', 'x')
 
 
-class Trade(CointParams):
+class Trade(models.Model):
 
     user = models.ForeignKey(get_user_model(),
         on_delete=models.CASCADE)
@@ -58,6 +58,9 @@ class Trade(CointParams):
         choices=MARKET_CHOICES,
         default='N/A',
     )
+
+    model_params = JSONField(default={})
+
     ativo_x = models.CharField(max_length=32)
     ativo_y = models.CharField(max_length=32)
 
