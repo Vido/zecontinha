@@ -43,6 +43,8 @@ class PairStats(models.Model):
     y_quote = models.FloatField(null=True, blank=True)
     success = models.BooleanField(default=False)
     model_params = JSONField(default={})
+    timestamp = models.DateTimeField(auto_now_add=True)
+
 
     def display_pair(self):
         return self.pair.replace('.SA', '').replace(' ', 'x')

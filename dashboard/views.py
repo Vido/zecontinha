@@ -172,11 +172,14 @@ class BovespaListView(FormListView):
         zscore = form.cleaned_data['zscore']
         periodo = form.cleaned_data['periodo']
 
-        qs = PairStats.objects.filter(success=success, n_observ=periodo)
+        qs = PairStats.objects.filter(success=success)
 
+        """
+        # TODO: FIX
         if success:
             qs = qs.filter(adf_pvalue__lte=pvalue)
             qs = qs.filter(Q(zscore__gte=zscore) | Q(zscore__lte=-zscore)) 
+        """
 
         if ticker != 'TODOS':
             qs = qs.filter(pair__icontains=ticker)
@@ -186,10 +189,10 @@ class BovespaListView(FormListView):
     def get_context_data(self, **kwargs):
         context = super(BovespaListView, self).get_context_data(**kwargs)
         if context['object_list'].exists():
-            obj = context['object_list'].latest('timestamp_calc')
+            obj = context['object_list'].latest('timestamp')
             more_context = {
-                'n_observ': obj.n_observ,
-                'timestamp_calc': obj.timestamp_calc,
+                #'n_observ': obj.n_observ,
+                'timestamp_calc': obj.timestamp,
             }
             context.update(more_context)
         return context
