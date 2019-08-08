@@ -1,0 +1,86 @@
+{% extends "dashboard/base.html" %}
+{% load i18n static %}
+
+{% block extrascripts %}
+    <script>
+        function enableBtn(){
+            $("#form_btn").prop("disabled", false);
+        }
+
+        $(document).ready(function() {
+            $('#dados').DataTable( {
+                dom: 'Bfrtip',
+                buttons: [
+                    'copy', 'csv', 'excel'
+                ]
+            } );
+        } );
+    </script>
+{% endblock %}
+
+{% block logotipo %}
+<img alt="Zé Continha" src="{% static 'vozdocu/ladyluck_min.png' %}" style="margin-top: 30px;">
+{% endblock logotipo  %}
+
+{% block descricao %}
+<p class="description">TUDO<p>
+{% endblock descricao %}
+
+{% block form_analise %}
+<h2>Ranking dos Pares</h2>
+    <form action="" method="POST">
+        {% csrf_token %}
+        <div style="float:left">
+        <table>
+        {{ form.as_table }}
+        </table>
+        </div>
+        <div style="margin-left:20px; float:left">
+        <div class="g-recaptcha" data-sitekey="6LdXsq4UAAAAAKlcpCUX-v52ZpQp_RrzKR5s-n8j" data-callback="enableBtn"></div>
+        <br/>
+        <button disabled type="submit" value="Submit" id="form_btn">Filtrar</button> 
+        </div>
+    </form>
+{% endblock form_analise %}
+
+<!-- -->
+{% block result_analise %}
+
+<hr>
+
+<table id="dados">
+    <thead>
+    <tr>
+        <th>Par</th>
+        <th>Cotação</th>
+        <th>ADF P-Valor</th>
+        <th>Z-Score</th>
+        <th>Ang. Coef.</th>
+        <th>Cmd.</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for obj in object_list %}
+    <tr>
+        <td>{{ obj.display_pair }}</td>
+        <td>{{ obj.x_quote|floatformat:2 }}x{{ obj.y_quote|floatformat:2 }}</td>
+        <td>{{ obj.adf_pvalue|floatformat:5 }}</td>
+        <td>{{ obj.zscore|floatformat:5 }}</td>
+        <td>{{ obj.ang_coef|floatformat:5 }}</td>
+        <td>{% if obj.success %}<button style="margin-top: 5px" onclick="newTrade()">Entrar</button>{% endif %}</td>
+    </tr>
+    {% empty %}
+        <td colspan="6">Nenhum dado encontrado</td>
+    {% endfor %}
+
+    </tbody>
+</table>
+
+{% if n_observ %}
+    <ul>
+        <li></b>Timestamp do Calculo:</b>{{ timestamp_calc }}</li>
+        <li><b>Número de Periodos: </b>{{ n_observ }}</li>
+    </ul>
+{% endif %}
+
+{% endblock result_analise %}

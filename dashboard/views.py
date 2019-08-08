@@ -45,7 +45,7 @@ TICKERS_YFINANCE = [t+'.SA' for t in ibov.CARTEIRA_IBOV]
 ATIVOS_CHOICE = list(zip(TICKERS_YFINANCE, ibov.CARTEIRA_IBOV))
 PERIODO_CHOICE = zip(PERIODO_YFINANCE, PERIODO_YFINANCE)
 INTERVALO_CHOICE = zip(INTERVALO_YFINANCE, INTERVALO_YFINANCE)
-PERIODOS_CALCULO = [100, 240]
+PERIODOS_CALCULO = list(range(20,260,20))
 PERIODOS_CHOICE = zip(PERIODOS_CALCULO, PERIODOS_CALCULO)
 
 
@@ -209,7 +209,6 @@ class BovespaListView(FormListView):
 
 class PairStatsListView(ListView):
     template_name = 'dashboard/pair_stats.html'
-    # form_class = FilterForm
     success_url = '/'
     queryset = PairStats.objects.none()
 

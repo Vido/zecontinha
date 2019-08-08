@@ -13,6 +13,7 @@ class CointParams(models.Model):
     last_resid = models.FloatField(null=True, blank=True)
     n_observ = models.IntegerField(null=True, blank=True)
     timestamp_calc = models.DateTimeField(auto_now_add=True)
+    success = models.BooleanField(default=False)
 
     class Meta:
         abstract = True
@@ -30,7 +31,6 @@ class PairStats(models.Model):
     """
 
     pair = models.CharField(max_length=32, unique=True)
-    success = models.BooleanField(default=False)
     market = models.CharField(
         max_length=32,
         choices=MARKET_CHOICES,
@@ -41,7 +41,7 @@ class PairStats(models.Model):
     ticker_y = models.CharField(max_length=32)
     x_quote = models.FloatField(null=True, blank=True)
     y_quote = models.FloatField(null=True, blank=True)
-
+    success = models.BooleanField(default=False)
     model_params = JSONField(default={})
 
     def display_pair(self):

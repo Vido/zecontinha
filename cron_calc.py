@@ -12,32 +12,20 @@ import pandas as pd
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "vozdocu.settings")
 django.setup()
 
+from django.forms.models import model_to_dict
 from statsmodels.tools.sm_exceptions import MissingDataError
 from django.db.models import Q
 
 from dashboard.ibov import CARTEIRA_IBOV
 from dashboard.cointegration import get_market_data, coint_model
-from dashboard.models import PairStats
+from dashboard.models import PairStats, CointParams
 from dashboard.views import PERIODOS_CALCULO
 
+def create_cointparams(success, pair, series_x=pd.Series([]), series_y=pd.Series([]), test_params={}):
 
-def create_object(success, pair, series_x=pd.Series([]), series_y=pd.Series([]), test_params={}):
-
-    obj = PairStats(
-        success = success,
-        pair = " ".join(pair), 
-        market = 'BOVESPA',
-        ticker_x = pair[0],
-        ticker_y = pair[1],
-    )
+    obj = CointParams(success=success)
 
     try:
-        if not series_x.empty:
-            obj.x_quote = series_x.iloc[-1]
-
-        if not series_y.empty:
-            obj.y_quote = series_y.iloc[-1]
-
         if success:
             obj.adf_pvalue = test_params['ADF'][1]
             obj.resid_std = test_params['OLS'].resid.std()
@@ -53,6 +41,22 @@ def create_object(success, pair, series_x=pd.Series([]), series_y=pd.Series([]),
 
     return obj
 
+def create_pairstats(pair, series_x=pd.Series([]), series_y=pd.Series([])):
+
+    obj = PairStats(
+        pair = " ".join(pair),
+        market = 'BOVESPA',
+        ticker_x = pair[0],
+        ticker_y = pair[1],
+    )
+
+    if not series_x.empty:
+        obj.x_quote = series_x.iloc[-1]
+
+    if not series_y.empty:
+        obj.y_quote = series_y.iloc[-1]
+
+    return obj
 
 def calc_ibovespa():
 
@@ -77,35 +81,41 @@ def calc_ibovespa():
     obj_buffer = []
     for idx, pair in enumerate(set_pairs):
         # Limite do Heroku: 10K rows
+
+        series_x = data[('Close', pair[0])]
+        series_y = data[('Close', pair[1])]
+        obj_pair = create_pairstats(pair, series_x=series_x, series_y=series_y)
+
         for periodo in PERIODOS_CALCULO:
-            print(idx, pair)
             series_x = data[('Close', pair[0])][-periodo:]
             series_y = data[('Close', pair[1])][-periodo:]
-            success = False
-
             try:
                 test_params = coint_model(series_x, series_y)
-                success = True
-                obj = create_object(success, pair, series_x, series_y, test_params)
+                obj_data = create_cointparams(True, pair, series_x, series_y, test_params)
+                obj_pair.success = True
             except MissingDataError:
+                obj_data = create_cointparams(False, pair)
                 print('FAIL - MissingDataError')
-                obj = create_object(success, pair)
 
-        obj_buffer.append(obj)
+            obj_pair.model_params[periodo] = model_to_dict(obj_data)
+
+        obj_buffer.append(obj_pair)
 
     PairStats.objects.bulk_create(obj_buffer)
 
 def enter_trades():
+    """
+        TODO
+    """
     trade_list()
     qs = PairStats.objects.filter(success=True)
     qs = qs.filter(Q(adf_pvalue__lte=0.05) & (Q(zscore__gte=2.0) | Q(zscore__lte=-2.0)))
-    #for obj in q:
-    #    Trade()
-    # TODO
 
 def exit_trades():
+    """
+        TODO
+    """
     pass
 
 if __name__ == '__main__':
     calc_ibovespa()
-
