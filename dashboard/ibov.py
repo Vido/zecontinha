@@ -1,6 +1,6 @@
 """
-PRA DEV
-__CARTEIRA_IBOV = [
+# PRA DEV
+CARTEIRA_IBOV = [
     #'BOVA11',
     'ITUB4',
     'VALE3',

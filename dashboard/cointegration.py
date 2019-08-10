@@ -34,6 +34,22 @@ def coint_model(series_x, series_y):
     except:
         raise
 
+def beta_rotation(series_x, series_y, window=40):
+    beta_list = []
+    try:
+        for i in range(0, len(series_x)-window):
+            slice_x = series_x[i:i+window]
+            slice_y = series_y[i:i+window]
+
+            X = sm.add_constant(slice_x.values)
+            mod = sm.OLS(slice_y, X)
+            results = mod.fit()
+            beta = results.params.x1
+            beta_list.append(beta)
+    except:
+        raise
+    return beta_list
+
 def asBase64(my_plt):
     _buffer = BytesIO()
     my_plt.savefig(_buffer, format='png', bbox_inches='tight')
@@ -81,4 +97,13 @@ def get_raw_plot(series_x, series_y, xlabel='', ylabel=''):
     mplt.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
            ncol=2, borderaxespad=0.)
     
+    return asBase64(mplt)
+
+def get_beta_plot(beta_list):
+    # limpa o canvas
+    mplt.clf()
+    mplt.cla()
+    #mplt.close()
+    mplt.plot(beta_list)
+    mplt.xticks(rotation=90)
     return asBase64(mplt)

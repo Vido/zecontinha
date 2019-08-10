@@ -43,7 +43,6 @@ class Index(FormView):
     success_url = '/'
 
     def form_valid(self, form):
-
         response = requests.post('https://www.google.com/recaptcha/api/siteverify',
                 data = {'secret':'6LdXsq4UAAAAAGEzZfUt9XtpE0URlMSXK2VJ94ix',
                         'remoteip': self.request.META.get('REMOTE_ADDR', ''),
@@ -120,6 +119,7 @@ class PairStatsDetailView(DetailView, FormMixin):
     template_name = 'dashboard/pair_stats.html'
     model = PairStats
     form_class = StatsForm
+    success_url = '/'
 
     def post(self, request, *args, **kwargs):
         self.form = self.get_form()
@@ -141,8 +141,11 @@ class PairStatsDetailView(DetailView, FormMixin):
         if hasattr(self, 'form'):
             pvalue = self.form.cleaned_data['pvalue']
             zscore = self.form.cleaned_data['zscore']
+            beta_plot = cointegration.get_beta_plot(context['object'].beta_rotation)
+
             context['pvalue'] = float(pvalue)
             context['zscore'] = float(zscore)
+            context['beta_plot'] = beta_plot.decode("utf-8")
         return context
 
     def form_valid(self, form):

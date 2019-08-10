@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
-from django.contrib.postgres.fields import JSONField
+from django.contrib.postgres.fields import JSONField, ArrayField
 
 
 class CointParams(models.Model):
@@ -26,6 +26,17 @@ MARKET_CHOICES = (
     ('COINBASE', 'Coinbase (Crypo)'),
 )
 
+class Quotes(models.Model):
+
+    market = models.CharField(
+        max_length=32,
+        choices=MARKET_CHOICES,
+        default='N/A',
+    )
+
+    ticker = models.CharField(max_length=32)
+    hquotes = ArrayField(models.FloatField(), blank=True)
+
 
 class PairStats(models.Model):
     """
@@ -41,12 +52,16 @@ class PairStats(models.Model):
 
     ticker_x = models.CharField(max_length=32)
     ticker_y = models.CharField(max_length=32)
+
+    # Ultima cotação
     x_quote = models.FloatField(null=True, blank=True)
     y_quote = models.FloatField(null=True, blank=True)
     success = models.BooleanField(default=False)
-    model_params = JSONField(default={})
-    timestamp = models.DateTimeField(auto_now_add=True)
 
+    model_params = JSONField(default={})
+    beta_rotation = ArrayField(models.FloatField(), blank=True)
+
+    timestamp = models.DateTimeField(auto_now_add=True)
 
     def display_pair(self):
         return self.pair.replace('.SA', '').replace(' ', 'x')
@@ -64,6 +79,7 @@ class Trade(models.Model):
     )
 
     model_params = JSONField(default={})
+    beta_rotation = ArrayField(models.FloatField(), blank=True)
 
     ativo_x = models.CharField(max_length=32)
     ativo_y = models.CharField(max_length=32)

@@ -17,7 +17,7 @@ from statsmodels.tools.sm_exceptions import MissingDataError
 from django.db.models import Q
 
 from dashboard.ibov import CARTEIRA_IBOV
-from dashboard.cointegration import get_market_data, coint_model
+from dashboard.cointegration import get_market_data, coint_model, beta_rotation
 from dashboard.models import PairStats, CointParams
 from dashboard.forms import PERIODOS_CALCULO
 
@@ -85,6 +85,10 @@ def calc_ibovespa():
         series_x = data[('Close', pair[0])]
         series_y = data[('Close', pair[1])]
         obj_pair = create_pairstats(pair, series_x=series_x, series_y=series_y)
+        print(pair)
+
+        beta_list = beta_rotation(series_x=series_x, series_y=series_y)
+        obj_pair.beta_rotation = beta_list
 
         for periodo in PERIODOS_CALCULO:
             series_x = data[('Close', pair[0])][-periodo:]
@@ -98,12 +102,10 @@ def calc_ibovespa():
                 print('FAIL - MissingDataError')
 
             obj_pair.model_params[periodo] = model_to_dict(obj_data)
-            print(id(obj_pair))
 
         #obj_buffer.append(obj_pair)
         # BUG bizarro do DjangoPython
         obj_pair.save()
-
 
     #PairStats.objects.bulk_create(obj_buffer)
 

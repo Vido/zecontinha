@@ -11,6 +11,7 @@
         $(document).ready(function() {
             $('#dados').DataTable( {
                 dom: 'Bfrtip',
+                pageLength : 15,
                 buttons: [
                     'copy', 'csv', 'excel'
                 ]
@@ -83,6 +84,10 @@
 
     </tbody>
 </table>
+
+<h3>Beta Rotation</h3>
+<img src="data:image/png;base64, {{beta_plot}}"/>
+<p class="description">Para este calculo é usada uma janela de 40 periodos<p>
 
 {% if n_observ %}
     <ul>
