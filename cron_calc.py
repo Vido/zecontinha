@@ -19,7 +19,7 @@ from django.db.models import Q
 from dashboard.ibov import CARTEIRA_IBOV
 from dashboard.cointegration import get_market_data, coint_model
 from dashboard.models import PairStats, CointParams
-from dashboard.views import PERIODOS_CALCULO
+from dashboard.forms import PERIODOS_CALCULO
 
 def create_cointparams(success, pair, series_x=pd.Series([]), series_y=pd.Series([]), test_params={}):
 
