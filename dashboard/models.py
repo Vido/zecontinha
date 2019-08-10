@@ -15,6 +15,8 @@ class CointParams(models.Model):
     timestamp_calc = models.DateTimeField(auto_now_add=True)
     success = models.BooleanField(default=False)
 
+    #TODO: Marcar o periodo
+
     class Meta:
         abstract = True
 

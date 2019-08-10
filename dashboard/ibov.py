@@ -1,9 +1,12 @@
+"""
+PRA DEV
 __CARTEIRA_IBOV = [
     #'BOVA11',
     'ITUB4',
     'VALE3',
     'BBDC4',
 ]
+"""
 
 CARTEIRA_IBOV = [
     #'BOVA11',

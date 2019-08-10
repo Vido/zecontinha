@@ -1,5 +1,6 @@
 {% extends "dashboard/base.html" %}
-{% load i18n static %}
+{% load i18n static model_params_utils %}
+
 
 {% block extrascripts %}
     <script>
@@ -19,15 +20,15 @@
 {% endblock %}
 
 {% block logotipo %}
-<img alt="Zé Continha" src="{% static 'vozdocu/ladyluck_min.png' %}" style="margin-top: 30px;">
+<img alt="Zé Continha" src="{% static 'vozdocu/fatcat_min.jpg' %}" style="margin-top: 30px;">
 {% endblock logotipo  %}
 
 {% block descricao %}
-<p class="description">TUDO<p>
+<p class="description">TODO: Colocar uma descrição<p>
 {% endblock descricao %}
 
 {% block form_analise %}
-<h2>Ranking dos Pares</h2>
+<h2>Estatísticas do Par: {{ object.display_pair }}</h2>
     <form action="" method="POST">
         {% csrf_token %}
         <div style="float:left">
@@ -51,26 +52,33 @@
 <table id="dados">
     <thead>
     <tr>
-        <th>Par</th>
-        <th>Cotação</th>
+        <th>#Observ</th>
         <th>ADF P-Valor</th>
         <th>Z-Score</th>
         <th>Ang. Coef.</th>
-        <th>Cmd.</th>
+        <th>Intercept.</th>
+        <th>Resíduo</th>
+        <th>Std.Dev.</th>
     </tr>
     </thead>
     <tbody>
-    {% for obj in object_list %}
+
+    {% for key, values in object.model_params.items %}
     <tr>
-        <td>{{ obj.display_pair }}</td>
-        <td>{{ obj.x_quote|floatformat:2 }}x{{ obj.y_quote|floatformat:2 }}</td>
-        <td>{{ obj.adf_pvalue|floatformat:5 }}</td>
-        <td>{{ obj.zscore|floatformat:5 }}</td>
-        <td>{{ obj.ang_coef|floatformat:5 }}</td>
-        <td>{% if obj.success %}<button style="margin-top: 5px" onclick="newTrade()">Entrar</button>{% endif %}</td>
+        <td>{{ values.n_observ }}</td>
+        <td style="{% color_adf values.adf_pvalue pvalue %}">
+            {{ values.adf_pvalue|floatformat:5 }}
+        </td>
+        <td style="{% color_zscore values.zscore zscore %}">
+            {{ values.zscore|floatformat:5 }}
+        </td>
+        <td>{{ values.ang_coef|floatformat:5 }}</td>
+        <td>{{ values.intercept|floatformat:5 }}</td>
+        <td  >{{ values.last_resid|floatformat:5 }}</td>
+        <td>{{ values.resid_std|floatformat:5 }}</td>
     </tr>
     {% empty %}
-        <td colspan="6">Nenhum dado encontrado</td>
+        <td colspan="6">Use o filtro para que os dados sejam apresentados</td>
     {% endfor %}
 
     </tbody>

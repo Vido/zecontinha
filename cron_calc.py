@@ -98,10 +98,14 @@ def calc_ibovespa():
                 print('FAIL - MissingDataError')
 
             obj_pair.model_params[periodo] = model_to_dict(obj_data)
+            print(id(obj_pair))
 
-        obj_buffer.append(obj_pair)
+        #obj_buffer.append(obj_pair)
+        # BUG bizarro do DjangoPython
+        obj_pair.save()
 
-    PairStats.objects.bulk_create(obj_buffer)
+
+    #PairStats.objects.bulk_create(obj_buffer)
 
 def enter_trades():
     """
