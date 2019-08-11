@@ -18,7 +18,7 @@ from django.db.models import Q
 
 from dashboard.ibov import CARTEIRA_IBOV
 from dashboard.cointegration import get_market_data, coint_model, beta_rotation
-from dashboard.models import PairStats, CointParams
+from dashboard.models import PairStats, CointParams, Quotes
 from dashboard.forms import PERIODOS_CALCULO
 
 def create_cointparams(success, pair, series_x=pd.Series([]), series_y=pd.Series([]), test_params={}):
@@ -123,5 +123,29 @@ def exit_trades():
     """
     pass
 
+def download_hquotes():
+    # Faz Download
+    ibov_tickers = [ "%s.SA" % s for s in CARTEIRA_IBOV]
+    data = get_market_data(ibov_tickers, '5y', '1d')
+
+    #from IPython import embed; embed()
+    # Limpa a Base
+    Quotes.objects.all().delete()
+
+    # Faz o calculo
+    obj_buffer = []
+    for idx, ticker in enumerate(ibov_tickers):
+        print(ticker)
+        series_x = data[('Close', ticker)]
+        try:
+            obj = Quotes(market='BOVESPA', ticker=ticker,
+                hquotes=series_x.values.tolist(), htimestamps=series_x.index.tolist())
+            obj_buffer.append(obj)
+        except Exception as e:
+            print e
+
+    Quotes.objects.bulk_create(obj_buffer)
+
 if __name__ == '__main__':
     calc_ibovespa()
+    download_hquotes()

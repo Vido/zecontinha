@@ -36,6 +36,7 @@ class Quotes(models.Model):
 
     ticker = models.CharField(max_length=32)
     hquotes = ArrayField(models.FloatField(), blank=True)
+    htimestamps = ArrayField(models.DateField(), blank=True)
 
 
 class PairStats(models.Model):
