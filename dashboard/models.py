@@ -1,3 +1,5 @@
+import pandas as pd
+
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.contrib.postgres.fields import JSONField, ArrayField
@@ -38,6 +40,11 @@ class Quotes(models.Model):
     hquotes = ArrayField(models.FloatField(), blank=True)
     htimestamps = ArrayField(models.DateField(), blank=True)
 
+    def __str__(self):
+        return self.ticker + " [%d]" % len(self.hquotes)
+
+    def get_series(self):
+        return pd.Series(self.hquotes, index=self.htimestamps)
 
 class PairStats(models.Model):
     """

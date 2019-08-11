@@ -11,7 +11,7 @@ from django.shortcuts import get_object_or_404
 from django.db.models import Q
 
 from . import cointegration
-from dashboard.models import PairStats
+from dashboard.models import PairStats, Quotes
 from dashboard.forms import InputForm, FilterForm, StatsForm
 
 
@@ -141,11 +141,27 @@ class PairStatsDetailView(DetailView, FormMixin):
         if hasattr(self, 'form'):
             pvalue = self.form.cleaned_data['pvalue']
             zscore = self.form.cleaned_data['zscore']
+            periodo = self.form.cleaned_data['periodo']
+
             beta_plot = cointegration.get_beta_plot(context['object'].beta_rotation)
 
             context['pvalue'] = float(pvalue)
             context['zscore'] = float(zscore)
             context['beta_plot'] = beta_plot.decode("utf-8")
+            context['period'] = periodo
+
+            try:
+                periodo = int(periodo)
+                ativo_x = self.kwargs['x']
+                ativo_y = self.kwargs['y']
+                series_x = Quotes.objects.get(ticker=ativo_x).get_series()[-periodo:]
+                series_y = Quotes.objects.get(ticker=ativo_y).get_series()[-periodo:]
+                plot_context = cointegration.get_plot_context(series_x, series_y, ativo_x, ativo_y)
+            except Exception as e:
+                print(e)
+                plot_context = {'resultados': False}
+            context.update(plot_context)
+
         return context
 
     def form_valid(self, form):

@@ -131,7 +131,6 @@ def download_hquotes():
     ibov_tickers = [ "%s.SA" % s for s in CARTEIRA_IBOV]
     data = get_market_data(ibov_tickers, '5y', '1d')
 
-    #from IPython import embed; embed()
     # Limpa a Base
     Quotes.objects.all().delete()
 

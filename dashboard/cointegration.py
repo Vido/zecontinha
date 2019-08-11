@@ -78,11 +78,12 @@ def get_residuals_plot(ols):
     mplt.clf()
     mplt.cla()
     #mplt.close()
-    mplt.plot(ols.resid)
+    mplt.plot(ols.resid, color='k')
     mplt.xticks(rotation=90)
 
-    mplt.hlines([-1*stddev, 1*stddev], xmin, xmax, color='gray')
-    mplt.hlines([-2*stddev, 2*stddev], xmin, xmax, color='black')
+    mplt.hlines([0], xmin, xmax, color='whitesmoke')
+    mplt.hlines([-1*stddev, 1*stddev], xmin, xmax, color='gainsboro')
+    mplt.hlines([-2*stddev, 2*stddev], xmin, xmax, color='orange')
     mplt.hlines([-3*stddev, 3*stddev], xmin, xmax, color='red')
     return asBase64(mplt)
 
@@ -104,6 +105,35 @@ def get_beta_plot(beta_list):
     mplt.clf()
     mplt.cla()
     #mplt.close()
-    mplt.plot(beta_list)
+    mplt.plot(beta_list, color='limegreen')
     mplt.xticks(rotation=90)
     return asBase64(mplt)
+
+def get_plot_context(series_x, series_y, ativo_x, ativo_y):
+    context = {}
+    #
+    test_params = coint_model(series_x, series_y)
+    #
+    scatter_plot = get_scatter_plot(
+        series_x, series_y, test_params['OLS'],
+        xlabel=ativo_x, ylabel=ativo_y)
+    #
+    residuals_plot = get_residuals_plot(
+        test_params['OLS'])
+    #
+    # TODO: Usar HighCharts
+    raw_plot = get_raw_plot(series_x, series_y,
+        xlabel=ativo_x, ylabel=ativo_y)
+    #
+    context.update(test_params)
+    context.update({
+        'ativo_x': ativo_x,
+        'ativo_y': ativo_y,
+        'raw_data': zip(series_x.index, series_x, series_y),
+        'scatter_plot': scatter_plot.decode("utf-8"),
+        'residuals_plot': residuals_plot.decode("utf-8"),
+        'raw_plot': raw_plot.decode("utf-8"),
+        'resultados': True,
+    })
+
+    return context

@@ -9,9 +9,20 @@
         }
 
         $(document).ready(function() {
-            $('#dados').DataTable( {
+            $('#periodos').DataTable( {
                 dom: 'Bfrtip',
                 pageLength : 15,
+                /*
+                buttons: [
+                    'copy', 'csv', 'excel'
+                ]
+                */
+            } );
+        } );
+
+        $(document).ready(function() {
+            $('#dados').DataTable( {
+                dom: 'Bfrtip',
                 buttons: [
                     'copy', 'csv', 'excel'
                 ]
@@ -50,7 +61,7 @@
 
 <hr>
 
-<table id="dados">
+<table id="periodos">
     <thead>
     <tr>
         <th>#Observ</th>
@@ -85,14 +96,24 @@
     </tbody>
 </table>
 
-<h3>Beta Rotation</h3>
-<img src="data:image/png;base64, {{beta_plot}}"/>
-<p class="description">Para este calculo é usada uma janela de 40 periodos<p>
+{% if beta_plot %}
+    <h3>Beta Rotation</h3>
+    <img src="data:image/png;base64, {{beta_plot}}"/>
+    <p class="description">Para este calculo é usada uma janela de 40 periodos<p>
+{% endif %}
+
+{% if resultados %}
+<hr>
+<h2>Resultados ({{ period }} períodos)</h2>
+    {% include 'dashboard/ols.html'%}
+    {% include 'dashboard/adf.html'%}
+    {% include 'dashboard/dados.html'%}
+{% endif %}
 
 {% if n_observ %}
     <ul>
         <li></b>Timestamp do Calculo:</b>{{ timestamp_calc }}</li>
-        <li><b>Número de Periodos: </b>{{ n_observ }}</li>
+        <li><b>Número de Períodos: </b>{{ period }}</li>
     </ul>
 {% endif %}
 
