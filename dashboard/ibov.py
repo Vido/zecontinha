@@ -1,4 +1,4 @@
-
+"""
 # PRA DEV
 CARTEIRA_IBOV = [
     #'BOVA11',
@@ -6,8 +6,9 @@ CARTEIRA_IBOV = [
     'VALE3',
     'BBDC4',
 ]
+"""
 
-__CARTEIRA_IBOV = [
+CARTEIRA_IBOV = [
     #'BOVA11',
     'ITUB4',
     'VALE3',
