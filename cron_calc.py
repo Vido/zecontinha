@@ -87,8 +87,11 @@ def calc_ibovespa():
         obj_pair = create_pairstats(pair, series_x=series_x, series_y=series_y)
         print(pair)
 
-        beta_list = beta_rotation(series_x=series_x, series_y=series_y)
-        obj_pair.beta_rotation = beta_list
+        try:
+            beta_list = beta_rotation(series_x=series_x, series_y=series_y)
+            obj_pair.beta_rotation = beta_list
+        except MissingDataError:
+            print('FAIL - MissingDataError - Beta')
 
         for periodo in PERIODOS_CALCULO:
             series_x = data[('Close', pair[0])][-periodo:]
@@ -99,7 +102,7 @@ def calc_ibovespa():
                 obj_pair.success = True
             except MissingDataError:
                 obj_data = create_cointparams(False, pair)
-                print('FAIL - MissingDataError')
+                print('FAIL - MissingDataError - OLS ADF')
 
             obj_pair.model_params[periodo] = model_to_dict(obj_data)
 
