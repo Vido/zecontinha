@@ -60,7 +60,7 @@ class PairStats(models.Model):
     success = models.BooleanField(default=False)
 
     model_params = JSONField(default={})
-    beta_rotation = ArrayField(models.FloatField(), blank=True)
+    beta_rotation = ArrayField(models.FloatField(), blank=True, null=True)
 
     timestamp = models.DateTimeField(auto_now_add=True)
 
