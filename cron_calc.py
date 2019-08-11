@@ -142,7 +142,7 @@ def download_hquotes():
                 hquotes=series_x.values.tolist(), htimestamps=series_x.index.tolist())
             obj_buffer.append(obj)
         except Exception as e:
-            print e
+            print(e)
 
     Quotes.objects.bulk_create(obj_buffer)
 
