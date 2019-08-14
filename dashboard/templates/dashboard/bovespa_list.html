@@ -37,9 +37,7 @@
         </table>
         </div>
         <div style="margin-left:20px; float:left">
-        <div class="g-recaptcha" data-sitekey="6LdXsq4UAAAAAKlcpCUX-v52ZpQp_RrzKR5s-n8j" data-callback="enableBtn"></div>
-        <br/>
-        <button disabled type="submit" value="Submit" id="form_btn">Filtrar</button> 
+            {% include 'dashboard/recaptcha.html' with btn_callback='enableBtn' submit_label='Filtrar' %}
         </div>
     </form>
 {% endblock form_analise %}
@@ -57,6 +55,7 @@
         <th>ADF P-Valor</th>
         <th>Z-Score</th>
         <th>Ang. Coef.</th>
+        <th>#Prd. Coint.</th>
         <th>Cmd.</th>
     </tr>
     </thead>
@@ -68,6 +67,7 @@
         <td>{% get_param obj period "adf_pvalue" 5 %}</td>
         <td>{% get_param obj period "zscore" 5 %}</td>
         <td>{% get_param obj period "ang_coef" 5 %}</td>
+        <td>{% n_p_coint obj 0.1 %}</td>
         <td>{% if obj.success %}<button style="margin-top: 5px" onclick="newTrade()">Entrar</button>{% endif %}</td>
     </tr>
     {% empty %}

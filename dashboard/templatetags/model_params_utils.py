@@ -29,3 +29,7 @@ def color_zscore(value, threshold):
         print(e)
 
     return ''
+
+@register.simple_tag
+def n_p_coint(obj, pvalue):
+    return obj.n_p_coint(pvalue)

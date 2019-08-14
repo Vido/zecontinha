@@ -49,9 +49,7 @@
         </table>
         </div>
         <div style="margin-left:20px; float:left">
-        <div class="g-recaptcha" data-sitekey="6LdXsq4UAAAAAKlcpCUX-v52ZpQp_RrzKR5s-n8j" data-callback="enableBtn"></div>
-        <br/>
-        <button disabled type="submit" value="Submit" id="form_btn">Filtrar</button> 
+            {% include 'dashboard/recaptcha.html' with btn_callback='enableBtn' submit_label='Filtrar' %}
         </div>
     </form>
 {% endblock form_analise %}

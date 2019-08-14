@@ -20,7 +20,6 @@ from django.urls import path, include
 from django.views.generic.base import RedirectView
 
 urlpatterns = [
-    path('admin/', RedirectView.as_view(url='https://www.youtube.com/watch?v=ednKK8GlvwI'), name='lalala'),
-    #path('admin/', admin.site.urls),
+    path('admin2', admin.site.urls),
     path('', include('dashboard.urls')),
 ]

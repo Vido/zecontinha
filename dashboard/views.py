@@ -37,12 +37,13 @@ class FormListView(ListView, FormMixin):
         return self.get(request, *args, **kwargs)
 
 
-class Index(FormView):
-    template_name = 'dashboard/base.html'
-    form_class = InputForm
-    success_url = '/'
+class RecaptchaMixin():
 
     def form_valid(self, form):
+        if self.request.user.is_superuser:
+            print("Superuser: Pulando o Recaptcha...")
+            return
+
         response = requests.post('https://www.google.com/recaptcha/api/siteverify',
                 data = {'secret':'6LdXsq4UAAAAAGEzZfUt9XtpE0URlMSXK2VJ94ix',
                         'remoteip': self.request.META.get('REMOTE_ADDR', ''),
@@ -53,6 +54,14 @@ class Index(FormView):
         if not response_payload['success']:
             return redirect('https://www.youtube.com/watch?v=QH2-TGUlwu4')
 
+
+class Index(FormView, RecaptchaMixin):
+    template_name = 'dashboard/base.html'
+    form_class = InputForm
+    success_url = '/'
+
+    def form_valid(self, form):
+        super(RecaptchaMixin, self).form_valid(**kwargs)
         context = {}
         if form.cleaned_data['ativo_x'] != form.cleaned_data['ativo_y']:
             context = form.get_context()
@@ -61,7 +70,7 @@ class Index(FormView):
         return self.render_to_response(context)
 
 
-class BovespaListView(FormListView):
+class BovespaListView(RecaptchaMixin, FormListView):
     template_name = 'dashboard/bovespa_list.html'
     form_class = FilterForm
     success_url = '/'
@@ -103,19 +112,8 @@ class BovespaListView(FormListView):
             context.update(more_context)
         return context
 
-    def form_valid(self, form):
-        response = requests.post('https://www.google.com/recaptcha/api/siteverify',
-                data = {'secret':'6LdXsq4UAAAAAGEzZfUt9XtpE0URlMSXK2VJ94ix',
-                        'remoteip': self.request.META.get('REMOTE_ADDR', ''),
-                        'response': self.request.POST.get('g-recaptcha-response', '')})
 
-        response_payload = json.loads(response.text)
-
-        if not response_payload['success']:
-            return redirect('https://www.youtube.com/watch?v=QH2-TGUlwu4')
-
-
-class PairStatsDetailView(DetailView, FormMixin):
+class PairStatsDetailView(RecaptchaMixin, DetailView, FormMixin):
     template_name = 'dashboard/pair_stats.html'
     model = PairStats
     form_class = StatsForm
@@ -164,13 +162,3 @@ class PairStatsDetailView(DetailView, FormMixin):
 
         return context
 
-    def form_valid(self, form):
-        response = requests.post('https://www.google.com/recaptcha/api/siteverify',
-                data = {'secret':'6LdXsq4UAAAAAGEzZfUt9XtpE0URlMSXK2VJ94ix',
-                        'remoteip': self.request.META.get('REMOTE_ADDR', ''),
-                        'response': self.request.POST.get('g-recaptcha-response', '')})
-
-        response_payload = json.loads(response.text)
-
-        if not response_payload['success']:
-            return redirect('https://www.youtube.com/watch?v=QH2-TGUlwu4')

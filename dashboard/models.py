@@ -74,6 +74,13 @@ class PairStats(models.Model):
     def display_pair(self):
         return self.pair.replace('.SA', '').replace(' ', 'x')
 
+    def n_p_coint(self, pvalue):
+        """ Número de Periodos Cointegrados """
+        counter = 0
+        for key, obj in self.model_params.items():
+            if obj.get('adf_pvalue', '') < pvalue:
+                counter += 1
+        return counter
 
 class Trade(models.Model):
 

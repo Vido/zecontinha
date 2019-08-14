@@ -81,9 +81,7 @@
                         </table>
                         </div>
                         <div style="margin-left:20px; float:left">
-                        <div class="g-recaptcha" data-sitekey="6LdXsq4UAAAAAKlcpCUX-v52ZpQp_RrzKR5s-n8j" data-callback="enableBtn"></div>
-                        <br/>
-                        <button disabled type="submit" value="Submit" id="form_btn">Analisar</button> 
+                            {% include 'dashboard/recaptcha.html' with btn_callback='enableBtn' submit_label='Analisar' %}
                         </div>
                     </form>
                 {% endblock form_analise %}
@@ -139,6 +137,11 @@
                     {% include 'dashboard/doacoes.html'%}
                 {% endblock doacoes%}
 
+                </ul>
+                <h2>Links Úteis</h2>
+                <ul>
+                    <li><a href="bzerp.atwpages.com">bzerp.atwpages.com</a></li>
+                </ul>
                 {% endblock nav-global %}
             </div>
             <div style="clear:both"></div>
