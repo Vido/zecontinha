@@ -55,13 +55,13 @@ class RecaptchaMixin():
             return redirect('https://www.youtube.com/watch?v=QH2-TGUlwu4')
 
 
-class Index(FormView, RecaptchaMixin):
+class Index(RecaptchaMixin, FormView):
     template_name = 'dashboard/base.html'
     form_class = InputForm
     success_url = '/'
 
     def form_valid(self, form):
-        super(RecaptchaMixin, self).form_valid(**kwargs)
+        super(RecaptchaMixin, self).form_valid(form)
         context = {}
         if form.cleaned_data['ativo_x'] != form.cleaned_data['ativo_y']:
             context = form.get_context()
@@ -88,6 +88,7 @@ class BovespaListView(RecaptchaMixin, FormListView):
         zscore = form.cleaned_data['zscore']
         periodo = form.cleaned_data['periodo']
         self.period = periodo
+        self.adf_pvalue = pvalue
 
         qs = PairStats.objects.filter(success=success)
 
