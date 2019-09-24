@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
     'dashboard',
+    'papertrading',
 ]
 
 MIDDLEWARE = [
@@ -86,7 +87,7 @@ DATABASES = {
         'USER': 'vozdocu',
         'PASSWORD': 'vozdocu',
         'HOST': 'localhost',
-        'PORT': '6000',
+        'PORT': '5432',
     }
 }
 
