@@ -77,6 +77,11 @@ class PairStats(models.Model):
         """ Número de Periodos Cointegrados """
         counter = 0
         for key, obj in self.model_params.items():
-            if obj.get('adf_pvalue', '') < pvalue:
-                counter += 1
+            try:
+                if obj.get('adf_pvalue', '') < pvalue:
+                    counter += 1
+            except TypeError:
+                print("OBJ", obj)
+                pass
+
         return counter

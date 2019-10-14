@@ -1,0 +1,48 @@
+{% extends "dashboard/base.html" %}
+{% load i18n static model_params_utils %}
+
+
+{% block extrascripts %}
+    <script>
+        function enableBtn(){
+            $("#form_btn").prop("disabled", false);
+        }
+
+        $(document).ready(function() {
+            $('#periodos').DataTable( {
+                dom: 'Bfrtip',
+                pageLength : 15,
+                /*
+                buttons: [
+                    'copy', 'csv', 'excel'
+                ]
+                */
+            } );
+        } );
+
+        $(document).ready(function() {
+            $('#dados').DataTable( {
+                dom: 'Bfrtip',
+                buttons: [
+                    'copy', 'csv', 'excel'
+                ]
+            } );
+        } );
+    </script>
+{% endblock %}
+
+{% block logotipo %}
+<img alt="Zé Continha" src="{% static 'vozdocu/nerd_min.jpg' %}" style="margin-top: 30px;">
+{% endblock logotipo  %}
+
+{% block descricao %}
+<p class="description">TODO: Colocar uma descrição<p>
+{% endblock descricao %} 
+
+{% block result_analise %}
+<hr>
+<h2>Operações</h2>
+{% for obj in object_list %}
+    {{ obj }}
+{% endfor %}
+{% endblock result_analise %}

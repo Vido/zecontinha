@@ -6,6 +6,8 @@
 
         <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.18/datatables.min.css"/>
 
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
         <style>
         .description{
             padding-left: 10px;
@@ -29,6 +31,9 @@
         <script src="https://cdn.datatables.net/buttons/1.5.6/js/dataTables.buttons.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
         <script src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.html5.min.js"></script>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 
         {% block extrascripts %}
         <script>
@@ -111,13 +116,13 @@
                     Cadastre-se.
                 </p>
                 <ul>
-                    {% if not user.is_authenticated %}
-                    <li><a href="#">Login</a> - WIP</li>
+                    {% if user.is_authenticated %}
+                    <li><a href="#">Minha Conta</a></li>
+                    <li><a href="{% url 'logout' %}">Logout</a>: {{ user }}</li>
                     {% else %}
-                    <li><a href="#">Logout</a>: {{ user }} - WIP</li>
-                    {% endif %}
+                    <li><a href="{% url 'login' %}">Login</a></li>
                     <li><a href="#">Cadastro</a> - WIP</li>
-                    <li><a href="#">Minha Conta</a> - WIP</li>
+                    {% endif %}
                 </ul>
                 <h2>Mercados</h2>
                 <ul>
@@ -150,6 +155,9 @@
         </div> <!-- ? bug -->
 
         <div style="clear:both"></div>
+
+        {% block modal %}
+        {% endblock modal %}
 
         {% block footer %}
         </div>

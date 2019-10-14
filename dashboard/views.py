@@ -103,12 +103,14 @@ class BovespaListView(RecaptchaMixin, FormListView):
         return qs
 
     def get_context_data(self, **kwargs):
+        from papertrading.forms import TradeForm
         context = super(BovespaListView, self).get_context_data(**kwargs)
         if context['object_list'].exists():
             obj = context['object_list'].latest('timestamp')
             more_context = {
                 'period': self.period,
                 'timestamp': obj.timestamp,
+                'modal_form': TradeForm()
             }
             context.update(more_context)
         return context
