@@ -20,8 +20,8 @@ from django.urls import path, include
 from django.views.generic.base import RedirectView
 
 urlpatterns = [
-    path('admin2', admin.site.urls),
+    path('admin2/', admin.site.urls),
     path('accounts/', include('django.contrib.auth.urls')),
-    path('papertrade', include('papertrading.urls')),
+    path('papertrade/', include('papertrading.urls')),
     path('', include('dashboard.urls')),
 ]

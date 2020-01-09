@@ -19,10 +19,17 @@
     </script>
 
     <script>
+        $(document).ready(function(){
+            p = $("#id_pair_stats_id").parent();
+            // console.log(p);
+            p.hide();
+        });
+
         function fillModalForm(pair_id){
             // Par
             pair = $("#pair_"+pair_id).find(".pair").find("a");
             $("#form_pair").html(pair.clone());
+            $("#id_pair_stats_id").val(pair.text());
 
             // Preenche a cotação
             quote = $("#pair_"+pair_id).find(".quote").html();
@@ -34,11 +41,10 @@
             txt_beta = $("#pair_"+pair_id).find(".beta").html();
             beta = parseFloat(txt_beta);
             x = parseFloat(tokens[0]);
-
-            console.log(x);
-            console.log(beta);
-
-            capital = parseFloat(10000);
+            capital = $("#form_capital").val();
+            // console.log(x);
+            // console.log(beta);
+            //
             qx = capital/x;
             y = parseFloat(tokens[1]);
             $("#form_qntx").val(Math.round(qx));
@@ -47,7 +53,16 @@
 
         function recalcModalForm(){
             // TODO
+            capital = $("#form_capital").val();
+            x = parseFloat($("#form_entry_x").val());
+            y = parseFloat($("#form_entry_y").val());
+            //
+            qx = capital/x;
+            y = parseFloat(tokens[1]);
+            $("#form_qntx").val(Math.round(qx));
+            $("#form_qnty").val(Math.round(qx/beta));
         }
+
     </script>
 {% endblock %}
 
@@ -131,7 +146,8 @@
       </div>
       <div class="modal-body">
         <p>Informações sobre o tamanho da posição</p>
-        <form>
+        <form method="POST" action="{% url 'boleta' %}">
+            {% csrf_token %}
             <p>
                 <label for="form_capital">Capital (R$)</label>
                 <input type="number" name="qnt_x" id="form_capital" min_value="0" step="1" required=""  value="10000">
@@ -155,7 +171,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
-        <button type="button" class="btn btn-primary">Salvar</button>
+        <button type="submit" class="btn btn-primary">Salvar</button>
       </div>
     </div>
   </div>

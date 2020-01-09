@@ -81,7 +81,7 @@ class PairStats(models.Model):
                 if obj.get('adf_pvalue', '') < pvalue:
                     counter += 1
             except TypeError:
-                print("OBJ", obj)
+                print("OBJ:", obj)
                 pass
 
         return counter
