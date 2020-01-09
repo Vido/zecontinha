@@ -5,7 +5,7 @@ from django.views.generic.edit import FormView, FormMixin
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 
-from django.shortcuts import redirect, render_to_response
+from django.shortcuts import redirect
 from django.shortcuts import get_object_or_404
 
 from django.db.models import Q
