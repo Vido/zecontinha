@@ -105,7 +105,10 @@ def get_beta_plot(beta_list):
     mplt.clf()
     mplt.cla()
     #mplt.close()
-    mplt.plot(beta_list, color='limegreen')
+    try:
+        mplt.plot(beta_list, color='limegreen')
+    except ValueError:
+        mplt.plot([], color='limegreen')
     mplt.xticks(rotation=90)
     return asBase64(mplt)
 
