@@ -29,7 +29,8 @@
             // Par
             pair = $("#pair_"+pair_id).find(".pair").find("a");
             $("#form_pair").html(pair.clone());
-            $("#id_pair_stats_id").val(pair.text());
+            $("#id_pair").val(pair.text());
+            $("#id_pair_stats_id").val(pair_id);
 
             // Preenche a cotação
             quote = $("#pair_"+pair_id).find(".quote").html();

@@ -10,13 +10,13 @@ class Trade(models.Model):
         on_delete=models.CASCADE)
 
     market = models.CharField(
-        max_length=2,
+        max_length=32,
         choices=MARKET_CHOICES,
         default='N/A',
     )
 
     model_params = JSONField(default={})
-    beta_rotation = ArrayField(models.FloatField(), blank=True)
+    beta_rotation = ArrayField(models.FloatField(), blank=True, null=True)
 
     ativo_x = models.CharField(max_length=32)
     ativo_y = models.CharField(max_length=32)
@@ -37,28 +37,11 @@ class Trade(models.Model):
 
     def set_params(self, pair_stats):
         # CointParams
-        self.adf_pvalue = pair_stats.adf_pvalue
-        self.resid_std = pair_stats.resid_std
-        self.zscore = pair_stats.zscore
-        self.ang_coef = pair_stats.ang_coef
-        self.intercept = pair_stats.intercept
-        self.last_resid = pair_stats.last_resid
-        self.n_observ = pair_stats.n_observ
-        self.timestamp_calc = pair_stats.timestamp_calc
-
-        # PairStats
-        self.ativo_x = pair_stats.ticker_x
-        self.ativo_y = pair_stats.ticker_y
-        self.entry_x = pair_stats.x_quote
-        self.entry_y = pair_stats.y_quote
-
-    @property
-    def ratio(self):
-        return (self.entry_x * self.ang_coef) - self.entry_y
-
-    def calc_margin(money, leverage=5):
-        direction = 1 if self.last_resid > 0 else -1
-        qnt = money / self.ratio
-
-        self.qnt_x = -direction * math.ceil(qnt * self.ang_coef)
-        self.qnt_y = direction * math.ceil(qnt)
+        self.model_params['adf_pvalue'] = pair_stats.adf_pvalue
+        self.model_params['resid_std'] = pair_stats.resid_std
+        self.model_params['zscore'] = pair_stats.zscore
+        self.model_params['ang_coef'] = pair_stats.ang_coef
+        self.model_params['intercept'] = pair_stats.intercept
+        self.model_params['last_resid'] = pair_stats.last_resid
+        self.model_params['n_observ'] = pair_stats.n_observ
+        self.model_params['timestamp_calc'] = pair_stats.timestamp_calc

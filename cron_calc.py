@@ -102,7 +102,7 @@ def calc_ibovespa():
                 obj_pair.success = True
             except MissingDataError:
                 obj_data = create_cointparams(False, pair)
-                print('FAIL - MissingDataError - OLS ADF')
+                print('FAIL - MissingDataError - OLS ADF', periodo)
 
             obj_pair.model_params[periodo] = model_to_dict(obj_data)
 

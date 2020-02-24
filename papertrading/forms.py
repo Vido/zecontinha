@@ -2,9 +2,13 @@ from django import forms
 
 class TradeForm(forms.Form):
 
-    pair_stats_id = forms.CharField(
+    pair = forms.CharField(
         #widget=forms.HiddenInput()
         )
+
+    pair_stats_id = forms.CharField(
+        widget=forms.HiddenInput()
+    )
 
     qnt_x = forms.CharField(
         label='Qnt.X',
