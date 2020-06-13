@@ -10,7 +10,7 @@ class Trade(models.Model):
         on_delete=models.CASCADE)
 
     market = models.CharField(
-        max_length=2,
+        max_length=8,
         choices=MARKET_CHOICES,
         default='N/A',
     )
