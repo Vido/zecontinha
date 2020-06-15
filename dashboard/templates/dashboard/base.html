@@ -78,17 +78,17 @@
 
                 {% block form_analise %}
                 <h2>Analise de Pares</h2>
-                    <form action="" method="POST">
-                        {% csrf_token %}
-                        <div style="float:left">
-                        <table>
-                        {{ form.as_table }}
-                        </table>
-                        </div>
-                        <div style="margin-left:20px; float:left">
-                            {% include 'dashboard/recaptcha.html' with btn_callback='enableBtn' submit_label='Analisar' %}
-                        </div>
-                    </form>
+                <form action="" method="POST">
+                    {% csrf_token %}
+                    <div style="float:left">
+                    <table>
+                    {{ form.as_table }}
+                    </table>
+                    </div>
+                    <div style="margin-left:20px; float:left">
+                        {% include 'dashboard/recaptcha.html' with btn_callback='enableBtn' submit_label='Analisar' %}
+                    </div>
+                </form>
                 {% endblock form_analise %}
                 <!-- -->
                 <div style="clear:both"></div>

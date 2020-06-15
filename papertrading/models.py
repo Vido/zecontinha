@@ -2,7 +2,8 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from django.contrib.postgres.fields import JSONField, ArrayField
 
-from dashboard.models import MARKET_CHOICES
+from dashboard.models import MARKET_CHOICES, Quotes
+from dashboard.forms import PERIODO_CHOICE
 
 class Trade(models.Model):
 
@@ -15,7 +16,8 @@ class Trade(models.Model):
         default='N/A',
     )
 
-    model_params = JSONField(default={})
+    periodo = models.IntegerField(choices=PERIODO_CHOICE)
+    model_params = JSONField(default=dict)
     beta_rotation = ArrayField(models.FloatField(), blank=True, null=True)
 
     ativo_x = models.CharField(max_length=32)
@@ -34,14 +36,39 @@ class Trade(models.Model):
     t_entry = models.DateField(auto_now_add=True)
     t_exit  = models.DateField(blank=True, null=True)
 
+    def is_open(self):
+        return self.exit_x is None and self.exit_y is None
 
-    def set_params(self, pair_stats):
-        # CointParams
-        self.model_params['adf_pvalue'] = pair_stats.adf_pvalue
-        self.model_params['resid_std'] = pair_stats.resid_std
-        self.model_params['zscore'] = pair_stats.zscore
-        self.model_params['ang_coef'] = pair_stats.ang_coef
-        self.model_params['intercept'] = pair_stats.intercept
-        self.model_params['last_resid'] = pair_stats.last_resid
-        self.model_params['n_observ'] = pair_stats.n_observ
-        self.model_params['timestamp_calc'] = pair_stats.timestamp_calc
+    def display_quote(self):
+        x_quote = self.exit_x if self.exit_x is not None else Quotes.objects.get(
+            ticker=self.ativo_x).get_series()[-1]
+        y_quote = self.exit_y if self.exit_y is not None else Quotes.objects.get(
+            ticker=self.ativo_y).get_series()[-1]
+        return "%.2f x %.2f" % (x_quote, y_quote)
+
+    def display_pair(self):
+        pair = "%s x %s" % (self.ativo_x, self.ativo_y)
+        return pair.replace('.SA', '')
+
+    def display_qnt(self):
+        return "%s x %s" % (self.qnt_x, self.qnt_y)
+
+    def display_zscore(self):
+        d = self.model_params
+        return self.model_params.get(
+            str(self.periodo), {}).get('zscore', 'N/A')
+
+    def display_profit(self):
+        """
+            Revisar: Está apresentando resultados errados
+        """
+        x_quote = self.exit_x if self.exit_x is not None else Quotes.objects.get(
+            ticker=self.ativo_x).get_series()[-1]
+        y_quote = self.exit_y if self.exit_y is not None else Quotes.objects.get(
+            ticker=self.ativo_y).get_series()[-1]
+
+        entry_net = (self.qnt_x * self.entry_x) - (self.qnt_y * self.entry_y)
+        open_net = (self.qnt_y * y_quote) - (self.qnt_x * x_quote)
+
+        #from IPython import embed; embed()
+        return open_net - entry_net

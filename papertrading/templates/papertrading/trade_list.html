@@ -1,7 +1,6 @@
 {% extends "dashboard/base.html" %}
 {% load i18n static model_params_utils %}
 
-
 {% block extrascripts %}
     <script>
         function enableBtn(){
@@ -29,7 +28,29 @@
             } );
         } );
     </script>
+    <script>
+        function fillModalForm(trade_id){
+            // Par
+            //trade_id
+            pair = $("#trade_"+trade_id).find(".pair").text();
+            console.log(pair);
+            $("#form_pair").html(pair);
+            $("#id_trade_id").val(trade_id);
+        }
+    </script>
 {% endblock %}
+
+{% block form_analise %}
+<h2>Paper trading</h2>
+<form action="" method="POST">
+    {% csrf_token %}
+    <div style="float:left">
+    <table>
+    {{ form.as_table }}
+    </table>
+    </div>
+</form>
+{% endblock form_analise %}
 
 {% block logotipo %}
 <img alt="Zé Continha" src="{% static 'vozdocu/nerd_min.jpg' %}" style="margin-top: 30px;">
@@ -40,9 +61,65 @@
 {% endblock descricao %} 
 
 {% block result_analise %}
+
 <hr>
-<h2>Operações</h2>
-{% for obj in object_list %}
-    {{ obj }}
-{% endfor %}
+
+<table id="dados">
+    <thead>
+    <tr>
+        <th>Par</th>
+        <th>Ultima Cotação</th>
+        <th>Qnt.</th>
+        <th>Z-Score</th>
+        <th>Cmd.</th>
+        <th>P/L</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for obj in object_list %}
+    <tr id="trade_{{ obj.id }}">
+        <td class="pair">{{ obj.display_pair }}</td>
+        <td class="quote">{{ obj.display_quote }}</td>
+        <td class="qnt">{{ obj.display_qnt }}</td>
+        <td class="zscore">{{ obj.display_zscore|floatformat:2 }}</td>
+
+        <td>{% if obj.is_open %}<button style="margin-top: 5px" type="button" class="btn btn-primary" data-toggle="modal" data-target="#ExitTradeModal" onclick="fillModalForm({{ obj.id }});">Fechar</button>{% endif %}</td>
+
+        <td class="profit">R$ {{ obj.display_profit|floatformat:2 }}</td>
+    </tr>
+    {% empty %}
+        <td colspan="6">Nenhum dado encontrado</td>
+    {% endfor %}
+
+    </tbody>
+</table>
 {% endblock result_analise %}
+
+{% block modal %}
+<!-- Modal -->
+<div class="modal fade" id="ExitTradeModal" tabindex="-1" role="dialog" aria-labelledby="ExitTradeModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="ExitTradeModalLabel">Cadastrar Operação</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form method="POST" action="{% url 'liquida' %}">
+      <div class="modal-body">
+        <p>Informações sobre o preço de fechamento da posição</p>
+            {% csrf_token %}
+        <hr>
+        <p id="form_pair"></p>
+            {{ modal_form.as_p }}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+        <button type="submit" class="btn btn-primary">Salvar</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock modal %}

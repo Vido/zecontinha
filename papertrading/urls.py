@@ -4,5 +4,6 @@ from papertrading import views
 
 urlpatterns = [
     path('', views.TradesListView.as_view(), name='blotter'),
-    path('boleta', views.TradesFormView.as_view(), name='boleta'),
+    path('boleta', views.EnterTradesFormView.as_view(), name='boleta'),
+    path('liquida', views.ExitTradesFormView.as_view(), name='liquida'),
 ]
