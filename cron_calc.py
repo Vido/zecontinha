@@ -17,7 +17,7 @@ from statsmodels.tools.sm_exceptions import MissingDataError
 from django.db.models import Q
 
 from dashboard.ibov import CARTEIRA_IBOV
-from dashboard.cointegration import get_market_data, coint_model, beta_rotation
+from dashboard.cointegration import get_market_data, coint_model, beta_rotation, drop_nan, match_timeseries
 from dashboard.models import PairStats, CointParams, Quotes
 from dashboard.forms import PERIODOS_CALCULO
 
@@ -36,6 +36,7 @@ def create_cointparams(success, pair, series_x=pd.Series([]), series_y=pd.Series
             obj.zscore = obj.last_resid / obj.resid_std
 
     except Exception as e:
+        raise
         print(e)
         obj.success = False
 
@@ -82,25 +83,29 @@ def calc_ibovespa():
     for idx, pair in enumerate(set_pairs):
         # Limite do Heroku: 10K rows
 
-        series_x = data[('Close', pair[0])]
-        series_y = data[('Close', pair[1])]
+        _x = drop_nan(data[('Close', pair[0])])
+        _y = drop_nan(data[('Close', pair[1])])
+        series_x, series_y = match_timeseries(_x, _y)
+
         obj_pair = create_pairstats(pair, series_x=series_x, series_y=series_y)
-        print(pair)
+        print(idx, pair)
 
         try:
             beta_list = beta_rotation(series_x=series_x, series_y=series_y)
             obj_pair.beta_rotation = beta_list
         except MissingDataError:
+            raise
             print('FAIL - MissingDataError - Beta')
 
         for periodo in PERIODOS_CALCULO:
-            series_x = data[('Close', pair[0])][-periodo:]
-            series_y = data[('Close', pair[1])][-periodo:]
+            slice_x = series_x[-periodo:]
+            slice_y = series_y[-periodo:]
             try:
-                test_params = coint_model(series_x, series_y)
-                obj_data = create_cointparams(True, pair, series_x, series_y, test_params)
+                test_params = coint_model(slice_x, slice_y)
+                obj_data = create_cointparams(True, pair, slice_x, slice_y, test_params)
                 obj_pair.success = True
             except MissingDataError:
+                raise
                 obj_data = create_cointparams(False, pair)
                 print('FAIL - MissingDataError - OLS ADF', periodo)
 
@@ -144,6 +149,7 @@ def download_hquotes():
                 hquotes=series_x.values.tolist(), htimestamps=series_x.index.tolist())
             obj_buffer.append(obj)
         except Exception as e:
+            raise
             print(e)
 
     Quotes.objects.bulk_create(obj_buffer)

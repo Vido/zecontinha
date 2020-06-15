@@ -8,6 +8,13 @@ import matplotlib.pyplot as mplt
 import statsmodels.api as sm
 from statsmodels.tsa.stattools import adfuller
 
+def drop_nan(a):
+    return a[~np.isnan(a)]
+
+def match_timeseries(x, y):
+    intersc = set.intersection(set(x.index), set(y.index))
+    return x[intersc], y[intersc]
+
 def get_market_data(tickers, period, interval):
     data = yf.download(
         tickers = " ".join(tickers),
@@ -48,6 +55,7 @@ def beta_rotation(series_x, series_y, window=40):
             beta_list.append(beta)
     except:
         raise
+
     return beta_list
 
 def asBase64(my_plt):

@@ -3,6 +3,10 @@ from django import forms
 from . import ibov
 from . import cointegration
 
+# para facilitar a vida
+drop_nan = cointegration.drop_nan
+match_timeseries = cointegration.match_timeseries
+
 #PERIODO_YFINANCE = ['1d', '5d', '1mo', '3mo', '6mo', '1y', '2y', '5y', '10y', 'ytd', 'max']
 PERIODO_YFINANCE = ['1mo', '3mo', '6mo', '1y']
 # DADOS INTRADAY VEM COM NAN POR CAUSA DO LEILAO
@@ -35,8 +39,10 @@ class InputForm(forms.Form):
             self.cleaned_data['periodo'],
             self.cleaned_data['intervalo']
         )
-        series_x = data[('Close', ativo_x)]
-        series_y = data[('Close', ativo_y)]
+
+        _x = drop_nan(data[('Close', ativo_x)])
+        _y = drop_nan(data[('Close', ativo_y)])
+        series_x, series_y = match_timeseries(_x, _y)
 
         plots_dict = cointegration.get_plot_context(series_x, series_y, ativo_x, ativo_y)
         context.update(plots_dict)
