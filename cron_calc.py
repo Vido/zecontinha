@@ -21,24 +21,27 @@ from dashboard.cointegration import get_market_data, coint_model, beta_rotation,
 from dashboard.models import PairStats, CointParams, Quotes
 from dashboard.forms import PERIODOS_CALCULO
 
-def create_cointparams(success, pair, series_x=pd.Series([]), series_y=pd.Series([]), test_params={}):
+def create_cointparams(success, test_params={}):
 
     obj = CointParams(success=success)
 
-    try:
-        if success:
-            obj.adf_pvalue = test_params['ADF'][1]
-            obj.resid_std = test_params['OLS'].resid.std()
-            obj.last_resid = test_params['OLS'].resid.iloc[-1]
-            obj.ang_coef = test_params['OLS'].params.x1
-            obj.intercept = test_params['OLS'].params.const
-            obj.n_observ = len(test_params['OLS'].resid)
-            obj.zscore = obj.last_resid / obj.resid_std
+    if not success:
+        obj.success = False
+        return obj
 
+    try:
+        obj.adf_pvalue = test_params['ADF'][1]
+        print(obj.adf_pvalue)
+        obj.resid_std = test_params['OLS'].resid.std()
+        obj.last_resid = test_params['OLS'].resid.iloc[-1]
+        obj.ang_coef = test_params['OLS'].params.x1
+        obj.intercept = test_params['OLS'].params.const
+        obj.n_observ = len(test_params['OLS'].resid)
+        obj.zscore = obj.last_resid / obj.resid_std
     except Exception as e:
-        raise
         print(e)
         obj.success = False
+        #raise
 
     return obj
 
@@ -94,20 +97,20 @@ def calc_ibovespa():
             beta_list = beta_rotation(series_x=series_x, series_y=series_y)
             obj_pair.beta_rotation = beta_list
         except MissingDataError:
-            raise
             print('FAIL - MissingDataError - Beta')
+            #raise
 
         for periodo in PERIODOS_CALCULO:
             slice_x = series_x[-periodo:]
             slice_y = series_y[-periodo:]
             try:
                 test_params = coint_model(slice_x, slice_y)
-                obj_data = create_cointparams(True, pair, slice_x, slice_y, test_params)
+                obj_data = create_cointparams(True, test_params)
                 obj_pair.success = True
             except MissingDataError:
-                raise
-                obj_data = create_cointparams(False, pair)
+                obj_data = create_cointparams(False, test_params)
                 print('FAIL - MissingDataError - OLS ADF', periodo)
+                #raise
 
             obj_pair.model_params[periodo] = model_to_dict(obj_data)
 
@@ -149,11 +152,12 @@ def download_hquotes():
                 hquotes=series_x.values.tolist(), htimestamps=series_x.index.tolist())
             obj_buffer.append(obj)
         except Exception as e:
-            raise
             print(e)
+            #raise
 
     Quotes.objects.bulk_create(obj_buffer)
 
 if __name__ == '__main__':
+    # Todo fazer o calc_ibovespa usar o hquotes
     calc_ibovespa()
     download_hquotes()

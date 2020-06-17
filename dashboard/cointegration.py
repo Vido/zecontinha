@@ -13,7 +13,9 @@ def drop_nan(a):
 
 def match_timeseries(x, y):
     intersc = set.intersection(set(x.index), set(y.index))
-    return x[intersc], y[intersc]
+    newx = x[intersc].sort_index()
+    newy = y[intersc].sort_index()
+    return newx, newy
 
 def get_market_data(tickers, period, interval):
     data = yf.download(
