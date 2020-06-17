@@ -48,4 +48,4 @@ prompt_toolkit = "==2.0.9"
 Pygments = "==2.4.2"
 
 [requires]
-python_version = "3.8"
+python_version = "3.6.10"
