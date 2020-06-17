@@ -25,6 +25,7 @@
             $("#id_pair_stats_id").val(pair_id);
 
             // Par
+            // Django + JS -> Feio IHMO, Refatorar
             $("#form_periodo").val({{ period }});
             $("#form_periodo").prop('readonly', true);
 
@@ -77,7 +78,14 @@
 {% endblock logotipo  %}
 
 {% block descricao %}
-<p class="description">Esse ranking é calculado com dos dados de fechamento. Diariamente uma rotina roda o calculo para todos os pares do IBOV. É utilizado o periodo de <b>01 ANO</b>, a partir da data do calculo. Devido a limitação do Heroku (limite de 10mil registros Postgres), <strike>calculamos para apenas 2 periodos: 100 e 240.</strike> Se houver falha no download dos dados ou na calculo, não serão exibidos os parametros (<i>checkbox Calc. c/ Sucesso</i>). Não garantimos que os dados apresentados estão corretos.<p>
+<p class="description">Esse ranking é calculado com dos dados de fechamento. Diariamente uma rotina roda o calculo para todos os pares do IBOV. É utilizado o periodo de <b>01 ANO</b>, a partir da data do calculo. Devido a limitação do Heroku (limite de 10mil registros Postgres), <strike>calculamos para apenas 2 periodos: 100 e 240.</strike> Se houver falha no download dos dados ou na calculo, não serão exibidos os parametros (<i>checkbox Calc. c/ Sucesso</i>).</p>
+
+<p class="description">O link do Par abre um pop-up.</p>
+
+<p class="description"><b>CAPTCHA:</b> Todas a telas tem reCAPTCHA. Fix isso para evitar bots. Infelizmente isso prejudica a usabilidade.</p>
+
+<p class="description">Cuidado! Não garantimos que os dados apresentados estão corretos.</p>
+
 {% endblock descricao %}
 
 {% block form_analise %}
@@ -115,7 +123,7 @@
     <tbody>
     {% for obj in object_list %}
     <tr id="pair_{{ obj.id }}">
-        <td class="pair"><a href="{% url 'pair-stats' x=obj.ticker_x y=obj.ticker_y %}">{{ obj.display_pair }}</a></td>
+        <td class="pair"><a href="{% url 'pair-stats' x=obj.ticker_x y=obj.ticker_y %}" target="popup" onclick="window.open('{% url 'pair-stats' x=obj.ticker_x y=obj.ticker_y %}','popup','width=900,height=900'); return false;">{{ obj.display_pair }}</a></td>
         <td class="quote">{{ obj.x_quote|floatformat:2 }}x{{ obj.y_quote|floatformat:2 }}</td>
         <td class="adf">{% get_param obj period "adf_pvalue" 5 %}</td>
         <td class="zscore">{% get_param obj period "zscore" 5 %}</td>

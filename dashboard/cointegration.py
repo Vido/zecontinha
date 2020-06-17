@@ -11,7 +11,8 @@ from statsmodels.tsa.stattools import adfuller
 def drop_nan(a):
     return a[~np.isnan(a)]
 
-def match_timeseries(x, y):
+def clean_timeseries(x, y):
+    x, y = drop_nan(x), drop_nan(y),
     intersc = set.intersection(set(x.index), set(y.index))
     newx = x[intersc].sort_index()
     newy = y[intersc].sort_index()

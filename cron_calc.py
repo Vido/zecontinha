@@ -17,7 +17,7 @@ from statsmodels.tools.sm_exceptions import MissingDataError
 from django.db.models import Q
 
 from dashboard.ibov import CARTEIRA_IBOV
-from dashboard.cointegration import get_market_data, coint_model, beta_rotation, drop_nan, match_timeseries
+from dashboard.cointegration import get_market_data, coint_model, beta_rotation, clean_timeseries
 from dashboard.models import PairStats, CointParams, Quotes
 from dashboard.forms import PERIODOS_CALCULO
 
@@ -31,7 +31,6 @@ def create_cointparams(success, test_params={}):
 
     try:
         obj.adf_pvalue = test_params['ADF'][1]
-        print(obj.adf_pvalue)
         obj.resid_std = test_params['OLS'].resid.std()
         obj.last_resid = test_params['OLS'].resid.iloc[-1]
         obj.ang_coef = test_params['OLS'].params.x1
@@ -86,9 +85,9 @@ def calc_ibovespa():
     for idx, pair in enumerate(set_pairs):
         # Limite do Heroku: 10K rows
 
-        _x = drop_nan(data[('Close', pair[0])])
-        _y = drop_nan(data[('Close', pair[1])])
-        series_x, series_y = match_timeseries(_x, _y)
+        _x = data[('Close', pair[0])]
+        _y = data[('Close', pair[1])]
+        series_x, series_y = clean_timeseries(_x, _y)
 
         obj_pair = create_pairstats(pair, series_x=series_x, series_y=series_y)
         print(idx, pair)

@@ -71,13 +71,18 @@
                 <h1>Zé Continha</h1>
 
                 {% block descricao %}
-                <p class="description">Esse sistema é uma prova de conceito sobre PairTrading (a.k.a Long and Short) baseado em Cointegração. Nenhuma recomendação de compra ou venda é feita neste sistema. Os dados são obtidos com 15 minutos de atraso. Não garantimos que os dados apresentados estão corretos. Não me responsabilizo pelo mal uso das informações.<p>
+                <p class="description">Esse sistema é uma prova de conceito sobre PairTrading (a.k.a Long and Short) baseado em Cointegração. Nenhuma recomendação de compra ou venda é feita neste sistema. Os dados são obtidos com 15 minutos de atraso. Não garantimos que os dados apresentados estão corretos. Não me responsabilizo pelo mal uso das informações.</p>
                 {% endblock descricao %}
 
                 {% block content %}
 
                 {% block form_analise %}
-                <h2>Analise de Pares</h2>
+                <h2>Acesso ao Sistema:</h2>
+                </p> Sugerimos que o usuário use a funcionalidade "Ranking" para selecionar os pares cointegrados.
+                <a href="{% url 'b3-pairs' %}">Click aqui!</a>
+                </p>
+
+                <h2>Demonstração</h2>
                 <form action="" method="POST">
                     {% csrf_token %}
                     <div style="float:left">
@@ -164,9 +169,9 @@
         </div>
         <div id="footer" style="width: 100%;">
             <hr>
-            <div style="float:left; width: 147px;">
+            <div style="float:left; width: 147px;">&nbsp;
             </div>
-            <div style="float:right; width: 89%;">
+            <div style="float:left; width: 60%;">
                 <p>Esse sistema é uma prova de conceito sobre PairTrading (a.k.a Long and Short), baseado em Cointegração. Nenhuma recomendação de compra ou venda é feita neste sistema. Não garantimos que os dados apresentados estão corretos. Não me responsabilizo pelo mal uso das informações.<p>
             </div>
         </div>

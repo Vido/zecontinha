@@ -155,12 +155,14 @@ class PairStatsDetailView(RecaptchaMixin, DetailView, FormMixin):
                 periodo = int(periodo)
                 ativo_x = self.kwargs['x']
                 ativo_y = self.kwargs['y']
-                series_x = Quotes.objects.get(ticker=ativo_x).get_series()[-periodo:]
-                series_y = Quotes.objects.get(ticker=ativo_y).get_series()[-periodo:]
+                _x = Quotes.objects.get(ticker=ativo_x).get_series()[-periodo:]
+                _y = Quotes.objects.get(ticker=ativo_y).get_series()[-periodo:]
+                series_x, series_y = cointegration.clean_timeseries(_x, _y)
                 plot_context = cointegration.get_plot_context(series_x, series_y, ativo_x, ativo_y)
             except Exception as e:
                 print(e)
                 plot_context = {'resultados': False}
+
             context.update(plot_context)
 
         return context
