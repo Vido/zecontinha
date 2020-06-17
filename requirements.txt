@@ -26,7 +26,6 @@ pexpect==4.7.0
 pickleshare==0.7.5
 pipenv==2018.11.26
 prompt-toolkit==2.0.9
-psycopg2==2.8.5
 psycopg2-binary==2.8.5
 ptyprocess==0.6.0
 Pygments==2.4.2
@@ -34,7 +33,6 @@ pyparsing==2.4.2
 python-dateutil==2.8.0
 pytz==2019.1
 requests==2.22.0
-scipy==1.3.0
 six==1.12.0
 sqlparse==0.3.1
 statsmodels==0.11.1
