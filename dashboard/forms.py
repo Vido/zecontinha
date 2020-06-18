@@ -1,6 +1,8 @@
 from django import forms
 
-from . import ibov
+#from dashboard.ibov import CARTEIRA_IBOV as CARTEIRA
+from dashboard.ibrx100 import  CARTEIRA_IBRX as CARTEIRA
+
 from . import cointegration
 
 # para facilitar a vida
@@ -12,13 +14,13 @@ PERIODO_YFINANCE = ['1mo', '3mo', '6mo', '1y']
 # DADOS INTRADAY VEM COM NAN POR CAUSA DO LEILAO
 #INTERVALO_YFINANCE = ['1m', '2m', '5m', '15m', '30m', '60m', '90m', '1h', '1d', '5d', '1wk', '1mo', '3mo']
 INTERVALO_YFINANCE = ['1d', '1h']
-TICKERS_YFINANCE = [t+'.SA' for t in ibov.CARTEIRA_IBOV]
+TICKERS_YFINANCE = [t+'.SA' for t in CARTEIRA]
 
 PERIODO_CHOICE = zip(PERIODO_YFINANCE, PERIODO_YFINANCE)
 INTERVALO_CHOICE = zip(INTERVALO_YFINANCE, INTERVALO_YFINANCE)
 PERIODOS_CALCULO = list(range(40,260,20))
 PERIODOS_CHOICE = list(zip(PERIODOS_CALCULO, PERIODOS_CALCULO))
-ATIVOS_CHOICE = list(zip(TICKERS_YFINANCE, ibov.CARTEIRA_IBOV))
+ATIVOS_CHOICE = list(zip(TICKERS_YFINANCE, CARTEIRA))
 
 
 class InputForm(forms.Form):

@@ -133,14 +133,15 @@
                 <ul>
                     <li><b>B3 (Ações)</b></li>
                     <li><ul>
-                        <li><a href="{% url 'index' %}">Analise</a></li>
+                        <!--
+                        <li><a href="{% url 'index' %}">Analise</a></li> -->
                         <li><a href="{% url 'b3-pairs' %}">Ranking</a></li>
                         <li><a href="#">Backtest - WIP</a></li>
                     </ul></li>
-                    <li><b>Coinbase (Crypto) - WIP</b></li>
+                    <li><b>Coinbase (Crypto)</b></li>
                     <li><ul>
-                        <li><a href="#">Analise - WIP</a></li>
-                        <li><a href="#">Ranking - WIP</a></li>
+                        <li>Analise</li>
+                        <li>Ranking</li>
                     </ul></li>
                 </ul>
                 {% block doacoes %}
@@ -150,8 +151,11 @@
                 </ul>
                 <h2>Links Úteis</h2>
                 <ul>
+                    <li><a href="https://www.papodemercado.com.br/">Papo de Mercado</a></li>
                     <li><a href="https://www.iqb3.com.br/">IQB3</a></li>
+                    <!--
                     <li><a href="https://bzerp.sfo2.digitaloceanspaces.com/index.html">BZERP</a></li>
+                    -->
                 </ul>
                 {% endblock nav-global %}
             </div>

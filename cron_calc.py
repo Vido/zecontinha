@@ -16,10 +16,15 @@ from django.forms.models import model_to_dict
 from statsmodels.tools.sm_exceptions import MissingDataError
 from django.db.models import Q
 
-from dashboard.ibov import CARTEIRA_IBOV
+#from dashboard.ibov import CARTEIRA_IBOV as CARTEIRA
+from dashboard.ibrx100 import  CARTEIRA_IBRX as CARTEIRA
+
 from dashboard.cointegration import get_market_data, coint_model, beta_rotation, clean_timeseries
 from dashboard.models import PairStats, CointParams, Quotes
 from dashboard.forms import PERIODOS_CALCULO
+
+from bot import send_msg
+
 
 def create_cointparams(success, test_params={}):
 
@@ -64,7 +69,7 @@ def create_pairstats(pair, series_x=pd.Series([]), series_y=pd.Series([])):
 def calc_ibovespa():
 
     # Faz Download
-    ibov_tickers = [ "%s.SA" % s for s in CARTEIRA_IBOV]
+    ibov_tickers = [ "%s.SA" % s for s in CARTEIRA]
     data = get_market_data(ibov_tickers, '1y', '1d')
 
     # Limpa a Base
@@ -119,23 +124,9 @@ def calc_ibovespa():
 
     #PairStats.objects.bulk_create(obj_buffer)
 
-def enter_trades():
-    """
-        TODO
-    """
-    trade_list()
-    qs = PairStats.objects.filter(success=True)
-    qs = qs.filter(Q(adf_pvalue__lte=0.05) & (Q(zscore__gte=2.0) | Q(zscore__lte=-2.0)))
-
-def exit_trades():
-    """
-        TODO
-    """
-    pass
-
 def download_hquotes():
     # Faz Download
-    ibov_tickers = [ "%s.SA" % s for s in CARTEIRA_IBOV]
+    ibov_tickers = [ "%s.SA" % s for s in CARTEIRA]
     data = get_market_data(ibov_tickers, '5y', '1d')
 
     # Limpa a Base
@@ -158,5 +149,6 @@ def download_hquotes():
 
 if __name__ == '__main__':
     # Todo fazer o calc_ibovespa usar o hquotes
-    calc_ibovespa()
-    download_hquotes()
+    #calc_ibovespa()
+    #download_hquotes()
+    bot.send_msg()
