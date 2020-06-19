@@ -67,6 +67,12 @@ def asBase64(my_plt):
     _buffer.seek(0)
     return base64.encodestring(_buffer.read())
 
+def fp_savefig(my_plt):
+    _buffer = BytesIO()
+    my_plt.savefig(_buffer, format='png', bbox_inches='tight')
+    _buffer.seek(0)
+    return _buffer
+
 def get_scatter_plot(series_x, series_y, ols, xlabel='', ylabel=''):
     x = np.arange(series_x.min(), series_x.max())
     # limpa o canvas
@@ -79,7 +85,7 @@ def get_scatter_plot(series_x, series_y, ols, xlabel='', ylabel=''):
     mplt.ylabel(ylabel)
     return asBase64(mplt)
 
-def get_residuals_plot(ols):
+def _get_residuals_plot(ols):
     # TODO: descobrir qual é correto
     stddev = ols.resid.std()
     xmin = ols.resid.index.min()
@@ -96,7 +102,11 @@ def get_residuals_plot(ols):
     mplt.hlines([-1*stddev, 1*stddev], xmin, xmax, color='gainsboro')
     mplt.hlines([-2*stddev, 2*stddev], xmin, xmax, color='orange')
     mplt.hlines([-3*stddev, 3*stddev], xmin, xmax, color='red')
-    return asBase64(mplt)
+    
+    return mplt
+
+def get_residuals_plot(ols):
+    return asBase64(_get_residuals_plot(ols))
 
 def get_raw_plot(series_x, series_y, xlabel='', ylabel=''):
     # limpa o canvas

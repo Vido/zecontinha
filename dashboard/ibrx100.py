@@ -103,4 +103,4 @@ CARTEIRA_IBRX = [
     'B3SA3',
     'ITUB4',
     'BOVA11',
-]
+][::-1]

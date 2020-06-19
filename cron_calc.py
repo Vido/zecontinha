@@ -7,7 +7,10 @@ import sys
 import django
 #from datetime import datetime
 #from django.utils import timezone
+
+import copy
 import pandas as pd
+from multiprocessing import Pool
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "vozdocu.settings")
 django.setup()
@@ -17,7 +20,7 @@ from statsmodels.tools.sm_exceptions import MissingDataError
 from django.db.models import Q
 
 #from dashboard.ibov import CARTEIRA_IBOV as CARTEIRA
-from dashboard.ibrx100 import  CARTEIRA_IBRX as CARTEIRA
+from dashboard.ibrx100 import  CARTEIRA_IBRX as _CARTEIRA
 
 from dashboard.cointegration import get_market_data, coint_model, beta_rotation, clean_timeseries
 from dashboard.models import PairStats, CointParams, Quotes
@@ -25,6 +28,10 @@ from dashboard.forms import PERIODOS_CALCULO
 
 from bot import send_msg
 
+CARTEIRA = _CARTEIRA
+#CARTEIRA = _CARTEIRA[:10] # DEBUG
+
+carteira_tickers = [ "%s.SA" % s for s in CARTEIRA]
 
 def create_cointparams(success, test_params={}):
 
@@ -66,76 +73,69 @@ def create_pairstats(pair, series_x=pd.Series([]), series_y=pd.Series([])):
 
     return obj
 
-def calc_ibovespa():
+def producer(idx, pair):
 
-    # Faz Download
-    ibov_tickers = [ "%s.SA" % s for s in CARTEIRA]
-    data = get_market_data(ibov_tickers, '1y', '1d')
+    _x = market_data[('Close', pair[0])]
+    _y = market_data[('Close', pair[1])]
+    series_x, series_y = clean_timeseries(_x, _y)
 
-    # Limpa a Base
-    PairStats.objects.all().delete()
+    obj_pair = create_pairstats(pair, series_x=series_x, series_y=series_y)
+    print(idx, pair)
+
+    try:
+        beta_list = beta_rotation(series_x=series_x, series_y=series_y)
+        obj_pair.beta_rotation = beta_list
+    except MissingDataError:
+        print('FAIL - MissingDataError - Beta')
+        #raise
+
+    for periodo in PERIODOS_CALCULO:
+        slice_x = series_x[-periodo:]
+        slice_y = series_y[-periodo:]
+        try:
+            test_params = coint_model(slice_x, slice_y)
+            obj_data = create_cointparams(True, test_params)
+            obj_pair.success = True
+        except MissingDataError:
+            obj_data = create_cointparams(False, test_params)
+            print('FAIL - MissingDataError - OLS ADF', periodo)
+            #raise
+
+        obj_pair.model_params[periodo] = model_to_dict(obj_data)
+
+    return copy.deepcopy(obj_pair)
+
+def gera_pares():
 
     # Forma todos os pares sem repetição
     set_pairs = set([])
-    for i in ibov_tickers:
-        for k in ibov_tickers:
+    for i in carteira_tickers:
+        for k in carteira_tickers:
             if i == k:
                 continue
             set_pairs.add((i, k))
 
     print('Total:', len(set_pairs), 'pares')
 
-    # Faz o calculo
-    obj_buffer = []
-    for idx, pair in enumerate(set_pairs):
-        # Limite do Heroku: 10K rows
+    return set_pairs
 
-        _x = data[('Close', pair[0])]
-        _y = data[('Close', pair[1])]
-        series_x, series_y = clean_timeseries(_x, _y)
+market_data = None
 
-        obj_pair = create_pairstats(pair, series_x=series_x, series_y=series_y)
-        print(idx, pair)
-
-        try:
-            beta_list = beta_rotation(series_x=series_x, series_y=series_y)
-            obj_pair.beta_rotation = beta_list
-        except MissingDataError:
-            print('FAIL - MissingDataError - Beta')
-            #raise
-
-        for periodo in PERIODOS_CALCULO:
-            slice_x = series_x[-periodo:]
-            slice_y = series_y[-periodo:]
-            try:
-                test_params = coint_model(slice_x, slice_y)
-                obj_data = create_cointparams(True, test_params)
-                obj_pair.success = True
-            except MissingDataError:
-                obj_data = create_cointparams(False, test_params)
-                print('FAIL - MissingDataError - OLS ADF', periodo)
-                #raise
-
-            obj_pair.model_params[periodo] = model_to_dict(obj_data)
-
-        #obj_buffer.append(obj_pair)
-        # BUG bizarro do DjangoPython
-        obj_pair.save()
-
-    #PairStats.objects.bulk_create(obj_buffer)
+def download_market_data():
+    global market_data
+    # Faz Download 1y
+    market_data = get_market_data(carteira_tickers, '1y', '1d')
 
 def download_hquotes():
-    # Faz Download
-    ibov_tickers = [ "%s.SA" % s for s in CARTEIRA]
-    data = get_market_data(ibov_tickers, '5y', '1d')
+    # Faz Download 5y
+    data = get_market_data(carteira_tickers, '5y', '1d')
 
     # Limpa a Base
     Quotes.objects.all().delete()
 
     # Faz o calculo
     obj_buffer = []
-    for idx, ticker in enumerate(ibov_tickers):
-        print(ticker)
+    for idx, ticker in enumerate(carteira_tickers):
         series_x = data[('Close', ticker)]
         try:
             obj = Quotes(market='BOVESPA', ticker=ticker,
@@ -147,8 +147,19 @@ def download_hquotes():
 
     Quotes.objects.bulk_create(obj_buffer)
 
+
 if __name__ == '__main__':
+
     # Todo fazer o calc_ibovespa usar o hquotes
-    calc_ibovespa()
+    download_market_data()
     download_hquotes()
-    bot.send_msg()
+
+    # Limpa a Base
+    PairStats.objects.all().delete()
+
+    with Pool(2) as p:
+        bulk_list = p.starmap(producer, enumerate(gera_pares()))
+    PairStats.objects.bulk_create(bulk_list)
+
+    # Telegram
+    send_msg()
