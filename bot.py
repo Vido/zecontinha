@@ -49,10 +49,12 @@ def send_msg():
               "Ang. Coef.: %.2f\n" \
               "Intercept: %.2f\n" \
 
+    _x = ps.ticker_x.replace('.SA', '')
+    _y = ps.ticker_y.replace('.SA', '')
+
     msg_str = msg_template % (
-        'http://zecontinha.herokuapp.com/b3/pair_stats/%s.SA/%s.SA' % (ps.ticker_x, ps.ticker_y),
-        ps.ticker_x,
-        ps.ticker_y,
+        'http://zecontinha.herokuapp.com/b3/pair_stats/%s.SA/%s.SA' % (_x, _y),
+        _x, _y,
         120,
         ps.model_params['120']['zscore'],
         ps.model_params['120']['adf_pvalue'] * 100,
