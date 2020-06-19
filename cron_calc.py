@@ -149,6 +149,6 @@ def download_hquotes():
 
 if __name__ == '__main__':
     # Todo fazer o calc_ibovespa usar o hquotes
-    #calc_ibovespa()
-    #download_hquotes()
+    calc_ibovespa()
+    download_hquotes()
     bot.send_msg()
