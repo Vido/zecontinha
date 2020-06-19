@@ -39,9 +39,6 @@ def get_plot(x_ticker, y_ticker):
 
 def send_msg():
 
-    # Sortear o par
-    # rodar o modelo
-    #get_residuals_plot()
     ps = select_pair(1)[0]
 
     msg_template = "<b>Estudo Long&Short do dia:</b>\n" \
@@ -52,13 +49,10 @@ def send_msg():
               "Ang. Coef.: %.2f\n" \
               "Intercept: %.2f\n" \
 
-    x_str = ps.ticker_x.replace('.SA', '')
-    y_str = ps.ticker_y.replace('.SA', '')
-
     msg_str = msg_template % (
-        'http://zecontinha.herokuapp.com/b3/pair_stats/%s/%s' % (x_str, y_str),
-        x_str,
-        y_str,
+        'http://zecontinha.herokuapp.com/b3/pair_stats/%s.SA/%s.SA' % (ps.ticker_x, ps.ticker_y),
+        ps.ticker_x,
+        ps.ticker_y,
         120,
         ps.model_params['120']['zscore'],
         ps.model_params['120']['adf_pvalue'] * 100,
