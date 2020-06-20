@@ -31,12 +31,19 @@
     </script>
 {% endblock %}
 
-{% block logotipo %}
-<img alt="Zé Continha" src="{% static 'vozdocu/fatcat_min.jpg' %}" style="margin-top: 30px;">
+{% block logotipo  %}
+<img title="Tyche (em grego: Τύχη, transl. Tykhe, 'sorte'), nos antigos cultos gregos, era a divindade tutelar responsável pela fortuna e prosperidade de uma cidade, seu destino e sorte — fosse ela boa ou ruim." src="{% static 'vozdocu/tyche_min.jpg' %}" style="margin-top: 30px;">
 {% endblock logotipo  %}
 
 {% block descricao %}
-<p class="description">TODO: Colocar uma descrição<p>
+
+<p class="description">Estas estatísticas individuais de cada par são calculadas com dos dados de fechamento. Uma rotina roda o cálculo para mais de pares 9000 pares de ações, em 11 períodos diferentes.</p>
+<p class="description"> Quanto maior o número de períodos cointegrados, melhor. <font color="red">Os perídos não-cointegrados ficam em marcados em vermelho</font>. A tabela mostra os dados de todos os perídos, porém os gráfico mostram os dados apenas do período selecionado.
+</p>
+
+<p class="description"><b>CAPTCHA:</b> Todas a telas tem reCAPTCHA. Fiz isso para evitar bots. Infelizmente isso prejudica a usabilidade.</p>
+
+<p class="description">Cuidado! Não garantimos que os dados apresentados estão corretos.</p>
 {% endblock descricao %}
 
 {% block form_analise %}
