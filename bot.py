@@ -28,8 +28,8 @@ def select_pair(n):
 
 def get_plot(x_ticker, y_ticker):
   from dashboard.models import PairStats, CointParams, Quotes
-  from dashboard.cointegration import fp_savefig, _get_residuals_plot
-  from dashboard.cointegration import coint_model, clean_timeseries
+  from coint.cointegration import fp_savefig, _get_residuals_plot
+  from coint.cointegration import coint_model, clean_timeseries
 
   _x = Quotes.objects.get(ticker=x_ticker).get_series()
   _y = Quotes.objects.get(ticker=y_ticker).get_series()

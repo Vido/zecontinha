@@ -10,10 +10,10 @@ from django.shortcuts import get_object_or_404
 
 from django.db.models import Q
 
-from . import cointegration
+from coint import cointegration
 from dashboard.models import PairStats, Quotes
 from dashboard.forms import InputForm, FilterForm, StatsForm
-
+from dashboard.forms import B3FilterForm, BinanceFilterForm
 
 class FormListView(ListView, FormMixin):
     def get(self, request, *args, **kwargs):
@@ -57,7 +57,8 @@ class RecaptchaMixin():
 
 class Index(RecaptchaMixin, FormView):
     template_name = 'dashboard/base.html'
-    form_class = InputForm
+    #form_class = InputForm
+    form_class = B3FilterForm
     success_url = '/'
 
     def form_valid(self, form):
@@ -69,12 +70,12 @@ class Index(RecaptchaMixin, FormView):
         context['form'] = form
         return self.render_to_response(context)
 
-
-class BovespaListView(RecaptchaMixin, FormListView):
+class GenericListView(RecaptchaMixin, FormListView):
     template_name = 'dashboard/bovespa_list.html'
-    form_class = FilterForm
     success_url = '/'
     queryset = PairStats.objects.none()
+    form_class = None
+    market = None
 
     def get_queryset(self, **kwargs):
 
@@ -90,7 +91,7 @@ class BovespaListView(RecaptchaMixin, FormListView):
         self.period = periodo
         self.adf_pvalue = pvalue
 
-        qs = PairStats.objects.filter(success=success)
+        qs = PairStats.objects.filter(success=success, market=self.market)
 
         if success:
             qs = qs.filter(**{'model_params__%s__adf_pvalue__lte' % periodo: pvalue})
@@ -104,7 +105,7 @@ class BovespaListView(RecaptchaMixin, FormListView):
 
     def get_context_data(self, **kwargs):
         from papertrading.forms import TradeForm
-        context = super(BovespaListView, self).get_context_data(**kwargs)
+        context = super(GenericListView, self).get_context_data(**kwargs)
         if context['object_list'].exists():
             obj = context['object_list'].latest('timestamp')
             more_context = {
@@ -115,6 +116,16 @@ class BovespaListView(RecaptchaMixin, FormListView):
             context.update(more_context)
         return context
 
+class BovespaListView(GenericListView):
+    form_class = B3FilterForm
+    market = 'BOVESPA'
+
+class BinanceListView(GenericListView):
+    template_name = 'dashboard/bovespa_list.html'
+    form_class = BinanceFilterForm
+    success_url = '/'
+    queryset = PairStats.objects.none()
+    market = 'BINANCE'
 
 class PairStatsDetailView(RecaptchaMixin, DetailView, FormMixin):
     template_name = 'dashboard/pair_stats.html'

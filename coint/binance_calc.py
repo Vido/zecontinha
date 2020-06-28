@@ -15,8 +15,9 @@ from binance.client import Client
 from django.forms.models import model_to_dict
 
 from dashboard.models import PairStats, CointParams, Quotes
-from dashboard.cointegration import coint_model, beta_rotation, clean_timeseries
+from coint.cointegration import coint_model, beta_rotation, clean_timeseries
 from dashboard.forms import PERIODOS_CALCULO
+from dashboard.forms import BINANCE_FUTURES
 
 from cron_calc import create_cointparams, create_pairstats, gera_pares
 
@@ -24,35 +25,6 @@ client = Client(
     config('BINANCE_APIKEY'),
     config('BINANCE_SECRETKEY')
 )
-
-#https://binance.zendesk.com/hc/en-us/articles/360033161972-Contract-Specifications
-BINANCE_FUTURES = [
-    'BTCUSDT',
-    'ETHUSDT',
-    'BCHUSDT',
-    'XRPUSDT',
-    'EOSUSDT',
-    'LTCUSDT',
-    'TRXUSDT',
-    'ETCUSDT',
-    'LINKUSDT',
-    'XLMUSDT',
-    'ADAUSDT',
-    'XMRUSDT',
-    'XTZUSDT',
-    'DASHUSDT',
-    'ZECUSDT',
-    'ATOMUSDT',
-    'BNBUSDT',
-    'ONTUSDT',
-    'IOTAUSDT',
-    'BATUSDT',
-    'VETUSDT',
-    'NEOUSDT',
-    'QTUMUSDT',
-    'IOSTUSDT',
-    'THETAUSDT',
-]
 
 def download_hquotes_binance():
 
@@ -124,8 +96,9 @@ if __name__ == '__main__':
     # Limpa a Base
     PairStats.objects.filter(market='BINANCE').delete()
 
-    with Pool(1) as p:
-        bulk_list = p.starmap(producer,
-            enumerate(gera_pares_binance(BINANCE_FUTURES)))
+    bulk_list = []
+    for idx, pair in enumerate(gera_pares(BINANCE_FUTURES)):
+        obj = producer(idx, pair)
+        bulk_list.append(obj)
 
     PairStats.objects.bulk_create(bulk_list)
