@@ -17,24 +17,25 @@ from coint.b3_calc import download_hquotes
 from coint.b3_calc import gera_pares
 from coint.b3_calc import producer as b3_producer
 
-from coint.ibrx100 import BINANCE_FUTURES
+from coint.binance_futures import BINANCE_FUTURES
 from coint.binance_calc import download_hquotes_binance
 from coint.binance_calc import producer as binance_producer
 
-
 from dashboard.models import PairStats, CointParams, Quotes
-
 from bot import send_msg
 
-#CARTEIRA_IBRX = CARTEIRA_IBRX[:10] # DEBUG
-ibrx_tickers = [ "%s.SA" % s for s in CARTEIRA_IBRX]
+#CARTEIRA_IBRX = CARTEIRA_IBRX[:5] # DEBUG
+#BINANCE_FUTURES = BINANCE_FUTURES[:5] # DEBUG
 
+ibrx_tickers = [ "%s.SA" % s for s in CARTEIRA_IBRX]
 
 def cron_b3():
 
+    # Limpa a Base
+    Quotes.objects.filter(market='BOVESPA').delete()
     # TODO: fazer o calc_ibovespa usar o hquotes
-    download_market_data()
-    download_hquotes()
+    download_market_data(ibrx_tickers)
+    download_hquotes(ibrx_tickers)
 
     # Limpa a Base
     PairStats.objects.filter(market='BOVESPA').delete()
@@ -47,6 +48,9 @@ def cron_b3():
     send_msg()
 
 def cron_binance():
+
+    # Limpa a Base
+    Quotes.objects.filter(market='BINANCE').delete()
     download_hquotes_binance()
 
     # Limpa a Base
@@ -54,7 +58,7 @@ def cron_binance():
 
     bulk_list = []
     for idx, pair in enumerate(gera_pares(BINANCE_FUTURES)):
-        obj = producer(idx, pair)
+        obj = binance_producer(idx, pair)
         bulk_list.append(obj)
 
     PairStats.objects.bulk_create(bulk_list)

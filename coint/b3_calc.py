@@ -121,12 +121,12 @@ def gera_pares(carteira_tickers):
 
 market_data = None
 
-def download_market_data():
+def download_market_data(carteira_tickers):
     global market_data
     # Faz Download 1y
     market_data = get_market_data(carteira_tickers, '1y', '1d')
 
-def download_hquotes():
+def download_hquotes(carteira_tickers):
     # Faz Download 5y
     data = get_market_data(carteira_tickers, '5y', '1d')
 

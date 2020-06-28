@@ -8,18 +8,18 @@ from multiprocessing import Pool
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "vozdocu.settings")
 django.setup()
 
-import pandas as pd
 from decouple import config
 from binance.client import Client
 
 from django.forms.models import model_to_dict
 
 from dashboard.models import PairStats, CointParams, Quotes
-from coint.cointegration import coint_model, beta_rotation, clean_timeseries
 from dashboard.forms import PERIODOS_CALCULO
 from dashboard.forms import BINANCE_FUTURES
 
-from cron_calc import create_cointparams, create_pairstats, gera_pares
+from coint.cointegration import coint_model, beta_rotation, clean_timeseries
+# TODO: Criar um arquivos com utils.py
+from coint.b3_calc import create_cointparams, create_pairstats, gera_pares
 
 client = Client(
     config('BINANCE_APIKEY'),
@@ -27,10 +27,6 @@ client = Client(
 )
 
 def download_hquotes_binance():
-
-    # Limpa a Base
-    Quotes.objects.filter(market='BINANCE').delete()
-
     # Faz o calculo
     obj_buffer = []
 
@@ -49,7 +45,7 @@ def download_hquotes_binance():
             q_list.append(k[4])
 
         try:
-            obj = Quotes(market='Binance', ticker=ticker,
+            obj = Quotes(market='BINANCE', ticker=ticker,
                 hquotes=q_list, htimestamps=ts_list)
             obj_buffer.append(obj)
         except Exception as e:
@@ -89,16 +85,3 @@ def producer(idx, pair, market='BINANCE'):
         obj_pair.model_params[periodo] = model_to_dict(obj_data)
 
     return copy.deepcopy(obj_pair)
-
-if __name__ == '__main__':
-    download_hquotes_binance()
-
-    # Limpa a Base
-    PairStats.objects.filter(market='BINANCE').delete()
-
-    bulk_list = []
-    for idx, pair in enumerate(gera_pares(BINANCE_FUTURES)):
-        obj = producer(idx, pair)
-        bulk_list.append(obj)
-
-    PairStats.objects.bulk_create(bulk_list)
