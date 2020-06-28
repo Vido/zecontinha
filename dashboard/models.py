@@ -23,8 +23,8 @@ class CointParams(models.Model):
 
 MARKET_CHOICES = (
     ('N/A', 'N/A'),
-    ('BOVESPA', 'B3 Ações'),
-    ('COINBASE', 'Coinbase (Crypo)'),
+    ('BOVESPA', 'B3 (Ações Brasileiras)'),
+    ('BINANCE', 'Binance Futures (Crypto)'),
 )
 
 class Quotes(models.Model):

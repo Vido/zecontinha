@@ -15,6 +15,7 @@ telegram_api_key = config('TELEGRAM_API_KEY')
 bot = telegram.Bot(telegram_api_key)
 
 chat_id_list = [
+    -1001164319166, # "Papo de Mercado 📈📉📊"
     -1001189309671, # "PdM - Homologação"
     -1001389579694, # "Python e Finanças"
 ]

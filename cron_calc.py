@@ -31,7 +31,7 @@ from bot import send_msg
 CARTEIRA = _CARTEIRA
 #CARTEIRA = _CARTEIRA[:10] # DEBUG
 
-carteira_tickers = [ "%s.SA" % s for s in CARTEIRA]
+ibrx_tickers = [ "%s.SA" % s for s in CARTEIRA]
 
 def create_cointparams(success, test_params={}):
 
@@ -56,11 +56,11 @@ def create_cointparams(success, test_params={}):
 
     return obj
 
-def create_pairstats(pair, series_x=pd.Series([]), series_y=pd.Series([])):
+def create_pairstats(pair, market, series_x=pd.Series([]), series_y=pd.Series([])):
 
     obj = PairStats(
         pair = " ".join(pair),
-        market = 'BOVESPA',
+        market = market,
         ticker_x = pair[0],
         ticker_y = pair[1],
     )
@@ -79,7 +79,7 @@ def producer(idx, pair):
     _y = market_data[('Close', pair[1])]
     series_x, series_y = clean_timeseries(_x, _y)
 
-    obj_pair = create_pairstats(pair, series_x=series_x, series_y=series_y)
+    obj_pair = create_pairstats(pair, 'BOVESPA', series_x=series_x, series_y=series_y)
     print(idx, pair)
 
     try:
@@ -105,7 +105,7 @@ def producer(idx, pair):
 
     return copy.deepcopy(obj_pair)
 
-def gera_pares():
+def gera_pares(carteira_tickers):
 
     # Forma todos os pares sem repetição
     set_pairs = set([])
@@ -131,7 +131,7 @@ def download_hquotes():
     data = get_market_data(carteira_tickers, '5y', '1d')
 
     # Limpa a Base
-    Quotes.objects.all().delete()
+    Quotes.objects.filter(market='BOVESPA').delete()
 
     # Faz o calculo
     obj_buffer = []
@@ -155,10 +155,10 @@ if __name__ == '__main__':
     download_hquotes()
 
     # Limpa a Base
-    PairStats.objects.all().delete()
+    PairStats.objects.filter(market='BOVESPA').delete()
 
     with Pool(2) as p:
-        bulk_list = p.starmap(producer, enumerate(gera_pares()))
+        bulk_list = p.starmap(producer, enumerate(gera_pares(ibrx_tickers)))
     PairStats.objects.bulk_create(bulk_list)
 
     # Telegram

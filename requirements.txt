@@ -52,3 +52,4 @@ virtualenv-clone==0.5.3
 wcwidth==0.1.7
 whitenoise==4.1.3
 yfinance==0.1.43
+python-binance==0.7.5
