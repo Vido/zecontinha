@@ -19,6 +19,9 @@ def clean_timeseries(x, y):
     return newx, newy
 
 def get_market_data(tickers, period, interval):
+    """
+    https://github.com/ranaroussi/yfinance/issues/363
+    """
     data = yf.download(
         tickers = " ".join(tickers),
         period = period,
@@ -26,7 +29,7 @@ def get_market_data(tickers, period, interval):
         #group_by = 'ticker',
         #auto_adjust = True,
         #prepost = False,
-        #treads = True,
+        treads = False,
         #proxy = None
     )
     return data

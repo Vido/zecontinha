@@ -121,17 +121,12 @@ def gera_pares(carteira_tickers):
 
 market_data = None
 
-def download_market_data(carteira_tickers):
-    global market_data
-    # Faz Download 1y
-    market_data = get_market_data(carteira_tickers, '1y', '1d')
-
 def download_hquotes(carteira_tickers):
+    global market_data
+
     # Faz Download 5y
     data = get_market_data(carteira_tickers, '5y', '1d')
-
-    # Limpa a Base
-    Quotes.objects.filter(market='BOVESPA').delete()
+    market_data = data[-260:]
 
     # Faz o calculo
     obj_buffer = []
@@ -146,3 +141,5 @@ def download_hquotes(carteira_tickers):
             #raise
 
     Quotes.objects.bulk_create(obj_buffer)
+
+    #return market_data

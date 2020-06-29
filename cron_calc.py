@@ -12,7 +12,6 @@ django.setup()
 
 #from coint.ibov import CARTEIRA_IBOV
 from coint.ibrx100 import  CARTEIRA_IBRX
-from coint.b3_calc import download_market_data
 from coint.b3_calc import download_hquotes
 from coint.b3_calc import gera_pares
 from coint.b3_calc import producer as b3_producer
@@ -33,15 +32,14 @@ def cron_b3():
 
     # Limpa a Base
     Quotes.objects.filter(market='BOVESPA').delete()
-    # TODO: fazer o calc_ibovespa usar o hquotes
-    download_market_data(ibrx_tickers)
     download_hquotes(ibrx_tickers)
 
     # Limpa a Base
     PairStats.objects.filter(market='BOVESPA').delete()
-
     with Pool(2) as p:
         bulk_list = p.starmap(b3_producer, enumerate(gera_pares(ibrx_tickers)))
+
+    # Grava dados no Banco
     PairStats.objects.bulk_create(bulk_list)
 
     # Telegram
@@ -55,12 +53,12 @@ def cron_binance():
 
     # Limpa a Base
     PairStats.objects.filter(market='BINANCE').delete()
-
     bulk_list = []
     for idx, pair in enumerate(gera_pares(BINANCE_FUTURES)):
         obj = binance_producer(idx, pair)
         bulk_list.append(obj)
 
+    # Grava dados no Banco
     PairStats.objects.bulk_create(bulk_list)
 
 if __name__ == '__main__':

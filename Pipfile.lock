@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "75549e3c5e205e985aacb4f3c3630b8c5b6137601dfc965d227862841a320e6b"
+            "sha256": "b98d95c3b7c0ce6661e9d1ec46904386b13b59f69ea4286393ae08f5e103ac07"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -41,10 +41,10 @@
         },
         "autobahn": {
             "hashes": [
-                "sha256:848aa77f808edcdc9144706d98f06fccb1c6ac8619f7418617880c27b285a7d0",
-                "sha256:aab27f21f87bda0990dcf27e9c6c4f09a3a579b4e259392db5a97a3f20231cd5"
+                "sha256:4be2466d51cde5e79d98bcc8bf62290e1f0e977b960da887d96c84a5af6f4f86",
+                "sha256:6ac6b6653b8d20d632b034adccf6a566154d4efbeaa23abf7c3995fd601e9a01"
             ],
-            "version": "==20.6.1"
+            "version": "==20.6.2"
         },
         "automat": {
             "hashes": [
@@ -795,10 +795,10 @@
         },
         "yfinance": {
             "hashes": [
-                "sha256:4eb16dd56f7b2b6b7ae70e05a454cfa528002fb691c0256b4bcffb853006a448"
+                "sha256:cee223cbd31e14955869f7978bcf83776d644345c7dea31ba5d41c309bfb0d3d"
             ],
             "index": "pypi",
-            "version": "==0.1.43"
+            "version": "==0.1.54"
         },
         "zope.interface": {
             "hashes": [
