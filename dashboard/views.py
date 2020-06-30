@@ -121,7 +121,7 @@ class BovespaListView(GenericListView):
     market = 'BOVESPA'
 
 class BinanceListView(GenericListView):
-    template_name = 'dashboard/bovespa_list.html'
+    template_name = 'dashboard/binance_list.html'
     form_class = BinanceFilterForm
     success_url = '/'
     queryset = PairStats.objects.none()
