@@ -45,12 +45,16 @@ class Quotes(models.Model):
     def get_series(self):
         return pd.Series(self.hquotes, index=self.htimestamps)
 
-class PairStats(models.Model):
+
+
+class BasePairStats(models.Model):
     """
         Essa tabela é recalculado todos os dias com os dados de fechamento
     """
 
-    pair = models.CharField(max_length=32, unique=True)
+    class Meta:
+        abstract = True
+
     market = models.CharField(
         max_length=32,
         choices=MARKET_CHOICES,
@@ -82,3 +86,7 @@ class PairStats(models.Model):
             if obj.get('adf_pvalue', '') < pvalue:
                 counter += 1
         return counter
+
+class PairStats(models.Model):
+    pair = models.CharField(max_length=32, unique=True)
+    timestamp = models.DateTimeField(auto_now_add=True)

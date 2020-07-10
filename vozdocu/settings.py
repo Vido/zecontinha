@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'dashboard',
     'papertrading',
+    'backtest',
 ]
 
 MIDDLEWARE = [
@@ -88,7 +89,12 @@ DATABASES = {
         'PASSWORD': 'vozdocu',
         'HOST': 'localhost',
         'PORT': '5432',
-    }
+        'TEST': {
+            #'MIRROR': 'default',
+            'NAME': 'vozdocu_backtest',
+            'DEPENDENCIES': [],
+        },
+    },
 }
 
 AUTH_PASSWORD_VALIDATORS = [
