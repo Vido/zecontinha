@@ -57,8 +57,7 @@ class RecaptchaMixin():
 
 class Index(RecaptchaMixin, FormView):
     template_name = 'dashboard/base.html'
-    #form_class = InputForm
-    form_class = B3FilterForm
+    form_class = InputForm
     success_url = '/'
 
     def form_valid(self, form):
