@@ -27,7 +27,7 @@ if __name__ == '__main__':
 
     Quotes.objects.filter(market='BINANCE').delete()
     download_hquotes_binance()
-    
+
     _x = Quotes.objects.get(ticker='BTCUSDT').get_series()
     _y = Quotes.objects.get(ticker='LTCUSDT').get_series()
     series_x, series_y = clean_timeseries(_x, _y)
