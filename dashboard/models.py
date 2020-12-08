@@ -82,11 +82,11 @@ class BasePairStats(models.Model):
         counter = 0
         for key, obj in self.model_params.items():
             if not obj.get('success', False):
-                continue 
+                continue
             if obj.get('adf_pvalue', '') < pvalue:
                 counter += 1
         return counter
 
-class PairStats(models.Model):
+class PairStats(BasePairStats):
     pair = models.CharField(max_length=32, unique=True)
     timestamp = models.DateTimeField(auto_now_add=True)
