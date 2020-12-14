@@ -1,5 +1,6 @@
 import json
 import requests
+from itertools import permutations
 
 from django.views.generic.edit import FormView, FormMixin
 from django.views.generic.list import ListView
@@ -60,6 +61,19 @@ class Index(RecaptchaMixin, FormView):
     form_class = InputForm
     success_url = '/'
 
+    def get_context_data(self, *args, **kwargs):
+
+        from coint.ibrx100 import  CARTEIRA_IBRX
+        from coint.binance_futures import BINANCE_FUTURES
+
+        context = super(FormMixin, self).get_context_data(*args, **kwargs)
+        context['pairs_b3'] = PairStats.objects.filter(market='BOVESPA').count()
+        context['pairs_binance'] = PairStats.objects.filter(market='BINANCE').count()
+        context['b3_total'] = len(list(permutations(CARTEIRA_IBRX, 2)))
+        context['binance_total'] = len(list(permutations(BINANCE_FUTURES, 2)))
+
+        return context
+
     def form_valid(self, form):
         super(RecaptchaMixin, self).form_valid(form)
         context = {}
@@ -68,6 +82,7 @@ class Index(RecaptchaMixin, FormView):
 
         context['form'] = form
         return self.render_to_response(context)
+
 
 class GenericListView(RecaptchaMixin, FormListView):
     template_name = 'dashboard/bovespa_list.html'
@@ -115,9 +130,11 @@ class GenericListView(RecaptchaMixin, FormListView):
             context.update(more_context)
         return context
 
+
 class BovespaListView(GenericListView):
     form_class = B3FilterForm
     market = 'BOVESPA'
+
 
 class BinanceListView(GenericListView):
     template_name = 'dashboard/binance_list.html'
@@ -125,6 +142,7 @@ class BinanceListView(GenericListView):
     success_url = '/'
     queryset = PairStats.objects.none()
     market = 'BINANCE'
+
 
 class PairStatsDetailView(RecaptchaMixin, DetailView, FormMixin):
     template_name = 'dashboard/pair_stats.html'
@@ -176,4 +194,3 @@ class PairStatsDetailView(RecaptchaMixin, DetailView, FormMixin):
             context.update(plot_context)
 
         return context
-

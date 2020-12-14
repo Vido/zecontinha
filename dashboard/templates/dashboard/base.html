@@ -15,7 +15,7 @@
         }
         td {
             text-align: center;
-        } 
+        }
         </style>
 
         {% block extrastyle %}
@@ -73,6 +73,13 @@
 
                 {% block descricao %}
                 <p class="description">Esse sistema é uma prova de conceito sobre PairTrading (a.k.a Long and Short) baseado em Cointegração. Nenhuma recomendação de compra ou venda é feita neste sistema. Os dados são obtidos com 15 minutos de atraso. Não garantimos que os dados apresentados estão corretos. Não me responsabilizo pelo mal uso das informações.</p>
+                <p class="description">
+                Status do Sistema:
+                <ul>
+                    <li><b>Pares B3:</b> {{ pairs_b3 }} de {{ b3_total }}</li>
+                    <li><b>Pares Binance:</b> {{ pairs_binance }} de {{ binance_total }}</li>
+                </ul>
+                </p>
                 {% endblock descricao %}
 
                 {% block content %}
@@ -98,7 +105,7 @@
                 {% endblock form_analise %}
                 <!-- -->
                 <div style="clear:both"></div>
-                
+
                 {% block result_analise %}
                 {% if resultados %}
                 <hr>
@@ -114,7 +121,7 @@
             </div>
 
             <div style="float:left; width: 25%;">
-        
+
                 {% block nav-global %}
                 <h2>Acesso</h2>
                 <p class="description">
@@ -164,7 +171,7 @@
                 {% endblock nav-global %}
             </div>
             <div style="clear:both"></div>
-            
+
         </div>
         </div> <!-- ? bug -->
 
