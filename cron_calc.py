@@ -59,7 +59,7 @@ def cron_b3_memory():
     PairStats.objects.filter(market='BOVESPA').delete()
 
     bulk_list = []
-    for idx, pair in enumerate(gera_pares(BINANCE_FUTURES)):
+    for idx, pair in enumerate(gera_pares(ibrx_tickers)):
         obj = binance_producer(idx, pair)
         bulk_list.append(obj)
 
