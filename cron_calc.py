@@ -60,10 +60,10 @@ def cron_b3_memory():
 
     bulk_list = []
     for idx, pair in enumerate(gera_pares(ibrx_tickers)):
-        obj = binance_producer(idx, pair)
+        obj = b3_producer(idx, pair)
         bulk_list.append(obj)
 
-        if len(bulk_list) > 4000:
+        if len(bulk_list) > 1000:
             # Grava dados no Banco
             PairStats.objects.bulk_create(bulk_list)
             # Libera a memória
