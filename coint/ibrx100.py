@@ -63,7 +63,7 @@ CARTEIRA_IBRX = [
     'ELET3',
     'SULA11',
     'COGN3',
-    'TIMP3',
+    'TIMS3',
     'ENGI11',
     'KLBN11',
     'BPAC11',

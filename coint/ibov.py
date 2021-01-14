@@ -52,7 +52,7 @@ CARTEIRA_IBOV = [
     'CSNA3',
     'ELET3',
     'YDUQ3',
-    'TIMP3',
+    'TIMS3',
     #'NATU3',
     'NTCO3',
     'KLBN11',
