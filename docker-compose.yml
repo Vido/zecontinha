@@ -1,0 +1,32 @@
+version: "3.5"
+services:
+  postgres:
+    image: postgres:alpine
+    container_name: postgres_zecontinha
+    restart: always
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=vozdocu
+      - POSTGRES_USER=vozdocu
+      - POSTGRES_PASSWORD=vozdocu
+    ports:
+      - 5432:5432
+  app:
+    build: .
+    container_name: app_zecontinha
+    volumes: 
+      - .:/src/
+    ports:
+      - "8000:8000"
+    environment:
+      - SECRET_KEY=nacabecashampoolavebemoseupe
+      - DATABASE_URL=postgres://vozdocu:vozdocu@postgres:5432/vozdocu
+      - BINANCE_APIKEY=xxx
+      - BINANCE_SECRETKEY=xxx
+      - TELEGRAM_API_KEY=xxx
+    links:
+      - postgres
+    depends_on:
+      - postgres
+    
