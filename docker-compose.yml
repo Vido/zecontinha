@@ -19,12 +19,8 @@ services:
       - .:/src/
     ports:
       - "8000:8000"
-    environment:
-      - SECRET_KEY=nacabecashampoolavebemoseupe
-      - DATABASE_URL=postgres://vozdocu:vozdocu@postgres:5432/vozdocu
-      - BINANCE_APIKEY=xxx
-      - BINANCE_SECRETKEY=xxx
-      - TELEGRAM_API_KEY=xxx
+    env_file:
+      - .env
     links:
       - postgres
     depends_on:
