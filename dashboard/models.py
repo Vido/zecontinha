@@ -18,8 +18,8 @@ class CointParams(models.Model):
 
     #TODO: Marcar o periodo
 
-    class Meta:
-        abstract = True
+    #class Meta:
+    #    abstract = True
 
 MARKET_CHOICES = (
     ('N/A', 'N/A'),
