@@ -9,7 +9,7 @@ verify_ssl = true
 appdirs = "==1.4.4"
 asgiref = "==3.2.7"
 backcall = "==0.1.0"
-certifi = "==2019.6.16"
+certifi = "==2022.12.7"
 cffi = "==1.14.0"
 chardet = "==3.0.4"
 cryptography = "==3.3.2"
