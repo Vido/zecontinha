@@ -32,6 +32,10 @@ BINANCE_SECRETKEY=xxx
 # Requerido para o Bot de Telegram
 TELEGRAM_API_KEY=xxx
 ```
+# Requerido para o Postgres
+POSTGRES_DB=xxxx
+POSTGRES_USER=xxxx
+POSTGRES_PASSWORD=xxxx
 
 Operação padrão Django normal: `manage.py`
 

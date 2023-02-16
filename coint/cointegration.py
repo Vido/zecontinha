@@ -29,7 +29,7 @@ def get_market_data(tickers, period, interval):
         #group_by = 'ticker',
         #auto_adjust = True,
         #prepost = False,
-        treads = False,
+        threads = False,
         #proxy = None
     )
     return data
