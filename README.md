@@ -18,7 +18,7 @@ Django
 Recomendamos usar o pyenv para obter a versão correta do Python,
 e criar um virtualenv a partir do pyenv.
 
-Recomendamos exportar as seguintes variaveis (usando um arquivo .env e chamando ele no docker-compose.yml):
+Recomendamos exportar as seguintes variaveis:
 ```
 # Requerido para o Django
 SECRET_KEY=xxx
@@ -32,6 +32,10 @@ BINANCE_SECRETKEY=xxx
 # Requerido para o Bot de Telegram
 TELEGRAM_API_KEY=xxx
 ```
+# Requerido para o Postgres
+POSTGRES_DB=xxxx
+POSTGRES_USER=xxxx
+POSTGRES_PASSWORD=xxxx
 
 Operação padrão Django normal: `manage.py`
 
