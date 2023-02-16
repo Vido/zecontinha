@@ -7,9 +7,9 @@ services:
     volumes:
       - ./data/db:/var/lib/postgresql/data
     environment:
-      - POSTGRES_DB=vozdocu
-      - POSTGRES_USER=vozdocu
-      - POSTGRES_PASSWORD=vozdocu
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     ports:
       - 5432:5432
   app:
@@ -19,8 +19,13 @@ services:
       - .:/src/
     ports:
       - "8000:8000"
-    env_file:
-      - .env
+    environment:
+      - SECRET_KEY=${SECRET_KEY}
+      - DATABASE_URL=${DATABASE_URL}
+      - BINANCE_APIKEY=${BINANCE_APIKEY}
+      - BINANCE_SECRETKEY=${BINANCE_SECRETKEY}
+      - TELEGRAM_API_KEY=${TELEGRAM_API_KEY}
+      - ENV=${ENV}
     links:
       - postgres
     depends_on:
