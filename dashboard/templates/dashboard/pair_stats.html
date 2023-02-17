@@ -76,6 +76,7 @@
         <th>Intercept.</th>
         <th>Resíduo</th>
         <th>Std.Dev.</th>
+        <th>Meia Vida</th>
     </tr>
     </thead>
     <tbody>
@@ -93,6 +94,7 @@
         <td>{{ values.intercept|floatformat:5 }}</td>
         <td>{{ values.last_resid|floatformat:5 }}</td>
         <td>{{ values.resid_std|floatformat:5 }}</td>
+        <td>{{ values.half_life|floatformat:5 }}</td>
     </tr>
     {% empty %}
         <td colspan="6">Use o filtro para que os dados sejam apresentados</td>

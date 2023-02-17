@@ -49,6 +49,7 @@ def create_cointparams(success, test_params={}):
         obj.intercept = test_params['OLS'].params.const
         obj.n_observ = len(test_params['OLS'].resid)
         obj.zscore = obj.last_resid / obj.resid_std
+        obj.half_life = test_params['HF']
     except Exception as e:
         print(e)
         obj.success = False

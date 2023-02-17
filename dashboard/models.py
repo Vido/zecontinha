@@ -12,14 +12,15 @@ class CointParams(models.Model):
     ang_coef = models.FloatField(null=True, blank=True)
     intercept = models.FloatField(null=True, blank=True)
     last_resid = models.FloatField(null=True, blank=True)
+    half_life = models.FloatField(null=True, blank=True)
     n_observ = models.IntegerField(null=True, blank=True)
     timestamp_calc = models.DateTimeField(auto_now_add=True)
     success = models.BooleanField(default=False)
 
     #TODO: Marcar o periodo
 
-    #class Meta:
-    #    abstract = True
+    # class Meta:
+    #     abstract = True
 
 MARKET_CHOICES = (
     ('N/A', 'N/A'),
