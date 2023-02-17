@@ -34,15 +34,28 @@ def get_market_data(tickers, period, interval):
     )
     return data
 
+def half_life_calc(ts):
+    lagged = ts.shift(1).fillna(method="bfill")
+    delta = ts-lagged
+    X = sm.add_constant(lagged.values)
+    ar_res = sm.OLS(delta, X).fit()
+    half_life = -1*np.log(2)/ar_res.params['x1']
+
+    return half_life, ar_res
+
 def coint_model(series_x, series_y):
     try:
         X = sm.add_constant(series_x.values)
         mod = sm.OLS(series_y, X)
         results = mod.fit()
         adfTest = adfuller(results.resid, autolag='AIC')
+        
+        ts = results.resid
+        half_life, _ = half_life_calc(ts)
         return {
             'OLS': results,
             'ADF': adfTest,
+            'HF': half_life, #TODO: qual a sigla? O return está correto?
         }
     except:
         raise
