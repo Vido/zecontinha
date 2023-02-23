@@ -1,6 +1,6 @@
 venv
 *.pyc
 staticfiles
-.env
+*.env
 *.sqlite3
 envvars

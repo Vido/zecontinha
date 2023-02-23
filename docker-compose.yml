@@ -6,28 +6,32 @@ services:
     restart: always
     volumes:
       - ./data/db:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_DB=${POSTGRES_DB}
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    env_file:
+      - ./postgres.env
+    #environment:
+    #  - POSTGRES_DB
+    #  - POSTGRES_USER
+    #  - POSTGRES_PASSWORD
     ports:
       - 5432:5432
   app:
     build: .
     container_name: app_zecontinha
-    volumes: 
+    volumes:
       - .:/src/
     ports:
       - "8000:8000"
-    environment:
-      - SECRET_KEY=${SECRET_KEY}
-      - DATABASE_URL=${DATABASE_URL}
-      - BINANCE_APIKEY=${BINANCE_APIKEY}
-      - BINANCE_SECRETKEY=${BINANCE_SECRETKEY}
-      - TELEGRAM_API_KEY=${TELEGRAM_API_KEY}
-      - ENV=${ENV}
+    env_file:
+      - ./zecontinha.env
+    #environment:
+    #  - DATABASE_URL="postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}"
+    #  - SECRET_KEY
+    #  - DATABASE_URL
+    #  - BINANCE_APIKEY
+    #  - BINANCE_SECRETKEY
+    #  - TELEGRAM_API_KEY
+    #  - ENV
     links:
       - postgres
     depends_on:
       - postgres
-    
