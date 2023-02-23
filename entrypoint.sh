@@ -11,6 +11,9 @@ echo "Running Django collectstatics..."
 python manage.py collectstatic --noinput
 
 if [ "$ENV" = "development" ] ; then
+    # Check postgres database
+    echo "Checking database"
+    python check_db.py --service-name postgres --ip postgres --port 5432
     echo "Starting server"
     python manage.py runserver 0.0.0.0:8000
 else
