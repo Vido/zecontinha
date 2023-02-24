@@ -14,11 +14,14 @@ services:
     #  - POSTGRES_PASSWORD
     ports:
       - 5432:5432
+    networks:
+      - zecontinha_network
   app:
     build: .
     container_name: app_zecontinha
     volumes:
       - .:/src/
+      - /var/logs/zecontinha:/srv/logs
     ports:
       - "8000:8000"
     env_file:
@@ -35,3 +38,8 @@ services:
       - postgres
     depends_on:
       - postgres
+    networks:
+      - zecontinha_network
+networks:
+  zecontinha_network:
+    name: zecontinha_network
