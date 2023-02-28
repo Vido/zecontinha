@@ -18,7 +18,7 @@ services:
       - zecontinha_network
   app:
     build: .
-    container_name: app_zecontinha
+    container_name: zecontinha
     volumes:
       - .:/src/
       - /var/logs/zecontinha:/srv/logs
