@@ -1,4 +1,4 @@
-    <div class="g-recaptcha" data-sitekey="6LdXsq4UAAAAAKlcpCUX-v52ZpQp_RrzKR5s-n8j" data-callback="{{ btn_callback }}"></div>
+    <div class="g-recaptcha" data-sitekey="{{ g_recaptcha_site_key }}" data-callback="{{ btn_callback }}"></div>
     <br/>
 {% if user.is_superuser %}
     <button type="submit" value="Submit" id="form_btn">{{ submit_label }}</button> 

@@ -1,20 +1,17 @@
-import json
-import requests
 from itertools import permutations
 
 from django.views.generic.edit import FormView, FormMixin
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
-
-from django.shortcuts import redirect
 from django.shortcuts import get_object_or_404
-
 from django.db.models import Q
 
 from coint import cointegration
 from dashboard.models import PairStats, Quotes
 from dashboard.forms import InputForm, FilterForm, StatsForm
 from dashboard.forms import B3FilterForm, BinanceFilterForm
+from dashboard.context_processors import RecaptchaMixin
+
 
 class FormListView(ListView, FormMixin):
     def get(self, request, *args, **kwargs):
@@ -36,24 +33,6 @@ class FormListView(ListView, FormMixin):
             self.form_invalid(form)
 
         return self.get(request, *args, **kwargs)
-
-
-class RecaptchaMixin():
-
-    def form_valid(self, form):
-        if self.request.user.is_superuser:
-            print("Superuser: Pulando o Recaptcha...")
-            return
-
-        response = requests.post('https://www.google.com/recaptcha/api/siteverify',
-                data = {'secret':'6LdXsq4UAAAAAGEzZfUt9XtpE0URlMSXK2VJ94ix',
-                        'remoteip': self.request.META.get('REMOTE_ADDR', ''),
-                        'response': self.request.POST.get('g-recaptcha-response', '')})
-
-        response_payload = json.loads(response.text)
-
-        if not response_payload['success']:
-            return redirect('https://www.youtube.com/watch?v=QH2-TGUlwu4')
 
 
 class Index(RecaptchaMixin, FormView):

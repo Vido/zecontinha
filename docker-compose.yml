@@ -18,6 +18,7 @@ services:
       - zecontinha_network
   app:
     build: .
+    # RFC 1034/1035 -> No _ on hostname
     container_name: zecontinha
     volumes:
       - .:/src/
@@ -34,6 +35,8 @@ services:
     #  - BINANCE_SECRETKEY
     #  - TELEGRAM_API_KEY
     #  - ENV
+    #  - G_RECAPTCHA_SITE_KEY
+    #  - G_RECAPTCHA_SECRET_KEY
     links:
       - postgres
     depends_on:
