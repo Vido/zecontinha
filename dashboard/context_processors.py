@@ -4,7 +4,7 @@ from decouple import config
 from django.shortcuts import redirect
 
 def g_recaptcha_site_key_processor(request):
-    return {config('G_RECAPTCHA_SITE_KEY')}
+    return {'g_recaptcha_site_key': config('G_RECAPTCHA_SITE_KEY')}
 
 class RecaptchaMixin():
 
