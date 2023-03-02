@@ -43,6 +43,25 @@ services:
       - postgres
     networks:
       - zecontinha_network
+  cron:
+    build: .
+    restart: on-failure:10
+    container_name: cron_zecontinha
+    restart: unless-stopped
+    entrypoint: ./entrypoint_cron.sh
+    env_file:
+      - ./zecontinha.env
+    volumes: 
+      - ./cron.d/crontab:/etc/cron.d/crontab
+      - .:/src/
+      - ./data/db:/var/lib/postgresql/data
+    links:
+      - postgres
+    depends_on:
+      - postgres
+    networks:
+      - zecontinha_network
+
 networks:
   zecontinha_network:
     name: zecontinha_network
