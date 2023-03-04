@@ -55,7 +55,7 @@ def send_msg():
     _y = ps.ticker_y.replace('.SA', '')
 
     msg_str = msg_template % (
-        'http://zecontinha.herokuapp.com/b3/pair_stats/%s.SA/%s.SA' % (_x, _y),
+        'http://zecontinha.com.br/b3/pair_stats/%s.SA/%s.SA' % (_x, _y),
         _x, _y,
         120,
         ps.model_params['120']['zscore'],

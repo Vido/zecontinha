@@ -6,7 +6,7 @@ O Zé Continha é uma prova de conceito sobre PairTrading (a.k.a Long and Short)
 * Não garantimos que os dados apresentados estão corretos.
 * Não me responsabilizo pelo mal uso das informações.
 
-http://zecontinha.herokuapp.com/b3/pairs_ranking
+http://zecontinha.com.br/b3/pairs_ranking
 
 ## Instruções para rodar em Desenvolvimento:
 ** Requisito ** : Python 3.6
@@ -24,18 +24,18 @@ Recomendamos exportar as seguintes variaveis:
 SECRET_KEY=xxx
 DATABASE_URL=postgres://user:password@host:5432/dbname
 
-
 # Requerido para a parte de Crypto
 BINANCE_APIKEY=xxx
 BINANCE_SECRETKEY=xxx
 
 # Requerido para o Bot de Telegram
 TELEGRAM_API_KEY=xxx
-```
+
 # Requerido para o Postgres
 POSTGRES_DB=xxxx
 POSTGRES_USER=xxxx
 POSTGRES_PASSWORD=xxxx
+```
 
 Operação padrão Django normal: `manage.py`
 
