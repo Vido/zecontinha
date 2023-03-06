@@ -93,5 +93,11 @@ def cron_binance():
     PairStats.objects.bulk_create(bulk_list)
 
 if __name__ == '__main__':
-    cron_b3_memory()
-    cron_binance()
+    dfunc = {
+        'b3': cron_b3_memory,
+        'binance': cron_binance,
+    }
+    args = dfunc.keys()
+    if len(sys.argv) == 3:
+        args = sys.argv[2]
+    [dfunc[f]() for f in args]

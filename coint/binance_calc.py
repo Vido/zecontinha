@@ -21,15 +21,15 @@ from coint.cointegration import coint_model, beta_rotation, clean_timeseries
 # TODO: Criar um arquivos com utils.py
 from coint.b3_calc import create_cointparams, create_pairstats, gera_pares
 
-client = Client(
-    config('BINANCE_APIKEY'),
-    config('BINANCE_SECRETKEY')
-)
-
 def download_hquotes_binance():
-    # Faz o calculo
-    obj_buffer = []
 
+    client = Client(
+        config('BINANCE_APIKEY'),
+        config('BINANCE_SECRETKEY'),
+        tld='us'
+    )
+
+    obj_buffer = []
     for idx, ticker in enumerate(BINANCE_FUTURES):
         print(idx, ticker)
         # fetch weekly klines since it listed
