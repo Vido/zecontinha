@@ -6,6 +6,7 @@ SHELL=/bin/bash
 BASH_ENV=/container.env
 
 
-30 18 * * * root /usr/local/bin/python /src/cron_calc.py >> /var/log/cron.log 2>&1
-0 8 * * * root /usr/local/bin/python /src/bot.py >> /var/log/cron.log 2>&1
+# Servidor nos EUA está 3 horas na frente do Brasil
+30 21 * * * root /usr/local/bin/python /src/cron_calc.py >> /var/log/cron.log 2>&1
+30 11 * * * root /usr/local/bin/python /src/bot.py >> /var/log/cron.log 2>&1
 # Don't remove the empty line at the end of this file. It is required to run the cron job
