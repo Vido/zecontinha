@@ -48,6 +48,7 @@ def cron_b3_fast():
     PairStats.objects.filter(market='BOVESPA').delete()
     PairStats.objects.bulk_create(bulk_list)
 
+    del bulk_list
     # Telegram
     send_msg()
 

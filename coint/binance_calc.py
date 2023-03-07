@@ -10,6 +10,7 @@ django.setup()
 
 from decouple import config
 from binance.client import Client
+from binance.exceptions import BinanceAPIException
 
 from django.forms.models import model_to_dict
 
@@ -26,15 +27,22 @@ def download_hquotes_binance():
     client = Client(
         config('BINANCE_APIKEY'),
         config('BINANCE_SECRETKEY'),
-        tld='us'
+        #tld='us'
     )
 
-    obj_buffer = []
+    obj_buffer, failed_tickers = [], []
     for idx, ticker in enumerate(BINANCE_FUTURES):
         print(idx, ticker)
-        # fetch weekly klines since it listed
-        klines = client.get_historical_klines(
-            ticker, Client.KLINE_INTERVAL_1DAY, "1 Jan, 2017")
+
+        try:
+            # fetch weekly klines since it listed
+            klines = client.get_historical_klines(
+                ticker, Client.KLINE_INTERVAL_1DAY, "1 Jan, 2017")
+        except BinanceAPIException as e:
+            failed_tickers.append(ticker)
+            print(e)
+            #raise
+            continue
 
         ts_list, q_list = [], []
         for k in klines:
@@ -50,8 +58,9 @@ def download_hquotes_binance():
             obj_buffer.append(obj)
         except Exception as e:
             print(e)
-            #raise
+            raise
 
+    print('failed_tickers', failed_tickers)
     Quotes.objects.bulk_create(obj_buffer)
 
 def producer(idx, pair, market='BINANCE'):
