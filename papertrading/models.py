@@ -61,14 +61,16 @@ class Trade(models.Model):
     def display_profit(self):
         """
             Revisar: Está apresentando resultados errados
+            - Revisar dados de entrada com relação ao Z
+            - Determinar qual é a ponta comprada
         """
         x_quote = self.exit_x if self.exit_x is not None else Quotes.objects.get(
             ticker=self.ativo_x).get_series()[-1]
         y_quote = self.exit_y if self.exit_y is not None else Quotes.objects.get(
             ticker=self.ativo_y).get_series()[-1]
 
-        entry_net = (self.qnt_x * self.entry_x) - (self.qnt_y * self.entry_y)
-        open_net = (self.qnt_y * y_quote) - (self.qnt_x * x_quote)
+        entry_net = (self.qnt_y * self.entry_y) - (self.qnt_x * self.entry_x)
+        open_net = (self.qnt_x * x_quote) - (self.qnt_y * y_quote)
 
         #from IPython import embed; embed()
         return open_net - entry_net
