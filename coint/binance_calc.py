@@ -94,6 +94,10 @@ def producer(idx, pair, market='BINANCE'):
             test_params = coint_model(slice_x, slice_y)
             obj_data = create_cointparams(True, test_params)
             obj_pair.success = True
+        except ValueError as ve:
+            print(ve)
+            obj_data = create_cointparams(False)
+            #raise
         except MissingDataError:
             obj_data = create_cointparams(False, test_params)
             print('FAIL - MissingDataError - OLS ADF', periodo)
