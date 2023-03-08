@@ -13,6 +13,7 @@ from binance.client import Client
 from binance.exceptions import BinanceAPIException
 
 from django.forms.models import model_to_dict
+from statsmodels.tools.sm_exceptions import MissingDataError
 
 from dashboard.models import PairStats, CointParams, Quotes
 from dashboard.forms import PERIODOS_CALCULO
@@ -65,12 +66,19 @@ def download_hquotes_binance():
 
 def producer(idx, pair, market='BINANCE'):
 
-    _x = Quotes.objects.get(ticker=pair[0]).get_series()
-    _y = Quotes.objects.get(ticker=pair[1]).get_series()
-    series_x, series_y = clean_timeseries(_x, _y)
+    print(idx, pair)
+
+    try:
+        _x = Quotes.objects.get(ticker=pair[0]).get_series()
+        _y = Quotes.objects.get(ticker=pair[1]).get_series()
+        series_x, series_y = clean_timeseries(_x, _y)
+    except MissingDataError as mde:
+        print(mde)
+        #raise
+        obj_pair = create_pairstats(pair, market, success=False)
+        return obj_pair
 
     obj_pair = create_pairstats(pair, market, series_x=series_x, series_y=series_y)
-    print(idx, pair)
 
     try:
         beta_list = beta_rotation(series_x=series_x, series_y=series_y)
