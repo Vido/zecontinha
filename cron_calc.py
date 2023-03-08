@@ -85,7 +85,8 @@ def cron_binance_memory():
         obj = binance_producer(idx, pair)
         bulk_list.append(obj)
 
-        if len(bulk_list) > 2000:
+        # TODO: Maquina não aguenta 2000 - quase ocupa toda a memoria
+        if len(bulk_list) > 1000:
             # Grava dados no Banco
             PairStats.objects.bulk_create(bulk_list)
             # Libera a memória

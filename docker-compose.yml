@@ -49,7 +49,7 @@ services:
     container_name: cron_zecontinha
     restart: unless-stopped
     entrypoint: ./entrypoint_cron.sh
-    volumes: 
+    volumes:
       - .:/src/
     env_file:
       - ./zecontinha.env
@@ -59,6 +59,10 @@ services:
       - postgres
     networks:
       - zecontinha_network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.90'
 
 networks:
   zecontinha_network:
