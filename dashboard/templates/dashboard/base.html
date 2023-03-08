@@ -130,7 +130,7 @@
                 </p>
                 <ul>
                     {% if user.is_authenticated %}
-                    <li><a href="#">Minha Conta</a></li>
+                    <li><a href="{% url 'blotter' %}">Minha Conta</a></li>
                     <li><a href="{% url 'logout' %}">Logout</a>: {{ user }}</li>
                     {% else %}
                     <li><a href="{% url 'login' %}">Login</a></li>

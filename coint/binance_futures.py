@@ -171,7 +171,7 @@ BINANCE_FUTURES = [
     "GALABUSD",
     "TRXBUSD",
     #"1000LUNCBUSD",
-    "LUNA2BUSD",
+    #"LUNA2BUSD",
     "OPUSDT",
     "DOTBUSD",
     "TLMBUSD",

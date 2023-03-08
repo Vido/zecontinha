@@ -32,6 +32,10 @@
             // Par
             pair = $("#pair_"+pair_id).find(".pair").find("a");
             $("#form_pair_title").html(pair.clone());
+            // ZScore
+            zscore = $("#pair_"+pair_id).find(".zscore");
+            $("#form_zscore").append(zscore.text());
+
             $("#id_pair").val(pair.text());
             // Trava edição
             $("#id_pair").prop('readonly', true);
@@ -181,6 +185,7 @@
         <form>
         <hr>
         <p id="form_pair_title"></p>
+        <p id="form_zscore"><label for="form_zscore">Z-Score:</label></p>
         {{ modal_form.as_p }}
       </div>
       <div class="modal-footer">

@@ -54,7 +54,6 @@ class Trade(models.Model):
         return "%s x %s" % (self.qnt_x, self.qnt_y)
 
     def display_zscore(self):
-        d = self.model_params
         return self.model_params.get(
             str(self.periodo), {}).get('zscore', 'N/A')
 
@@ -69,8 +68,16 @@ class Trade(models.Model):
         y_quote = self.exit_y if self.exit_y is not None else Quotes.objects.get(
             ticker=self.ativo_y).get_series()[-1]
 
+
+        zscore = self.model_params.get(str(self.periodo), {})['zscore']
+        if zscore > 0:
+            b_quote, entry_b, qnt_b = 0, 0, 0
+            s_quote, entry_s, qnt_s = 0, 0, 0
+        else:
+            b_quote, entry_b, qnt_b = 0, 0, 0
+            s_quote, entry_s, qnt_s = 0, 0, 0
+
         entry_net = (self.qnt_y * self.entry_y) - (self.qnt_x * self.entry_x)
         open_net = (self.qnt_x * x_quote) - (self.qnt_y * y_quote)
 
-        #from IPython import embed; embed()
         return open_net - entry_net
