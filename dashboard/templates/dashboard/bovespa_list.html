@@ -127,7 +127,7 @@
     <tbody>
     {% for obj in object_list %}
     <tr id="pair_{{ obj.id }}">
-        <td class="pair"><a href="{% url 'pair-stats' x=obj.ticker_x y=obj.ticker_y %}" target="popup" onclick="window.open('{% url 'pair-stats' x=obj.ticker_x y=obj.ticker_y %}','popup','width=900,height=900'); return false;">{{ obj.display_pair }}</a></td>
+        <td class="pair"><a href="{% url 'pair-stats' x=obj.ticker_x y=obj.ticker_y %}" target="popup" onclick="window.open('{% url 'pair-stats' x=obj.ticker_x y=obj.ticker_y %}','popup','width=1920,height=720'); return false;">{{ obj.display_pair }}</a></td>
         <td class="quote">{{ obj.x_quote|floatformat:2 }}x{{ obj.y_quote|floatformat:2 }}</td>
         <td class="adf">{% get_param obj period "adf_pvalue" 5 %}</td>
         <td class="zscore">{% get_param obj period "zscore" 5 %}</td>
