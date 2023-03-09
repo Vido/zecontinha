@@ -1,8 +1,5 @@
-"""
-O Heroku Scheduler roda este script diariamente
-"""
-
 import os
+import gc
 import sys
 import django
 from multiprocessing import Pool
@@ -47,8 +44,8 @@ def cron_b3_fast():
     # Grava dados no Banco
     PairStats.objects.filter(market='BOVESPA').delete()
     PairStats.objects.bulk_create(bulk_list)
-
     del bulk_list
+
     # Telegram
     send_msg()
 
@@ -67,8 +64,8 @@ def cron_b3_memory():
         if len(bulk_list) > 1000:
             # Grava dados no Banco
             PairStats.objects.bulk_create(bulk_list)
-            # Libera a memória
             del bulk_list
+            gc.collect() # Libera a memória
             bulk_list = []
 
     # Grava dados no Banco o restante
@@ -89,8 +86,8 @@ def cron_binance_memory():
         if len(bulk_list) > 1000:
             # Grava dados no Banco
             PairStats.objects.bulk_create(bulk_list)
-            # Libera a memória
             del bulk_list
+            gc.collect() # Libera a memória
             bulk_list = []
 
     # Grava dados no Banco o restante
