@@ -15,8 +15,8 @@ telegram_api_key = config('TELEGRAM_API_KEY')
 bot = telegram.Bot(telegram_api_key)
 
 chat_id_list = [
-    -1001164319166, # "Papo de Mercado 📈📉📊"
-    -1001189309671, # "PdM - Homologação"
+    #-1001164319166, # "Papo de Mercado 📈📉📊"
+    #-1001189309671, # "PdM - Homologação"
     -1001389579694, # "Python e Finanças"
 ]
 
@@ -69,6 +69,7 @@ def send_msg():
     for chat_id in chat_id_list:
         bot.send_message(
                 chat_id=chat_id,
+                message_thread_id=9973, # Chat do ZéContinha
                 text=msg_str,
                 parse_mode=telegram.ParseMode.HTML)
 
