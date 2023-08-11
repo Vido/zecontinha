@@ -69,11 +69,15 @@ def send_msg():
     for chat_id in chat_id_list:
         bot.send_message(
                 chat_id=chat_id,
-                message_thread_id=9973, # Chat do ZéContinha
+                message_thread_id=9973,
                 text=msg_str,
                 parse_mode=telegram.ParseMode.HTML)
 
-        bot.send_photo(chat_id=chat_id, photo=plot)
+        bot.send_photo(
+                chat_id=chat_id,
+                message_thread_id=9973,
+                photo=plot)
+
         # Bug do retorno do ponteiro
         plot.seek(0)
 
