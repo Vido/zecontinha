@@ -116,6 +116,14 @@ html5lib = ["html5lib"]
 lxml = ["lxml"]
 
 [[package]]
+name = "cachetools"
+version = "4.2.2"
+description = "Extensible memoizing collections and decorators"
+category = "main"
+optional = false
+python-versions = "~=3.5"
+
+[[package]]
 name = "certifi"
 version = "2023.7.22"
 description = "Python package for providing Mozilla's CA Bundle."
@@ -487,17 +495,18 @@ python-versions = "*"
 
 [[package]]
 name = "python-telegram-bot"
-version = "13.5"
+version = "13.15"
 description = "We have made you a wrapper you can't refuse"
 category = "main"
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.7"
 
 [package.dependencies]
 APScheduler = "3.6.3"
+cachetools = "4.2.2"
 certifi = "*"
 pytz = ">=2018.6"
-tornado = ">=5.1"
+tornado = "6.1"
 
 [package.extras]
 json = ["ujson"]
@@ -658,11 +667,11 @@ python-versions = ">=3.7"
 
 [[package]]
 name = "tornado"
-version = "6.3.2"
+version = "6.1"
 description = "Tornado is a Python web framework and asynchronous networking library, originally developed at FriendFeed."
 category = "main"
 optional = false
-python-versions = ">= 3.8"
+python-versions = ">= 3.5"
 
 [[package]]
 name = "typing-extensions"
@@ -778,7 +787,7 @@ requests = ">=2.31"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "2aa2146de5618c00455491d0a2f48ca39f8bfda7aeca996049509ae32b99c5d8"
+content-hash = "7022408e3756ed2ef2163b30d24aa482f9d138445e9ccb370e2bc5129cfaf475"
 
 [metadata.files]
 aiohttp = []
@@ -792,6 +801,7 @@ asgiref = []
 async-timeout = []
 attrs = []
 beautifulsoup4 = []
+cachetools = []
 certifi = []
 charset-normalizer = []
 cycler = []
