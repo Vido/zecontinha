@@ -22,7 +22,8 @@ from django.db.models import Q
 #from coint.ibov import CARTEIRA_IBOV as CARTEIRA
 from coint.ibrx100 import  CARTEIRA_IBRX as _CARTEIRA
 
-from coint.cointegration import get_market_data, coint_model, beta_rotation, clean_timeseries
+from coint.cointegration import get_market_data, coint_model, clean_timeseries
+from coint.analysis import beta_rotation, analysis_model
 from dashboard.models import PairStats, CointParams, Quotes
 from dashboard.forms import PERIODOS_CALCULO
 
@@ -33,12 +34,11 @@ CARTEIRA = _CARTEIRA
 
 ibrx_tickers = [ "%s.SA" % s for s in CARTEIRA]
 
-def create_cointparams(success, test_params={}):
+def create_cointparams_obj(success, test_params={}, analysis_params={}):
 
     obj = CointParams(success=success)
 
     if not success:
-        obj.success = False
         return obj
 
     try:
@@ -49,11 +49,19 @@ def create_cointparams(success, test_params={}):
         obj.intercept = test_params['OLS'].params.const
         obj.n_observ = len(test_params['OLS'].resid)
         obj.zscore = obj.last_resid / obj.resid_std
-        obj.half_life = test_params['HF']
+    else:
+        obj.success = True
     except Exception as e:
         print(e)
         obj.success = False
         #raise
+
+    try:
+        obj.half_life = analysis_params['OUHL']
+        obj.hurst = analysis_params['RSH']
+    except Exception as e:
+        #print(e)
+        raise
 
     return obj
 
@@ -95,10 +103,10 @@ def producer(idx, pair):
         slice_y = series_y[-periodo:]
         try:
             test_params = coint_model(slice_x, slice_y)
-            obj_data = create_cointparams(True, test_params)
-            obj_pair.success = True
+            analysis_params = analysis_model(test_params['OLS'].resid)
+            obj_data = create_cointparams(True, test_params, analysis_params)
         except MissingDataError:
-            obj_data = create_cointparams(False, test_params)
+            obj_data = create_cointparams(False)
             print('FAIL - MissingDataError - OLS ADF', periodo)
             #raise
 

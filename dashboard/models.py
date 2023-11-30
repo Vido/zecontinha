@@ -1,7 +1,7 @@
 import pandas as pd
 
 from django.db import models
-from django.contrib.postgres.fields import JSONField, ArrayField
+from django.contrib.postgres.fields import ArrayField
 
 
 class CointParams(models.Model):
@@ -13,6 +13,7 @@ class CointParams(models.Model):
     intercept = models.FloatField(null=True, blank=True)
     last_resid = models.FloatField(null=True, blank=True)
     half_life = models.FloatField(null=True, blank=True)
+    hurst = models.FloatField(null=True, blank=True)
     n_observ = models.IntegerField(null=True, blank=True)
     timestamp_calc = models.DateTimeField(auto_now_add=True)
     success = models.BooleanField(default=False)
@@ -70,7 +71,7 @@ class BasePairStats(models.Model):
     y_quote = models.FloatField(null=True, blank=True)
     success = models.BooleanField(default=False)
 
-    model_params = JSONField(default=dict)
+    model_params = models.JSONField(default=dict)
     beta_rotation = ArrayField(models.FloatField(), blank=True, null=True)
 
     timestamp = models.DateTimeField(auto_now_add=True)

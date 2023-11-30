@@ -49,7 +49,8 @@ def send_msg():
               "Z-Score: %.2f\n" \
               "ADF p-value: %.2f %%\n" \
               "Ang. Coef.: %.2f\n" \
-              "Intercept: %.2f\n" \
+              "Half-life: %.2f\n" \
+              "Hurst: %.2f\n" \
 
     _x = ps.ticker_x.replace('.SA', '')
     _y = ps.ticker_y.replace('.SA', '')
@@ -62,24 +63,26 @@ def send_msg():
         ps.model_params['120']['adf_pvalue'] * 100,
         ps.model_params['120']['ang_coef'],
         ps.model_params['120']['intercept'],
+        ps.model_params['120']['half_life'],
+        ps.model_params['120']['hurst'],
       )
 
     plot = get_plot(ps.ticker_x, ps.ticker_y)
 
-    for chat_id in chat_id_list:
-        bot.send_message(
-                chat_id=chat_id,
-                message_thread_id=9973,
-                text=msg_str,
-                parse_mode=telegram.ParseMode.HTML)
+    bot.send_message(
+            chat_id='@pythonfinancas',
+            #chat_id=-1001389579694, # "Python e Finanças"
+            message_thread_id=9973,
+            text=msg_str,
+            parse_mode=telegram.ParseMode.HTML)
 
-        bot.send_photo(
-                chat_id=chat_id,
-                message_thread_id=9973,
-                photo=plot)
+    bot.send_photo(
+            chat_id='@pythonfinancas',
+            message_thread_id=9973,
+            photo=plot)
 
-        # Bug do retorno do ponteiro
-        plot.seek(0)
+    # Bug do retorno do ponteiro
+    plot.seek(0)
 
 if __name__ == '__main__':
     send_msg()

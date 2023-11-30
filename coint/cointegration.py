@@ -34,14 +34,6 @@ def get_market_data(tickers, period, interval):
     )
     return data
 
-def half_life_calc(ts):
-    lagged = ts.shift(1).fillna(method="bfill")
-    delta = ts-lagged
-    X = sm.add_constant(lagged.values)
-    ar_res = sm.OLS(delta, X).fit()
-    half_life = -1*np.log(2)/ar_res.params['x1']
-
-    return half_life, ar_res
 
 def coint_model(series_x, series_y):
     try:
@@ -49,33 +41,14 @@ def coint_model(series_x, series_y):
         mod = sm.OLS(series_y, X)
         results = mod.fit()
         adfTest = adfuller(results.resid, autolag='AIC')
-        
-        ts = results.resid
-        half_life, _ = half_life_calc(ts)
-        return {
-            'OLS': results,
-            'ADF': adfTest,
-            'HF': half_life, #TODO: qual a sigla? O return está correto?
-        }
     except:
         raise
 
-def beta_rotation(series_x, series_y, window=40):
-    beta_list = []
-    try:
-        for i in range(0, len(series_x)-window):
-            slice_x = series_x[i:i+window]
-            slice_y = series_y[i:i+window]
+    return {
+        'OLS': results,
+        'ADF': adfTest,
+    }
 
-            X = sm.add_constant(slice_x.values)
-            mod = sm.OLS(slice_y, X)
-            results = mod.fit()
-            beta = results.params.x1
-            beta_list.append(beta)
-    except:
-        raise
-
-    return beta_list
 
 def asBase64(my_plt):
     _buffer = BytesIO()
@@ -118,7 +91,7 @@ def _get_residuals_plot(ols):
     mplt.hlines([-1*stddev, 1*stddev], xmin, xmax, color='gainsboro')
     mplt.hlines([-2*stddev, 2*stddev], xmin, xmax, color='orange')
     mplt.hlines([-3*stddev, 3*stddev], xmin, xmax, color='red')
-    
+
     return mplt
 
 def get_residuals_plot(ols):
@@ -134,7 +107,7 @@ def get_raw_plot(series_x, series_y, xlabel='', ylabel=''):
 
     mplt.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
            ncol=2, borderaxespad=0.)
-    
+
     return asBase64(mplt)
 
 def get_beta_plot(beta_list):
