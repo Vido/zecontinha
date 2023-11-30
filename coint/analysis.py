@@ -32,6 +32,6 @@ def analysis_model(resid):
     H, c, data = compute_Hc(ts, kind='random_walk', simplified=True)
 
     return {
-        'OUHL': half_life
-        'RSH': H
+        'OUHL': half_life,
+        'RSH': H,
     }

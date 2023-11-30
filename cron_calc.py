@@ -20,8 +20,8 @@ from coint.binance_calc import producer as binance_producer
 from dashboard.models import PairStats, CointParams, Quotes
 from bot import send_msg
 
-#CARTEIRA_IBRX = CARTEIRA_IBRX[:5] # DEBUG
-#BINANCE_FUTURES = BINANCE_FUTURES[:5] # DEBUG
+CARTEIRA_IBRX = CARTEIRA_IBRX[:5] # DEBUG
+BINANCE_FUTURES = BINANCE_FUTURES[:5] # DEBUG
 
 ibrx_tickers = [ "%s.SA" % s for s in CARTEIRA_IBRX]
 
