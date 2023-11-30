@@ -73,10 +73,11 @@
         <th>ADF PValor</th>
         <th>ZScore</th>
         <th>Ang.Coef.</th>
-        <th>Intercept.</th>
-        <th>Resíd</th>
-        <th>Std.Dev.</th>
+        <!-- <th>Intercept.</th> -->
+        <!-- <th>Resíd</th> -->
+        <!-- <th>Std.Dev.</th> -->
         <th>HalfLife</th>
+        <th>Hurst</th>
     </tr>
     </thead>
     <tbody>
@@ -91,10 +92,11 @@
             {{ values.zscore|floatformat:5 }}
         </td>
         <td>{{ values.ang_coef|floatformat:5 }}</td>
-        <td>{{ values.intercept|floatformat:5 }}</td>
-        <td>{{ values.last_resid|floatformat:5 }}</td>
-        <td>{{ values.resid_std|floatformat:5 }}</td>
+        <!-- <td>{{ values.intercept|floatformat:5 }}</td> -->
+        <!-- <td>{{ values.last_resid|floatformat:5 }}</td> -->
+        <!-- <td>{{ values.resid_std|floatformat:5 }}</td> -->
         <td>{{ values.half_life|floatformat:5 }}</td>
+        <td>{{ values.hurst|floatformat:5 }}</td>
     </tr>
     {% empty %}
         <td colspan="6">Use o filtro para que os dados sejam apresentados</td>
