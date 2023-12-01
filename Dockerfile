@@ -20,9 +20,9 @@ WORKDIR /src
 ADD ./ /src
 
 RUN pip install install --upgrade pip
-#RUN pip install -r requirements.txt
 
-RUN pip install poetry
-RUN poetry config virtualenvs.create false
-
+# POETRY
+ENV POETRY_VIRTUALENVS_CREATE=false
+RUN pip install poetry && \
+    poetry config virtualenvs.create false
 RUN poetry install --no-interaction --no-ansi
