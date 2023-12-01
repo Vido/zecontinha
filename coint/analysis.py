@@ -1,3 +1,4 @@
+import numpy as np
 import statsmodels.api as sm
 from hurst import compute_Hc
 
@@ -26,10 +27,19 @@ def beta_rotation(series_x, series_y, window=40):
 
     return beta_list
 
-def analysis_model(resid):
+def analysis_model(ts):
 
-    half_life, _ = half_life_calc(ts)
-    H, c, data = compute_Hc(ts, kind='random_walk', simplified=True)
+    try:
+        half_life, _ = half_life_calc(ts)
+    except Exception as e:
+        half_life = None
+        print(e)
+
+    try:
+        H, c, data = compute_Hc(ts, kind='random_walk', simplified=True)
+    except Exception as e:
+        H = None
+        print(e)
 
     return {
         'OUHL': half_life,

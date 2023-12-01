@@ -12,16 +12,14 @@ from decouple import config
 from binance.client import Client
 from binance.exceptions import BinanceAPIException
 
-from django.forms.models import model_to_dict
 from statsmodels.tools.sm_exceptions import MissingDataError
 
 from dashboard.models import PairStats, CointParams, Quotes
 from dashboard.forms import PERIODOS_CALCULO
 from dashboard.forms import BINANCE_FUTURES
 
-from coint.cointegration import coint_model, beta_rotation, clean_timeseries
-# TODO: Criar um arquivos com utils.py
-from coint.b3_calc import create_cointparams, create_pairstats, gera_pares
+from coint.cointegration import clean_timeseries
+from coint.common import gera_pares, generic_producer
 
 def download_hquotes_binance():
 
@@ -65,9 +63,7 @@ def download_hquotes_binance():
     Quotes.objects.bulk_create(obj_buffer)
 
 def producer(idx, pair, market='BINANCE'):
-
     print(idx, pair)
-
     try:
         _x = Quotes.objects.get(ticker=pair[0]).get_series()
         _y = Quotes.objects.get(ticker=pair[1]).get_series()
@@ -75,34 +71,7 @@ def producer(idx, pair, market='BINANCE'):
     except MissingDataError as mde:
         print(mde)
         #raise
-        obj_pair = create_pairstats(pair, market, success=False)
+        obj_pair = CointParams.create(pair, market, success=False)
         return obj_pair
 
-    obj_pair = create_pairstats(pair, market, series_x=series_x, series_y=series_y)
-
-    try:
-        beta_list = beta_rotation(series_x=series_x, series_y=series_y)
-        obj_pair.beta_rotation = beta_list
-    except MissingDataError:
-        print('FAIL - MissingDataError - Beta')
-        #raise
-
-    for periodo in PERIODOS_CALCULO:
-        slice_x = series_x[-periodo:]
-        slice_y = series_y[-periodo:]
-        try:
-            test_params = coint_model(slice_x, slice_y)
-            obj_data = create_cointparams(True, test_params)
-            obj_pair.success = True
-        except ValueError as ve:
-            print(ve)
-            obj_data = create_cointparams(False)
-            #raise
-        except MissingDataError:
-            obj_data = create_cointparams(False, test_params)
-            print('FAIL - MissingDataError - OLS ADF', periodo)
-            #raise
-
-        obj_pair.model_params[periodo] = model_to_dict(obj_data)
-
-    return copy.deepcopy(obj_pair)
+    return generic_producer(pair, market, series_x, series_y)

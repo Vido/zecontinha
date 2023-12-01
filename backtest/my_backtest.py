@@ -22,8 +22,7 @@ from dashboard.forms import PERIODOS_CALCULO
 from backtest.models import PairStats
 
 from coint.cointegration import coint_model, beta_rotation, clean_timeseries
-# TODO: Criar um arquivos com utils.py
-from coint.b3_calc import create_cointparams, gera_pares
+from coint.common import gera_pares
 from coint.binance_calc import download_hquotes_binance
 
 # Objetos carregado em memória
@@ -76,7 +75,7 @@ def calcula_modelo(refdate, pair, market='BINANCE'):
     series_x, series_y = clean_timeseries(_x, _y)
 
     model_params = {}
-    obj_pair = create_pairstats(pair, market, series_x=series_x, series_y=series_y)
+    obj_pair = PairStats.create(pair, market, series_x=series_x, series_y=series_y)
     # Valor esperado: 690
     #print(refdate, pair, 'len_X', len(series_x), 'len_Y', len(series_y))
     #print(refdate, pair)
@@ -88,10 +87,10 @@ def calcula_modelo(refdate, pair, market='BINANCE'):
 
         try:
             test_params = coint_model(slice_x, slice_y)
-            obj_data = create_cointparams(True, test_params)
+            obj_data = CointParams.create(True, test_params)
             obj_pair.success = True
         except MissingDataError:
-            obj_data = create_cointparams(False, test_params)
+            obj_data = CointParams.create(False, test_params)
             print('FAIL - MissingDataError - OLS ADF', periodo)
             #raise
 

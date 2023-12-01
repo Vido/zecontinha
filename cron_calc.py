@@ -95,6 +95,6 @@ def cron_binance_memory():
 
 if __name__ == '__main__':
     download_b3()
-    download_binance()
+    #download_binance()
     cron_b3_fast()
-    cron_binance_memory()
+    #cron_binance_memory()

@@ -23,11 +23,43 @@ class CointParams(models.Model):
     # class Meta:
     #     abstract = True
 
+    @classmethod
+    def create(cls, success, test_params={}, analysis_params={}):
+
+        obj = CointParams(success=success)
+        if not success:
+            return obj
+
+        try:
+            obj.adf_pvalue = test_params['ADF'][1]
+            obj.resid_std = test_params['OLS'].resid.std()
+            obj.last_resid = test_params['OLS'].resid.iloc[-1]
+            obj.ang_coef = test_params['OLS'].params.x1
+            obj.intercept = test_params['OLS'].params.const
+            obj.n_observ = len(test_params['OLS'].resid)
+            obj.zscore = obj.last_resid / obj.resid_std
+        except Exception as e:
+            print(e)
+            obj.success = False
+            #raise
+        else:
+            obj.success = True
+
+        try:
+            obj.half_life = analysis_params['OUHL']
+            obj.hurst = analysis_params['RSH']
+        except Exception as e:
+            #print(e)
+            raise
+
+        return obj
+
 MARKET_CHOICES = (
     ('N/A', 'N/A'),
     ('BOVESPA', 'B3 (Ações Brasileiras)'),
     ('BINANCE', 'Binance Futures (Crypto)'),
 )
+
 
 class Quotes(models.Model):
 
@@ -76,6 +108,24 @@ class BasePairStats(models.Model):
 
     timestamp = models.DateTimeField(auto_now_add=True)
 
+    @classmethod
+    def create(cls, pair, market, series_x=pd.Series([]), series_y=pd.Series([])):
+
+        obj = PairStats(
+            pair = " ".join(pair),
+            market = market,
+            ticker_x = pair[0],
+            ticker_y = pair[1],
+        )
+
+        if not series_x.empty:
+            obj.x_quote = series_x.iloc[-1]
+
+        if not series_y.empty:
+            obj.y_quote = series_y.iloc[-1]
+
+        return obj
+
     def display_pair(self):
         return self.pair.replace('.SA', '').replace(' ', 'x')
 
@@ -88,6 +138,7 @@ class BasePairStats(models.Model):
             if obj.get('adf_pvalue', '') < pvalue:
                 counter += 1
         return counter
+
 
 class PairStats(BasePairStats):
     pair = models.CharField(max_length=32, unique=True)
