@@ -143,3 +143,14 @@ class BasePairStats(models.Model):
 class PairStats(BasePairStats):
     pair = models.CharField(max_length=32, unique=True)
     timestamp = models.DateTimeField(auto_now_add=True)
+
+    @classmethod
+    def last_update(cls, market):
+        ts_last_update = None
+        try:
+            _latest = PairStats.objects.filter(market=market).latest('timestamp')
+            ts_last_update = _latest.timestamp
+        except PairStats.DoesNotExist:
+            pass
+
+        return ts_last_update
