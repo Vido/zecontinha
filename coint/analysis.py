@@ -29,16 +29,18 @@ def beta_rotation(series_x, series_y, window=40):
 
 def analysis_model(ts):
 
+    half_life = None
     try:
         half_life, _ = half_life_calc(ts)
     except Exception as e:
-        half_life = None
         print(e)
 
+    H = None
     try:
-        H, c, data = compute_Hc(ts, kind='random_walk', simplified=True)
+        # todo remover restricao se a lib mudar
+        if len(ts) >= 100:
+            H, c, data = compute_Hc(ts, kind='random_walk', simplified=True)
     except Exception as e:
-        H = None
         print(e)
 
     return {

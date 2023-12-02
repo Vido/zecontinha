@@ -50,6 +50,8 @@ class Index(RecaptchaMixin, FormView):
         context['pairs_binance'] = PairStats.objects.filter(market='BINANCE').count()
         context['b3_total'] = len(list(permutations(CARTEIRA_IBRX, 2)))
         context['binance_total'] = len(list(permutations(BINANCE_FUTURES, 2)))
+        context['b3_last_update'] = PairStats.objects.filter(market='BOVESPA').latest('timestamp')
+        context['binance_last_update'] = PairStats.objects.filter(market='BINANCE').latest('timestamp')
 
         return context
 
