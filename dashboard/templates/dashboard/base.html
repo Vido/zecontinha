@@ -76,9 +76,22 @@
                 <p class="description">
                 Status do Sistema:
                 <ul>
-                    <li<b>Ultima </b></li>
-                    <li><b>Pares B3:</b> {{ pairs_b3 }} de {{ b3_total }} - {{ b3_last_update|date:"D Y/M/d G:i:s e" }}</li>
-                    <li><b>Pares Binance:</b> {{ pairs_binance }} de {{ binance_total }} - {{ binance_last_update|date:"D d M Y" }}</li>
+                    <li><b>Pares B3:</b> {{ pairs_b3 }} de {{ b3_total }}</li>
+                    {% if b3_et %}
+                    <li>Atualização: {{ b3_update|date:"D Y/M/d G:i:s e" }}</li>
+                    <li>Tempo Estimado: {{ b3_et.hours }}h {{ b3_et.minutes }}</li>
+                    {% else %}
+                    <li>Atualização: N/A</li>
+                    <li>Tempo Estimado: N/A</li>
+                    {% endif %}
+                    <li><b>Pares Binance:</b> {{ pairs_binance }} de {{ binance_total }}</li>
+                    {% if binance_et %}
+                    <li>Atualização: {{ binance_update|date:"D Y/M/d G:i:s e" }}</li>
+                    <li>Tempo Estimado: {{ binance_et.hours }}h {{ binance_et.minutes }}</li>
+                    {% else %}
+                    <li>Atualização: N/A</li>
+                    <li>Tempo Estimado: N/A</li>
+                    {% endif %}
                 </ul>
                 </p>
                 {% endblock descricao %}

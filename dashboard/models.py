@@ -139,6 +139,15 @@ class BasePairStats(models.Model):
                 counter += 1
         return counter
 
+def _get_update(qs, _callable='latest'):
+        ts_update = None
+        try:
+            _latest = getattr(qs, _callable)('timestamp')
+            ts_update = _latest.timestamp
+        except PairStats.DoesNotExist:
+            pass
+
+        return ts_update
 
 class PairStats(BasePairStats):
     pair = models.CharField(max_length=32, unique=True)
@@ -146,11 +155,23 @@ class PairStats(BasePairStats):
 
     @classmethod
     def last_update(cls, market):
-        ts_last_update = None
-        try:
-            _latest = PairStats.objects.filter(market=market).latest('timestamp')
-            ts_last_update = _latest.timestamp
-        except PairStats.DoesNotExist:
-            pass
+        qs = PairStats.objects.filter(market=market)
+        return _get_update(qs)
 
-        return ts_last_update
+    @classmethod
+    def estimated_time(cls, market):
+        stats = {}
+        qs = PairStats.objects.filter(market=market)
+        try:
+            duration = _get_update_(qs, _callable='latest') - _get_update_(qs, _callable='earliest')
+            seconds = duration.total_seconds()
+            stats = {
+                    'duration': duration,
+                    'hours': seconds // 3600,
+                    'minutes': (seconds % 3600) // 60,
+                    'seconds': seconds % 60
+            }
+        except Exception as e:
+            print(e)
+
+        return stats
