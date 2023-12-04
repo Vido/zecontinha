@@ -149,7 +149,8 @@ def _get_update(qs, _callable='latest'):
         try:
             _latest = getattr(qs, _callable)('timestamp')
             ts_update = _latest.timestamp
-        except PairStats.DoesNotExist:
+        except PairStats.DoesNotExist as e:
+            print(e)
             pass
 
         return ts_update
@@ -168,7 +169,7 @@ class PairStats(BasePairStats):
         stats = {}
         qs = PairStats.objects.filter(market=market)
         try:
-            duration = _get_update_(qs, _callable='latest') - _get_update_(qs, _callable='earliest')
+            duration = _get_update(qs, _callable='latest') - _get_update(qs, _callable='earliest')
             seconds = duration.total_seconds()
             stats = {
                     'duration': duration,
