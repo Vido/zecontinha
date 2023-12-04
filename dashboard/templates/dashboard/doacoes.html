@@ -1,12 +1,18 @@
+{% load static %}
 {% block doacoes %}
 <h2>Faça uma Doação</h2>
 <div style="margin-left: 30px">
+    <!--
     <div>
         <img src="https://en.bitcoin.it/w/images/en/e/ed/Bitcoin_accepted_here_printable.png" height="70" width="183" alt="Bitcoin accepted here!">
     </div>
+    -->
     <div>
-        <input style="width:183px" type="text" value="1MkJepBmkiTg36DuvdhWmTrozn3HLW6w8M" id="btcInput"><br>
-        <button style="margin-top: 5px" onclick="copyFunction()">Copy</button> 
+        <img src="{% static 'vozdocu/qr_bc1ql9vqr9mgucxf7s27aghupparlav22jh7jsnfpu.jpg' %}" height="183" width="183" alt="Bitcoin accepted here!">
+    </div>
+    <div>
+        <input style="width:183px" type="text" value="bc1ql9vqr9mgucxf7s27aghupparlav22jh7jsnfpu" id="btcInput"><br>
+        <button style="margin-top: 5px" onclick="copyFunction()">Copy</button>
     </div>
     <div style="clear: both; margin-bottom: 1rem;"></div>
 </div>
