@@ -16,12 +16,11 @@ from statsmodels.tools.sm_exceptions import MissingDataError
 
 from dashboard.models import PairStats, CointParams, Quotes
 from dashboard.forms import PERIODOS_CALCULO
-from dashboard.forms import BINANCE_FUTURES
 
 from coint.cointegration import clean_timeseries
 from coint.common import gera_pares, generic_producer
 
-def download_hquotes_binance():
+def download_hquotes_binance(tickers_list):
 
     client = Client(
         config('BINANCE_APIKEY'),
@@ -30,9 +29,8 @@ def download_hquotes_binance():
     )
 
     obj_buffer, failed_tickers = [], []
-    for idx, ticker in enumerate(BINANCE_FUTURES):
+    for idx, ticker in enumerate(tickers_list):
         print(idx, ticker)
-
         try:
             # fetch weekly klines since it listed
             klines = client.get_historical_klines(

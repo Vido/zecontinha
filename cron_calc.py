@@ -7,6 +7,7 @@ from multiprocessing import Pool
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "vozdocu.settings")
 django.setup()
 
+from django.conf import settings
 #from coint.ibov import CARTEIRA_IBOV
 from coint.ibrx100 import  CARTEIRA_IBRX
 from coint.b3_calc import download_hquotes
@@ -20,8 +21,9 @@ from coint.binance_calc import producer as binance_producer
 from dashboard.models import PairStats, CointParams, Quotes
 from bot import send_msg
 
-#CARTEIRA_IBRX = CARTEIRA_IBRX[:5] # DEBUG
-#BINANCE_FUTURES = BINANCE_FUTURES[:5] # DEBUG
+if settings.DEBUG:
+    CARTEIRA_IBRX = CARTEIRA_IBRX[:5] # DEBUG
+    BINANCE_FUTURES = BINANCE_FUTURES[:5] # DEBUG
 
 ibrx_tickers = [ "%s.SA" % s for s in CARTEIRA_IBRX]
 
@@ -32,7 +34,7 @@ def download_b3():
 
 def download_binance():
     Quotes.objects.filter(market='BINANCE').delete()
-    download_hquotes_binance()
+    download_hquotes_binance(BINANCE_FUTURES)
 
 def cron_b3_fast():
     """
@@ -46,21 +48,18 @@ def cron_b3_fast():
     PairStats.objects.bulk_create(bulk_list)
     del bulk_list
 
-    # Telegram
-    send_msg()
-
-def cron_b3_memory():
+def cron_memory(market, producer, tickers_list):
     """
     Funcao que prioriza o uso limitado da memoria.
     """
-
     # Limpa a Base
-    PairStats.objects.filter(market='BOVESPA').delete()
+    PairStats.objects.filter(market=market).delete()
     bulk_list = []
-    for idx, pair in enumerate(gera_pares(ibrx_tickers)):
-        obj = b3_producer(idx, pair)
+    for idx, pair in enumerate(gera_pares(tickers_list)):
+        obj = producer(idx, pair)
         bulk_list.append(obj)
 
+        # TODO: Maquina Heroku não aguenta 2000 - quase ocupa toda a memoria
         if len(bulk_list) > 1000:
             # Grava dados no Banco
             PairStats.objects.bulk_create(bulk_list)
@@ -70,32 +69,15 @@ def cron_b3_memory():
 
     # Grava dados no Banco o restante
     PairStats.objects.bulk_create(bulk_list)
-
-    # Telegram
-    send_msg()
-
-def cron_binance_memory():
-
-    PairStats.objects.filter(market='BINANCE').delete()
-    bulk_list = []
-    for idx, pair in enumerate(gera_pares(BINANCE_FUTURES)):
-        obj = binance_producer(idx, pair)
-        bulk_list.append(obj)
-
-        # TODO: Maquina não aguenta 2000 - quase ocupa toda a memoria
-        if len(bulk_list) > 1000:
-            # Grava dados no Banco
-            PairStats.objects.bulk_create(bulk_list)
-            del bulk_list
-            gc.collect() # Libera a memória
-            bulk_list = []
-
-    # Grava dados no Banco o restante
-    PairStats.objects.bulk_create(bulk_list)
+    del bulk_list
 
 if __name__ == '__main__':
+
     download_b3()
     download_binance()
     #cron_b3_fast()
-    cron_b3_memory()
-    cron_binance_memory()
+    cron_memory('BOVESPA', b3_producer, ibrx_tickers)
+    cron_memory('BINANCE', binance_producer, BINANCE_FUTURES)
+
+    # Telegram
+    send_msg()

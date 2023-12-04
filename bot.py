@@ -9,6 +9,9 @@ import random
 import telegram
 from decouple import config
 from django.db.models import Q
+from django.conf import settings
+
+from dashboard.models import PairStats, Quotes
 
 #chat_id = config('TELEGRAM_CHAT_ID', cast=int)
 telegram_api_key = config('TELEGRAM_API_KEY')
@@ -21,14 +24,13 @@ chat_id_list = [
 ]
 
 def select_pair(n):
-    from dashboard.models import PairStats, CointParams, Quotes
+    # TODO: Revisar
     qs = PairStats.objects.filter(success=True)
     qs = qs.filter(
       Q(model_params__120__adf_pvalue__lte=0.05) & (Q(model_params__120__zscore__gte=2.0) | Q(model_params__120__zscore__lte=-2.0)))
     return random.sample(set(qs), n)
 
 def get_plot(x_ticker, y_ticker):
-  from dashboard.models import PairStats, CointParams, Quotes
   from coint.cointegration import fp_savefig, _get_residuals_plot
   from coint.cointegration import coint_model, clean_timeseries
 
@@ -41,7 +43,11 @@ def get_plot(x_ticker, y_ticker):
 
 def send_msg():
 
-    ps = select_pair(1)[0]
+    if settings.DEBUG:
+        ps_qs = PairStats.objects.filter(success=True)
+        ps = ps_qs[0]
+    else:
+        ps = select_pair(1)[0]
 
     msg_template = "<b>Estudo Long&Short do dia:</b>\n" \
               'Par: <a href="%s">%s x %s</a>\n' \
@@ -56,13 +62,11 @@ def send_msg():
     _y = ps.ticker_y.replace('.SA', '')
 
     msg_str = msg_template % (
-        'http://zecontinha.com.br/b3/pair_stats/%s.SA/%s.SA' % (_x, _y),
-        _x, _y,
+        'http://zecontinha.com.br/b3/pair_stats/%s.SA/%s.SA' % (_x, _y), _x, _y,
         120,
         ps.model_params['120']['zscore'],
         ps.model_params['120']['adf_pvalue'] * 100,
         ps.model_params['120']['ang_coef'],
-        ps.model_params['120']['intercept'],
         ps.model_params['120']['half_life'],
         ps.model_params['120']['hurst'],
       )

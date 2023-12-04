@@ -101,6 +101,8 @@ class BasePairStats(models.Model):
     # Ultima cotação
     x_quote = models.FloatField(null=True, blank=True)
     y_quote = models.FloatField(null=True, blank=True)
+
+    # TODO: Revisar
     success = models.BooleanField(default=False)
 
     model_params = models.JSONField(default=dict)
@@ -123,6 +125,9 @@ class BasePairStats(models.Model):
 
         if not series_y.empty:
             obj.y_quote = series_y.iloc[-1]
+
+        if obj.x_quote and obj.y_quote:
+            success = True
 
         return obj
 
