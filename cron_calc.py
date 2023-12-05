@@ -60,7 +60,9 @@ def cron_memory(market, producer, tickers_list):
         bulk_list.append(obj)
 
         # TODO: Maquina Heroku não aguenta 2000 - quase ocupa toda a memoria
-        if len(bulk_list) > 800:
+        # TODO: Digital Ocean não tanka 800
+        # django.db.utils.OperationalError: FATAL:  the database system is in recovery mode
+        if len(bulk_list) > 500:
             # Grava dados no Banco
             PairStats.objects.bulk_create(bulk_list)
             del bulk_list
@@ -79,9 +81,6 @@ def main():
 
     cron_memory('BOVESPA', b3_producer, ibrx_tickers)
     cron_memory('BINANCE', binance_producer, BINANCE_FUTURES)
-
-    #cron_async('BOVESPA', b3_producer, ibrx_tickers)
-    #cron_async('BINANCE', binance_producer, BINANCE_FUTURES)
 
     # Telegram
     send_msg()

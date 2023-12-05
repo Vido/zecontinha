@@ -112,10 +112,10 @@ BINANCE_FUTURES = [
     "STMXUSDT",
     "DENTUSDT",
     "CELRUSDT",
+    "HOTUSDT",
 ]
 
 foo = [
-    "HOTUSDT",
     "MTLUSDT",
     "OGNUSDT",
     "NKNUSDT",
