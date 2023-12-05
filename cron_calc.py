@@ -11,13 +11,13 @@ from django.conf import settings
 #from coint.ibov import CARTEIRA_IBOV
 from coint.ibrx100 import  CARTEIRA_IBRX
 from coint.b3_calc import download_hquotes
-from coint.b3_calc import gera_pares
 from coint.b3_calc import producer as b3_producer
 
 from coint.binance_futures import BINANCE_FUTURES
 from coint.binance_calc import download_hquotes_binance
 from coint.binance_calc import producer as binance_producer
 
+from coint.common import gera_pares
 from dashboard.models import PairStats, CointParams, Quotes
 from bot import send_msg
 
@@ -60,7 +60,7 @@ def cron_memory(market, producer, tickers_list):
         bulk_list.append(obj)
 
         # TODO: Maquina Heroku não aguenta 2000 - quase ocupa toda a memoria
-        if len(bulk_list) > 1000:
+        if len(bulk_list) > 800:
             # Grava dados no Banco
             PairStats.objects.bulk_create(bulk_list)
             del bulk_list
@@ -71,13 +71,21 @@ def cron_memory(market, producer, tickers_list):
     PairStats.objects.bulk_create(bulk_list)
     del bulk_list
 
-if __name__ == '__main__':
+def main():
 
     download_b3()
     download_binance()
     #cron_b3_fast()
+
     cron_memory('BOVESPA', b3_producer, ibrx_tickers)
     cron_memory('BINANCE', binance_producer, BINANCE_FUTURES)
 
+    #cron_async('BOVESPA', b3_producer, ibrx_tickers)
+    #cron_async('BINANCE', binance_producer, BINANCE_FUTURES)
+
     # Telegram
     send_msg()
+
+if __name__ == '__main__':
+    #asyncio.run(main())
+    main()

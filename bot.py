@@ -25,8 +25,7 @@ chat_id_list = [
 
 def select_pair(n):
     # TODO: Revisar
-    qs = PairStats.objects.filter(success=True)
-    qs = qs.filter(
+    qs = PairStats.objects.filter(
       Q(model_params__120__adf_pvalue__lte=0.05) & (Q(model_params__120__zscore__gte=2.0) | Q(model_params__120__zscore__lte=-2.0)))
     return random.sample(set(qs), n)
 
@@ -44,7 +43,7 @@ def get_plot(x_ticker, y_ticker):
 def send_msg():
 
     if settings.DEBUG:
-        ps_qs = PairStats.objects.filter(success=True)
+        ps_qs = PairStats.objects.all()
         ps = ps_qs[0]
     else:
         ps = select_pair(1)[0]

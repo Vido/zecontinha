@@ -102,9 +102,6 @@ class BasePairStats(models.Model):
     x_quote = models.FloatField(null=True, blank=True)
     y_quote = models.FloatField(null=True, blank=True)
 
-    # TODO: Revisar
-    success = models.BooleanField(default=False)
-
     model_params = models.JSONField(default=dict)
     beta_rotation = ArrayField(models.FloatField(), blank=True, null=True)
 
@@ -125,9 +122,6 @@ class BasePairStats(models.Model):
 
         if not series_y.empty:
             obj.y_quote = series_y.iloc[-1]
-
-        if obj.x_quote and obj.y_quote:
-            success = True
 
         return obj
 
@@ -173,9 +167,9 @@ class PairStats(BasePairStats):
             seconds = duration.total_seconds()
             stats = {
                     'duration': duration,
-                    'hours': seconds // 3600,
-                    'minutes': (seconds % 3600) // 60,
-                    'seconds': seconds % 60
+                    'hours': int(seconds // 3600),
+                    'minutes': int((seconds % 3600) // 60),
+                    'seconds': int(seconds % 60)
             }
         except Exception as e:
             print(e)

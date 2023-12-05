@@ -122,13 +122,13 @@
     <tr id="pair_{{ obj.id }}">
         <td class="pair"><a href="{% url 'pair-stats' x=obj.ticker_x y=obj.ticker_y %}" target="popup" onclick="window.open('{% url 'pair-stats' x=obj.ticker_x y=obj.ticker_y %}','popup','width=1920,height=720'); return false;">{{ obj.display_pair }}</a></td>
         <td class="quote">{{ obj.x_quote|floatformat:2 }}x{{ obj.y_quote|floatformat:2 }}</td>
-        <td class="adf">{% get_param obj period "adf_pvalue" 5 %}</td>
-        <td class="zscore">{% get_param obj period "zscore" 5 %}</td>
-        <td class="beta">{% get_param obj period "ang_coef" 5 %}</td>
-        <td class="half_life ">{% get_param obj period "half_life" 5 %}</td>
-        <td class="hurst">{% get_param obj period "hurst" 5 %}</td>
+        <td class="adf">{% get_param obj period "adf_pvalue" 3 %}</td>
+        <td class="zscore">{% get_param obj period "zscore" 2 %}</td>
+        <td class="beta">{% get_param obj period "ang_coef" 2 %}</td>
+        <td class="half_life ">{% get_param obj period "half_life" 2 %}</td>
+        <td class="hurst">{% get_param obj period "hurst" 3 %}</td>
         <td>{% n_p_coint obj 0.1 %}</td>
-        <td>{% if obj.success %}<button style="margin-top: 5px" type="button" class="btn btn-primary" data-toggle="modal" data-target="#EnterTradeModal" onclick="fillModalForm({{ obj.id }});">Entrar</button>{% endif %}</td>
+        <td><button style="margin-top: 5px" type="button" class="btn btn-primary" data-toggle="modal" data-target="#EnterTradeModal" onclick="fillModalForm({{ obj.id }});">Entrar</button></td>
     </tr>
     {% empty %}
         <td colspan="6">Nenhum dado encontrado</td>

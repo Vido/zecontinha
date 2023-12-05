@@ -18,7 +18,7 @@ from dashboard.models import PairStats, CointParams, Quotes
 from dashboard.forms import PERIODOS_CALCULO
 
 from coint.cointegration import clean_timeseries
-from coint.common import gera_pares, generic_producer
+from coint.common import generic_producer
 
 def download_hquotes_binance(tickers_list):
 

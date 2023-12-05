@@ -5,7 +5,11 @@ register = template.Library()
 @register.simple_tag
 def get_param(obj, period, key, floatformat, *args, **kwargs):
     fformat = '%.' + '%d' % int(floatformat) + 'f'
-    return fformat % obj.model_params[period][key]
+    try:
+        string = fformat % obj.model_params[period][key]
+    except TypeError:
+        string = 'N/A'
+    return string
 
 # TODO, fazer class e CSS
 @register.simple_tag

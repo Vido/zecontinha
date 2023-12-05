@@ -65,10 +65,10 @@ class FilterForm(forms.Form):
         label='ADF P-Valor (max)',
         #default=0.1,
         required=True,
-        max_value=1,
-        min_value=0,
+        max_value=0.5,
+        min_value=0.01,
         initial=0.1,
-        widget=forms.NumberInput(attrs={'id': 'form_pavalue', 'step': "0.01"})
+        widget=forms.NumberInput(attrs={'id': 'form_pvalue', 'step': "0.01"})
         )
     zscore = forms.FloatField(
         label='|Z-Score|',
@@ -77,12 +77,18 @@ class FilterForm(forms.Form):
         max_value=6,
         min_value=0,
         initial=2.0,
-        widget=forms.NumberInput(attrs={'id': 'form_pavalue', 'step': "0.01"})
+        widget=forms.NumberInput(attrs={'id': 'form_zscore', 'step': "0.1"})
         )
-    success = forms.BooleanField(
-        label='Calc. c/ Sucesso',
+    n_per_coint = forms.FloatField(
+        label='Número Periodos Cointegrados',
+        #default=0.1,
         required=False,
-        initial=True)
+        max_value=11,
+        min_value=0,
+        initial=5,
+        widget=forms.NumberInput(attrs={'id': 'form_npercoint', 'step': "1"})
+        )
+
 
 class B3FilterForm(FilterForm):
     # Todo fazer autocomplete
@@ -109,21 +115,19 @@ class BinanceFilterForm(FilterForm):
 class StatsForm(forms.Form):
     pvalue = forms.FloatField(
         label='ADF P-Valor (max)',
-        #default=0.1,
         required=True,
-        max_value=1,
-        min_value=0,
+        max_value=0.5,
+        min_value=0.01,
         initial=0.1,
         widget=forms.NumberInput(attrs={'id': 'form_pavalue', 'step': "0.01"})
         )
     zscore = forms.FloatField(
         label='|Z-Score|',
-        #default=0.1,
         required=True,
         max_value=6,
         min_value=0,
         initial=2.0,
-        widget=forms.NumberInput(attrs={'id': 'form_pavalue', 'step': "0.01"})
+        widget=forms.NumberInput(attrs={'id': 'form_pavalue', 'step': "0.1"})
         )
     periodo = forms.ChoiceField(
         label='Periodos',

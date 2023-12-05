@@ -40,16 +40,6 @@ def generic_producer(pair, market, series_x, series_y):
 
     return copy.deepcopy(obj_pair)
 
+from itertools import permutations
 def gera_pares(carteira_tickers):
-
-    # Forma todos os pares sem repetição
-    set_pairs = set([])
-    for i in carteira_tickers:
-        for k in carteira_tickers:
-            if i == k:
-                continue
-            set_pairs.add((i, k))
-
-    print('Total:', len(set_pairs), 'pares')
-
-    return set_pairs
+    return permutations(carteira_tickers, 2)

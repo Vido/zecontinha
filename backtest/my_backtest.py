@@ -88,7 +88,6 @@ def calcula_modelo(refdate, pair, market='BINANCE'):
         try:
             test_params = coint_model(slice_x, slice_y)
             obj_data = CointParams.create(True, test_params)
-            obj_pair.success = True
         except MissingDataError:
             obj_data = CointParams.create(False, test_params)
             print('FAIL - MissingDataError - OLS ADF', periodo)
