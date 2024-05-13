@@ -26,7 +26,9 @@ chat_id_list = [
 def select_pair(n):
     # TODO: Revisar
     qs = PairStats.objects.filter(
-      Q(model_params__120__adf_pvalue__lte=0.05) & (Q(model_params__120__zscore__gte=2.0) | Q(model_params__120__zscore__lte=-2.0)))
+      Q(model_params__120__adf_pvalue__lte=0.05) &
+      Q(model_params__120__hurst__lte=0.3) &
+      (Q(model_params__120__zscore__gte=2.0) | Q(model_params__120__zscore__lte=-2.0)))
     return random.sample(set(qs), n)
 
 def get_plot(x_ticker, y_ticker):
@@ -48,7 +50,7 @@ def send_msg():
     else:
         ps = select_pair(1)[0]
 
-    msg_template = "<b>Estudo Long&Short do dia:</b>\n" \
+    msg_template = "<b>Estudo Long&Short (v2):</b>\n" \
               'Par: <a href="%s">%s x %s</a>\n' \
               "N# Periodos: %d\n" \
               "Z-Score: %.2f\n" \
