@@ -60,16 +60,28 @@ class FilterForm(forms.Form):
         label='Periodos',
         required=True,
         choices=PERIODOS_CHOICE
-        )
+    )
+
     pvalue = forms.FloatField(
         label='ADF P-Valor (max)',
         #default=0.1,
         required=True,
         max_value=0.5,
+        min_value=0.005,
+        initial=0.05,
+        widget=forms.NumberInput(attrs={'id': 'form_pvalue', 'step': "0.005"})
+    )
+
+    hurst = forms.FloatField(
+        label='Hurst (max)',
+        #default=0.1,
+        required=False,
+        max_value=1.0,
         min_value=0.01,
-        initial=0.1,
-        widget=forms.NumberInput(attrs={'id': 'form_pvalue', 'step': "0.01"})
-        )
+        initial=0.3,
+        widget=forms.NumberInput(attrs={'id': 'form_hurst', 'step': "0.01"})
+    )
+
     zscore = forms.FloatField(
         label='|Z-Score|',
         #default=0.1,
@@ -78,7 +90,8 @@ class FilterForm(forms.Form):
         min_value=0,
         initial=2.0,
         widget=forms.NumberInput(attrs={'id': 'form_zscore', 'step': "0.1"})
-        )
+    )
+
     n_per_coint = forms.FloatField(
         label='Número Periodos Cointegrados',
         #default=0.1,
@@ -87,7 +100,7 @@ class FilterForm(forms.Form):
         min_value=0,
         initial=5,
         widget=forms.NumberInput(attrs={'id': 'form_npercoint', 'step': "1"})
-        )
+    )
 
 
 class B3FilterForm(FilterForm):
