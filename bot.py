@@ -42,13 +42,7 @@ def get_plot(x_ticker, y_ticker):
   r = coint_model(series_x[-120:], series_y[-120:])
   return fp_savefig(_get_residuals_plot(r['OLS']))
 
-def send_msg():
-
-    if settings.DEBUG:
-        ps_qs = PairStats.objects.all()
-        ps = ps_qs[0]
-    else:
-        ps = select_pair(1)[0]
+def get_msg_plot(ps):
 
     msg_template = "<b>Estudo Long&Short (v2):</b>\n" \
               'Par: <a href="%s">%s x %s</a>\n' \
@@ -74,6 +68,22 @@ def send_msg():
 
     plot = get_plot(ps.ticker_x, ps.ticker_y)
 
+    return msg_str, plot 
+
+
+if __name__ == '__main__':
+        
+    try:
+        if settings.DEBUG:
+            ps_qs = PairStats.objects.all()
+            ps = ps_qs[0]
+        else:
+            ps = select_pair(1)[0]
+        msg_str, plot = get_msg_plot(ps)
+
+    except Exception as e:
+        msg_str, plot = str(e), None
+
     bot.send_message(
             chat_id='@pythonfinancas',
             #chat_id=-1001389579694, # "Python e Finanças"
@@ -81,13 +91,9 @@ def send_msg():
             text=msg_str,
             parse_mode=telegram.ParseMode.HTML)
 
-    bot.send_photo(
-            chat_id='@pythonfinancas',
-            message_thread_id=9973,
-            photo=plot)
-
-    # Bug do retorno do ponteiro
-    plot.seek(0)
-
-if __name__ == '__main__':
-    send_msg()
+    if plot:
+        bot.send_photo(
+                chat_id='@pythonfinancas',
+                message_thread_id=9973,
+                photo=plot)
+        plot.seek(0) # Bug do retorno do ponteiro
