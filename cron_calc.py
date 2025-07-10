@@ -49,7 +49,7 @@ def cron_b3_fast():
     PairStats.objects.bulk_create(bulk_list)
     del bulk_list
 
-def cron_memory(market, producer, tickers_list):
+def cron_memory(market, producer, tickers_list, size=500):
     """
     Funcao que prioriza o uso limitado da memoria.
     """
@@ -63,7 +63,7 @@ def cron_memory(market, producer, tickers_list):
         # TODO: Maquina Heroku não aguenta 2000 - quase ocupa toda a memoria
         # TODO: Digital Ocean não tanka 800
         # django.db.utils.OperationalError: FATAL:  the database system is in recovery mode
-        if len(bulk_list) > 500:
+        if len(bulk_list) > size:
             # Grava dados no Banco
             PairStats.objects.bulk_create(bulk_list)
             del bulk_list
@@ -81,7 +81,7 @@ def main():
     #cron_b3_fast()
 
     cron_memory('BOVESPA', b3_producer, ibrx_tickers)
-    cron_memory('BINANCE', binance_producer, BINANCE_FUTURES)
+    cron_memory('BINANCE', binance_producer, BINANCE_FUTURES, size=250)
 
     # Telegram
     send_msg()
