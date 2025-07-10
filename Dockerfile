@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.4
-FROM python:3.7.17-bullseye
+FROM python:3.9.22-bullseye
 
 
 # Cron
