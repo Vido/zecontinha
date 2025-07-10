@@ -70,8 +70,7 @@ def get_msg_plot(ps):
 
     return msg_str, plot 
 
-
-if __name__ == '__main__':
+def send_msg():
         
     try:
         if settings.DEBUG:
@@ -97,3 +96,6 @@ if __name__ == '__main__':
                 message_thread_id=9973,
                 photo=plot)
         plot.seek(0) # Bug do retorno do ponteiro
+
+if __name__ == '__main__':
+    send_msg()
