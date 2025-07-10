@@ -3,7 +3,6 @@ name = "zecontinha"
 version = "0.1.2"
 description = ""
 authors = ["Vido <vidov8@gmail.com>"]
-package-mode = false
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -11,16 +10,16 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.dependencies]
 python = "3.9.22"
-pandas = "1.3.5"
+pandas = "2.2.3"
 yfinance = "0.2.65"
 dj-database-url = "2.1.0"
-gunicorn = "21.2.0"
+gunicorn = "23.0.0"
 python-telegram-bot = "13.15"
 python-binance = "1.0.17"
-matplotlib = "3.5.0"
-psycopg2 = "2.9.5"
-psycopg-binary = "3.1.8"
-statsmodels = "0.13.5"
+matplotlib = "3.9.4"
+psycopg2 = "2.9.10"
+psycopg-binary = "3.2.9"
+statsmodels = "0.14.5"
 hurst="0.0.5"
 whitenoise = "4.1.4"
 python-decouple = "3.8"

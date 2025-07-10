@@ -23,4 +23,4 @@ ADD ./ /src
 ENV POETRY_VIRTUALENVS_CREATE=false
 RUN pip install poetry && \
     poetry config virtualenvs.create false && \
-    poetry install --no-interaction --no-ansi
+    poetry install --no-interaction --no-ansi --no-root
