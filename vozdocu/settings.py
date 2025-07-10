@@ -70,6 +70,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'dashboard.context_processors.g_recaptcha_site_key_processor',
+                'dashboard.context_processors.system_status',
             ],
             'debug': DEBUG,
         },

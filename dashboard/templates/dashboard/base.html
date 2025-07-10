@@ -73,31 +73,38 @@
 
                 {% block descricao %}
                 <p class="description">Esse sistema é uma prova de conceito sobre PairTrading (a.k.a Long and Short) baseado em Cointegração. Nenhuma recomendação de compra ou venda é feita neste sistema. Os dados são obtidos com 15 minutos de atraso. Não garantimos que os dados apresentados estão corretos. Não me responsabilizo pelo mal uso das informações.</p>
-                <p class="description">
-                Status do Sistema:
-                <ul>
-                    <li><b>Pares B3:</b> {{ pairs_b3 }} de {{ b3_total }}</li>
-                    {% if b3_et %}
-                    <li>Atualização: {{ b3_update|date:"D Y/M/d G:i:s e" }}</li>
-                    <li>Tempo Estimado: {{ b3_et.hours }}h {{ b3_et.minutes }}</li>
-                    {% else %}
-                    <li>Atualização: N/A</li>
-                    <li>Tempo Estimado: N/A</li>
-                    {% endif %}
-                    <li><b>Pares Binance:</b> {{ pairs_binance }} de {{ binance_total }}</li>
-                    {% if binance_et %}
-                    <li>Atualização: {{ binance_update|date:"D Y/M/d G:i:s e" }}</li>
-                    <li>Tempo Estimado: {{ binance_et.hours }}h {{ binance_et.minutes }}</li>
-                    {% else %}
-                    <li>Atualização: N/A</li>
-                    <li>Tempo Estimado: N/A</li>
-                    {% endif %}
-                </ul>
-                </p>
-
+		<div style="text-align: center; margin-left: auto; margin-right: auto;">
                 <iframe width="560" height="315" src="https://www.youtube.com/embed/jK01uO-Awi4?si=ehlhN8woqZUYgOz-&amp;start=385" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-
+		</div>
                 {% endblock descricao %}
+
+		{% block status %}
+		<table style="width: 75%">
+		    <thead>
+			<tr>
+			<th>🖥️ Status do Sistema</th>
+			<th>Quantidade de Pares</th>
+			<th>Ultima Atualização</th>
+			<th>Duração do Processo</th>
+			</tr>
+		    </thead>
+		    <tbody>
+			<tr>
+			    <th>B3</th>
+			    <td>{{ pairs_b3 }} de {{ b3_total }}{% if pairs_b3 == b3_total %}✅{% else %}⚠️ {% endif %}</td>
+			    <td>{{ b3_update|date:"Y/M/d G:i:s e" }}</td>
+			    <td>{% if b3_et %}{{ b3_et.hours }}h {{ b3_et.minutes }}min{% else %} N/A ❌ {% endif %}</td>
+			</tr>
+			<tr>
+			    <th>Binance</th>
+			    <td>{{ pairs_binance }} de {{ binance_total }}{% if pairs_binance == binance_total %}✅{% else %}⚠️ {% endif %}</td>
+			    <td>{{ b3_update|date:"Y/M/d G:i:s e" }}</td>
+			    <td>{% if binance_et %}{{ binance_et.hours }}h {{ binance_et.minutes }}min{% else %} N/A ❌ {% endif %}</td>
+			</tr>
+		    </tbody>
+		</table>
+		<hr>
+		{% endblock status %}
 
                 {% block content %}
 
@@ -109,13 +116,13 @@
 
                 <h2>Demonstração</h2>
                 <form action="" method="POST">
-                    {% csrf_token %}
                     <div style="float:left">
+                    {% csrf_token %}
                     <table>
                     {{ form.as_table }}
                     </table>
                     </div>
-                    <div style="margin-left:20px; float:left">
+                    <div style="margin-left:40px; float:left">
                         {% include 'dashboard/recaptcha.html' with btn_callback='enableBtn' submit_label='Analisar' %}
                     </div>
                 </form>
@@ -128,7 +135,7 @@
                 <hr>
                 <h2>Resultados</h2>
                     {% include 'dashboard/ols.html'%}
-                    {% include 'dashboard/adf.html'%}
+		    {% include 'dashboard/analysis.html' %}
                     {% include 'dashboard/dados.html'%}
                 {% endif %}
                 {% endblock result_analise %}
