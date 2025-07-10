@@ -27,7 +27,7 @@ def get_market_data(tickers, period, interval):
         period = period,
         interval = interval,
         #group_by = 'ticker',
-        #auto_adjust = True,
+        auto_adjust = False,
         #prepost = False,
         threads = False,
         #proxy = None
@@ -54,7 +54,7 @@ def asBase64(my_plt):
     _buffer = BytesIO()
     my_plt.savefig(_buffer, format='png', bbox_inches='tight')
     _buffer.seek(0)
-    return base64.encodestring(_buffer.read())
+    return base64.encodebytes(_buffer.read())
 
 def fp_savefig(my_plt):
     _buffer = BytesIO()

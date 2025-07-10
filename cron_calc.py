@@ -36,6 +36,7 @@ def download_binance():
     Quotes.objects.filter(market='BINANCE').delete()
     download_hquotes_binance(BINANCE_FUTURES)
 
+# TODO: cron_fast and cron_memory could be one functio - with parameters or a strategy pattern
 def cron_b3_fast():
     """
     Funcao bastante rapida, porem usa muita memoria do Heroku (640Mb / 512Mb)
