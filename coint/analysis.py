@@ -45,7 +45,6 @@ def analysis_model(ts):
         rshd = None
         print(e)
 
-    print(rshd)
     return {
         'OUHL': half_life,
         'RSHD': rshd,
