@@ -57,6 +57,7 @@ services:
     links:
       - postgres
     depends_on:
+      - app
       - postgres
     networks:
       - zecontinha_network
