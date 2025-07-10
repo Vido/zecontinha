@@ -317,10 +317,17 @@ description = "Hurst exponent evaluation and R/S-analysis"
 category = "main"
 optional = false
 python-versions = "*"
+develop = false
 
 [package.dependencies]
 numpy = ">=1.10"
 pandas = ">=0.18"
+
+[package.source]
+type = "git"
+url = "https://github.com/Mottl/hurst.git"
+reference = "master"
+resolved_reference = "6ca8f5fb5a8dacfbec4c2df9485d267f3cef25a6"
 
 [[package]]
 name = "idna"
@@ -876,7 +883,7 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "1.1"
 python-versions = "3.9.22"
-content-hash = "adc5d746fdcf32c21839adfe2b2c24660a4f29d99f339085422140bfa2eca719"
+content-hash = "54e407d927fa412fe3ea3e6fe8b164caef887259e72490d6529c846be7184d7e"
 
 [metadata.files]
 aiohappyeyeballs = [
@@ -1455,9 +1462,7 @@ gunicorn = [
     {file = "gunicorn-23.0.0-py3-none-any.whl", hash = "sha256:ec400d38950de4dfd418cff8328b2c8faed0edb0d517d3394e457c317908ca4d"},
     {file = "gunicorn-23.0.0.tar.gz", hash = "sha256:f014447a0101dc57e294f6c18ca6b40227a4c90e9bdb586042628030cba004ec"},
 ]
-hurst = [
-    {file = "hurst-0.0.5-py3-none-any.whl", hash = "sha256:d163f11fe2318aa8979c921d6667b8dfd6205c629924fefbed68505357cf995e"},
-]
+hurst = []
 idna = [
     {file = "idna-3.10-py3-none-any.whl", hash = "sha256:946d195a0d259cbba61165e88e65941f16e9b36ea6ddb97f00452bae8b1287d3"},
     {file = "idna-3.10.tar.gz", hash = "sha256:12f65c9b470abda6dc35cf8e63cc574b1c52b11df2c86030af0ac09b01b13ea9"},
