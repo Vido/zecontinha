@@ -3,7 +3,7 @@ import statsmodels.api as sm
 from hurst import compute_Hc
 
 def half_life_calc(ts):
-    lagged = ts.shift(1).fillna(method="bfill")
+    lagged = ts.shift(1).bfill()
     delta = ts-lagged
     X = sm.add_constant(lagged.values)
     ar_res = sm.OLS(delta, X).fit()
