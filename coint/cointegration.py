@@ -124,8 +124,9 @@ def get_beta_plot(beta_list):
 
 def get_plot_context(series_x, series_y, ativo_x, ativo_y):
     context = {}
-    #
     test_params = coint_model(series_x, series_y)
+    context.update(test_params)
+
     #
     scatter_plot = get_scatter_plot(
         series_x, series_y, test_params['OLS'],
@@ -133,12 +134,18 @@ def get_plot_context(series_x, series_y, ativo_x, ativo_y):
     #
     residuals_plot = get_residuals_plot(
         test_params['OLS'])
+
     #
+    from coint.analysis import analysis_model
+    analysis_params = analysis_model(
+            test_params['OLS'].resid)
+    context.update(analysis_params)
+
     # TODO: Usar HighCharts
     raw_plot = get_raw_plot(series_x, series_y,
         xlabel=ativo_x, ylabel=ativo_y)
+
     #
-    context.update(test_params)
     context.update({
         'ativo_x': ativo_x,
         'ativo_y': ativo_y,

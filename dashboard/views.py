@@ -1,4 +1,3 @@
-from itertools import permutations
 
 from django.views.generic.edit import FormView, FormMixin
 from django.views.generic.list import ListView
@@ -41,21 +40,7 @@ class Index(RecaptchaMixin, FormView):
     success_url = '/'
 
     def get_context_data(self, *args, **kwargs):
-
-        from coint.ibrx100 import  CARTEIRA_IBRX
-        from coint.binance_futures import BINANCE_FUTURES
-
-        context = super(FormMixin, self).get_context_data(*args, **kwargs)
-        context['pairs_b3'] = PairStats.objects.filter(market='BOVESPA').count()
-        context['pairs_binance'] = PairStats.objects.filter(market='BINANCE').count()
-        context['b3_total'] = len(list(permutations(CARTEIRA_IBRX, 2)))
-        context['binance_total'] = len(list(permutations(BINANCE_FUTURES, 2)))
-        #
-        context['b3_update'] = PairStats.last_update(market='BOVESPA')
-        context['binance_update'] = PairStats.last_update(market='BINANCE')
-        context['b3_et'] = PairStats.estimated_time(market='BOVESPA')
-        context['binance_et'] = PairStats.estimated_time(market='BINANCE')
-
+        context = super(FormView, self).get_context_data(*args, **kwargs)
         return context
 
     def form_valid(self, form):

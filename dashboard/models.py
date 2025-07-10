@@ -47,10 +47,13 @@ class CointParams(models.Model):
 
         try:
             obj.half_life = analysis_params['OUHL']
-            obj.hurst = analysis_params['RSH']
         except Exception as e:
-            #print(e)
-            raise
+            print(e)
+
+        try:
+            obj.hurst = analysis_params['RSHD'][0]
+        except Exception as e:
+            print(e)
 
         return obj
 

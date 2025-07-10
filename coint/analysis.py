@@ -11,6 +11,10 @@ def half_life_calc(ts):
 
     return half_life, ar_res
 
+def hurst_calc(ts):
+    H, c, data = compute_Hc(ts, kind='random_walk', simplified=True, min_sample=40)
+    return H, 2 - H
+
 def beta_rotation(series_x, series_y, window=40):
     beta_list = []
     try:
@@ -29,21 +33,20 @@ def beta_rotation(series_x, series_y, window=40):
 
 def analysis_model(ts):
 
-    half_life = None
     try:
         half_life, _ = half_life_calc(ts)
     except Exception as e:
+        half_life = None
         print(e)
 
-    H = None
     try:
-        # todo remover restricao se a lib mudar
-        if len(ts) >= 100:
-            H, c, data = compute_Hc(ts, kind='random_walk', simplified=True)
+        rshd = hurst_calc(ts)
     except Exception as e:
+        rshd = None
         print(e)
 
+    print(rshd)
     return {
         'OUHL': half_life,
-        'RSH': H,
+        'RSHD': rshd,
     }

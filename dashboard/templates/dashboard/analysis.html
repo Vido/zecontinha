@@ -1,0 +1,50 @@
+<img src="data:image/png;base64, {{residuals_plot}}"/>
+<h3>Augmented Dickey–Fuller test</h3>
+<table style="width: 100%">
+    <tr>
+        <th>Test statistic</th>
+        <th>p-value</th>
+        <th>critical values</th>
+    </tr>
+    <tr>
+        <td>{{ ADF.0|floatformat:3 }}</td>
+	{% widthratio ADF.1 1 100 as ppercent%}
+	<td>{{ ADF.1|floatformat:4 }} <b>({{ ppercent|floatformat:0 }}%)</b></td>
+        <td>
+            <ul>
+            {% for key, value in ADF.4.items %}
+                <li>{{ key }}: {{ value|floatformat:3 }}</li>
+            {% endfor %}
+            </ul>
+        </td>
+    </tr>
+</table>
+
+<h3>Memória de Longo Prazo</h3>
+{% if RSHD %}
+<table style="width: 50%">
+    <tr>
+        <th>Hurst exponent</th>
+        <th>Fractal dimension</th>
+    </tr>
+    <tr>
+        <td>{{ RSHD.0|floatformat:2 }}</td>
+        <td>{{ RSHD.1|floatformat:2 }}</td>
+    </tr>
+</table>
+{% else %}
+<p>Não foi possível calcular</p>
+{% endif %}
+
+<h3>Reversão á Média</h3>
+{% if OUHL %}
+<table style="width: 25%">
+    <tr>
+        <th>Meia Vida</th>
+        <td>{{ OUHL|floatformat:2 }}</td>
+    </tr>
+</table>
+{% else %}
+<p>Não foi possível calcular</p>
+{% endif %}
+
