@@ -36,52 +36,86 @@ def download_binance():
     Quotes.objects.filter(market='BINANCE').delete()
     download_hquotes_binance(BINANCE_FUTURES)
 
-# TODO: cron_fast and cron_memory could be one functio - with parameters or a strategy pattern
-def cron_b3_fast():
+def cron_process_pairs(
+    market: str,
+    producer,
+    tickers_list: list,
+    mode: str = "sequential",
+    batch_size: int = 500,
+    processes: int = 2
+):
     """
-    Funcao bastante rapida, porem usa muita memoria do Heroku (640Mb / 512Mb)
-    """
-    with Pool(2) as p:
-        bulk_list = p.starmap(b3_producer, enumerate(gera_pares(ibrx_tickers)))
+    Processes pairs of tickers and saves results to the database.
 
-    # Grava dados no Banco
-    PairStats.objects.filter(market='BOVESPA').delete()
-    PairStats.objects.bulk_create(bulk_list)
-    del bulk_list
+    Supports two modes:
+        - "sequential" : processes pairs in batches to save memory.
+        - "multiprocessing" : processes all pairs in parallel (faster but uses more memory).
+    
+    Memory Limits:
+        - Heroku ~2000 pairs
+        - Digital Ocean ~800 pairs
+        
+        django.db.utils.OperationalError: FATAL:  the database system is in recovery mode
+    """
 
-def cron_memory(market, producer, tickers_list, size=500):
-    """
-    Funcao que prioriza o uso limitado da memoria.
-    """
-    # Limpa a Base
+    # Clear old pairs from database
     PairStats.objects.filter(market=market).delete()
-    bulk_list = []
-    for idx, pair in enumerate(gera_pares(tickers_list)):
-        obj = producer(idx, pair)
-        bulk_list.append(obj)
 
-        # TODO: Maquina Heroku não aguenta 2000 - quase ocupa toda a memoria
-        # TODO: Digital Ocean não tanka 800
-        # django.db.utils.OperationalError: FATAL:  the database system is in recovery mode
-        if len(bulk_list) > size:
-            # Grava dados no Banco
+    pairs = list(gera_pares(tickers_list))
+
+    if mode == "multiprocessing":
+        # Faster method, but it uses a lot of Heroku memory: 640MB / 512MB.
+
+        with Pool(processes) as pool:
+            bulk_list = pool.starmap(producer, enumerate(pairs))
+
+        # Save all pairs to the database
+        PairStats.objects.bulk_create(bulk_list)
+        del bulk_list
+
+    elif mode == "sequential":
+        bulk_list = []
+
+        for idx, pair in enumerate(pairs):
+            obj = producer(idx, pair)
+            bulk_list.append(obj)
+
+            if len(bulk_list) >= batch_size:
+                # Save the current batch to free memory
+                PairStats.objects.bulk_create(bulk_list)
+                del bulk_list
+                gc.collect() # Free memory
+                bulk_list = []
+
+        if bulk_list:
+            # Save any remaining pairs to the database
             PairStats.objects.bulk_create(bulk_list)
             del bulk_list
-            gc.collect() # Libera a memória
-            bulk_list = []
 
-    # Grava dados no Banco o restante
-    PairStats.objects.bulk_create(bulk_list)
-    del bulk_list
+    else:
+        raise ValueError(f"Unknown mode: {mode}. Use 'sequential' or 'multiprocessing'.")
+
 
 def main():
 
     download_b3()
     download_binance()
-    #cron_b3_fast()
 
-    cron_memory('BOVESPA', b3_producer, ibrx_tickers)
-    cron_memory('BINANCE', binance_producer, BINANCE_FUTURES, size=250)
+    cron_process_pairs(
+        market='BOVESPA',
+        producer=b3_producer,
+        tickers_list=ibrx_tickers,
+        mode="sequential",
+        batch_size=500
+    )
+
+    cron_process_pairs(
+        market='BINANCE',
+        producer=binance_producer,
+        tickers_list=BINANCE_FUTURES,
+        mode="sequential",
+        batch_size=250
+    )
 
     # Telegram
     send_msg()
