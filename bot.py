@@ -91,11 +91,11 @@ def send_msg():
             parse_mode=telegram.ParseMode.HTML)
 
     if plot:
+        plot.seek(0) # Bug do retorno do ponteiro
         bot.send_photo(
                 chat_id='@pythonfinancas',
                 message_thread_id=9973,
                 photo=plot)
-        plot.seek(0) # Bug do retorno do ponteiro
 
 if __name__ == '__main__':
     send_msg()
