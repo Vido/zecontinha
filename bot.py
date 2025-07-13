@@ -43,32 +43,46 @@ def get_plot(x_ticker, y_ticker):
   return fp_savefig(_get_residuals_plot(r['OLS']))
 
 def get_msg_plot(ps):
-
-    msg_template = "<b>Estudo Long&Short (v2):</b>\n" \
-              'Par: <a href="%s">%s x %s</a>\n' \
-              "N# Periodos: %d\n" \
-              "Z-Score: %.2f\n" \
-              "ADF p-value: %.2f %%\n" \
-              "Ang. Coef.: %.2f\n" \
-              "Half-life: %.2f\n" \
-              "Hurst: %.2f\n" \
+    msg_template = (
+        "<b>Estudo Long&Short (v2):</b>\n"
+        'Par: <a href="%s">%s x %s</a>\n'
+        "N# Periodos: %d\n"
+        "Z-Score: %.2f\n"
+        "ADF p-value: %.2f %%\n"
+        "Ang. Coef.: %.2f\n"
+        "Half-life: %.2f\n"
+        "Hurst: %.2f\n"
+    )
 
     _x = ps.ticker_x.replace('.SA', '')
     _y = ps.ticker_y.replace('.SA', '')
 
+    model_params = ps.model_params.get('120', {})
+
+    zscore = model_params.get('zscore', 0.0)
+
+    adf_pvalue = model_params.get('adf_pvalue')
+    adf_pvalue_pct = adf_pvalue * 100 if adf_pvalue is not None else 0.0
+
+    ang_coef = model_params.get('ang_coef', 0.0)
+    half_life = model_params.get('half_life', 0.0)
+    hurst = model_params.get('hurst', 0.0)
+
     msg_str = msg_template % (
-        'http://zecontinha.com.br/b3/pair_stats/%s.SA/%s.SA' % (_x, _y), _x, _y,
+        f"http://zecontinha.com.br/b3/pair_stats/{_x}.SA/{_y}.SA",
+        _x,
+        _y,
         120,
-        ps.model_params['120']['zscore'],
-        ps.model_params['120']['adf_pvalue'] * 100,
-        ps.model_params['120']['ang_coef'],
-        ps.model_params['120']['half_life'],
-        ps.model_params['120']['hurst'],
-      )
+        zscore,
+        adf_pvalue_pct,
+        ang_coef,
+        half_life,
+        hurst,
+    )
 
     plot = get_plot(ps.ticker_x, ps.ticker_y)
 
-    return msg_str, plot 
+    return msg_str, plot
 
 def send_msg():
         
