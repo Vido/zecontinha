@@ -23,33 +23,36 @@ chat_id_list = [
     -1001389579694, # "Python e Finanças"
 ]
 
-def select_pair(n):
+def get_pairs(
+    adf_pvalue_threshold=0.05,
+    hurst_threshold=0.3,
+    zscore_threshold=2.0,
+    periods=120,
+    order_by_field='hurst' # 'hurst', 'random'
+):
     """
-    Select n random PairStats objects filtered by specific model_params criteria.
-
-    Uses order_by('?') for random sampling in the database.
-
-    Returns a list of PairStats instances or an empty list if none found.
+    Select, filter and order PairStats objects based on statistical thresholds.
     """
+    positive_z_filter = {f'model_params__{periods}__zscore__gte': zscore_threshold}
+    negative_z_filter = {f'model_params__{periods}__zscore__lte': -zscore_threshold}
+    exclude_adf_hurst_filter = {
+        f'model_params__{periods}__adf_pvalue__gte': adf_pvalue_threshold,
+        f'model_params__{periods}__hurst__gte': hurst_threshold,
+    }
 
-    qs = PairStats.objects.filter(
-        model_params__120__adf_pvalue__lte=0.05,
-        model_params__120__hurst__lte=0.3
-    ).filter(
-        Q(model_params__120__zscore__gte=2.0) | Q(model_params__120__zscore__lte=-2.0)
-    )
+    queryset = PairStats.objects.filter(
+        Q(**positive_z_filter) | Q(**negative_z_filter)
+    ).exclude(**exclude_adf_hurst_filter)
 
-    count = qs.count()
-    if count == 0:
-        return []
+    order_by_queries = {
+        'hurst': f'model_params__{periods}__hurst',
+        'random': '?',
+    }
 
-    # If n is greater than count, limit to the maximum available
-    n = min(n, count)
+    order_field = order_by_queries.get(order_by_field, order_by_queries['hurst'])
+    queryset = queryset.order_by(order_field)
 
-    # Random sampling directly in the database
-    random_qs = qs.order_by('?')[:n]
-
-    return list(random_qs)
+    return queryset if queryset.exists() else None
 
 
 def get_plot(x_ticker, y_ticker):
@@ -64,16 +67,15 @@ def get_plot(x_ticker, y_ticker):
   return fp_savefig(_get_residuals_plot(r['OLS']))
 
 def get_msg_plot(ps):
-    msg_template = (
-        "<b>Estudo Long&Short (v2):</b>\n"
-        'Par: <a href="%s">%s x %s</a>\n'
-        "N# Periodos: %d\n"
-        "Z-Score: %.2f\n"
-        "ADF p-value: %.2f %%\n"
-        "Ang. Coef.: %.2f\n"
-        "Half-life: %.2f\n"
-        "Hurst: %.2f\n"
-    )
+
+    msg_template = "<b>Estudo Long&Short (v3):</b>\n" \
+              'Par: <a href="%s">%s x %s</a>\n' \
+              "N# Periodos: %d\n" \
+              "Z-Score: %.2f\n" \
+              "ADF p-value: %.2f %%\n" \
+              "Ang. Coef.: %.2f\n" \
+              "Half-life: %.2f\n" \
+              "Hurst: %.2f\n" \
 
     _x = ps.ticker_x.replace('.SA', '')
     _y = ps.ticker_y.replace('.SA', '')
@@ -112,10 +114,10 @@ def send_msg():
             ps_qs = PairStats.objects.all()
             ps = ps_qs[0]
         else:
-            pairs = select_pair(1)
+            pairs = get_pairs(order_by_field='hurst')
             if not pairs:
                 raise ValueError("No pairs found matching criteria")
-            ps = pairs[0]
+            ps = pairs.first()
         msg_str, plot = get_msg_plot(ps)
 
     except Exception as e:
