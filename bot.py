@@ -1,6 +1,7 @@
 import os
 import sys
 import django
+from collections import defaultdict
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "vozdocu.settings")
 django.setup()
@@ -66,46 +67,42 @@ def get_plot(x_ticker, y_ticker):
   r = coint_model(series_x[-120:], series_y[-120:])
   return fp_savefig(_get_residuals_plot(r['OLS']))
 
-def get_msg_plot(ps):
+def get_html_msg(pair, n_periods=120):
+    msg_template = '\n'.join((
+        '<b>Estudo Long&Short (v3):</b>',
+        'Par: <a href="{url}">{_x} x {_y}</a>',
+        '#Periodos: {n_periods}',
+        'Z-Score: {zscore}',
+        'ADF p-value: {adf_pvalue}',
+        'Ang. Coef.: {ang_coef}',
+        'Half-life: {half_life}',
+        'Hurst: {hurst}',
+    ))
 
-    msg_template = "<b>Estudo Long&Short (v3):</b>\n" \
-              'Par: <a href="%s">%s x %s</a>\n' \
-              "N# Periodos: %d\n" \
-              "Z-Score: %.2f\n" \
-              "ADF p-value: %.2f %%\n" \
-              "Ang. Coef.: %.2f\n" \
-              "Half-life: %.2f\n" \
-              "Hurst: %.2f\n" \
+    # Load model params with default "N/A"
+    params = pair.model_params.get(str(n_periods), {})
+    values = defaultdict(lambda: 'N/A')
+    values.update(params)
 
-    _x = ps.ticker_x.replace('.SA', '')
-    _y = ps.ticker_y.replace('.SA', '')
+    # Define tickers and URL
+    values['_x'] = pair.ticker_x.replace('.SA', '')
+    values['_y'] = pair.ticker_y.replace('.SA', '')
+    values['url'] = f'http://zecontinha.com.br/b3/pair_stats/{values["_x"]}.SA/{values["_y"]}.SA'
+    values['n_periods'] = n_periods
 
-    model_params = ps.model_params.get('120', {})
+    # Handle ADF p-value separately (convert to % if available)
+    adf_pvalue = params.get('adf_pvalue')
+    if adf_pvalue is not None:
+        values['adf_pvalue'] = f'{adf_pvalue * 100:.2f} %'
+    else:
+        values['adf_pvalue'] = 'N/A'
 
-    zscore = model_params.get('zscore', 0.0)
+    # Format all floats to two decimals
+    for key, value in list(values.items()):
+        if isinstance(value, float):
+            values[key] = f'{value:.2f}'
 
-    adf_pvalue = model_params.get('adf_pvalue')
-    adf_pvalue_pct = adf_pvalue * 100 if adf_pvalue is not None else 0.0
-
-    ang_coef = model_params.get('ang_coef', 0.0)
-    half_life = model_params.get('half_life', 0.0)
-    hurst = model_params.get('hurst', 0.0)
-
-    msg_str = msg_template % (
-        f"http://zecontinha.com.br/b3/pair_stats/{_x}.SA/{_y}.SA",
-        _x,
-        _y,
-        120,
-        zscore,
-        adf_pvalue_pct,
-        ang_coef,
-        half_life,
-        hurst,
-    )
-
-    plot = get_plot(ps.ticker_x, ps.ticker_y)
-
-    return msg_str, plot
+    return msg_template.format_map(values)
 
 def send_msg():
         
@@ -118,7 +115,8 @@ def send_msg():
             if not pairs:
                 raise ValueError("No pairs found matching criteria")
             ps = pairs.first()
-        msg_str, plot = get_msg_plot(ps)
+        msg_str = get_html_msg(ps)
+        plot = get_plot(ps.ticker_x, ps.ticker_y)
 
     except Exception as e:
         msg_str, plot = str(e), None
