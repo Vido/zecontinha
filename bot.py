@@ -67,42 +67,33 @@ def get_plot(x_ticker, y_ticker):
   r = coint_model(series_x[-120:], series_y[-120:])
   return fp_savefig(_get_residuals_plot(r['OLS']))
 
-def get_html_msg(pair, n_periods=120):
-    msg_template = '\n'.join((
-        '<b>Estudo Long&Short (v3):</b>',
-        'Par: <a href="{url}">{_x} x {_y}</a>',
-        '#Periodos: {n_periods}',
-        'Z-Score: {zscore}',
-        'ADF p-value: {adf_pvalue}',
-        'Ang. Coef.: {ang_coef}',
-        'Half-life: {half_life}',
-        'Hurst: {hurst}',
-    ))
+def get_msg_plot(ps):
 
-    # Load model params with default "N/A"
-    params = pair.model_params.get(str(n_periods), {})
-    values = defaultdict(lambda: 'N/A')
-    values.update(params)
+    msg_template = "<b>Estudo Long&Short (v3):</b>\n" \
+              'Par: <a href="%s">%s x %s</a>\n' \
+              "N# Periodos: %d\n" \
+              "Z-Score: %.2f\n" \
+              "ADF p-value: %.2f %%\n" \
+              "Ang. Coef.: %.2f\n" \
+              "Half-life: %.2f\n" \
+              "Hurst: %.2f\n" \
 
-    # Define tickers and URL
-    values['_x'] = pair.ticker_x.replace('.SA', '')
-    values['_y'] = pair.ticker_y.replace('.SA', '')
-    values['url'] = f'http://zecontinha.com.br/b3/pair_stats/{values["_x"]}.SA/{values["_y"]}.SA'
-    values['n_periods'] = n_periods
+    _x = ps.ticker_x.replace('.SA', '')
+    _y = ps.ticker_y.replace('.SA', '')
 
-    # Handle ADF p-value separately (convert to % if available)
-    adf_pvalue = params.get('adf_pvalue')
-    if adf_pvalue is not None:
-        values['adf_pvalue'] = f'{adf_pvalue * 100:.2f} %'
-    else:
-        values['adf_pvalue'] = 'N/A'
+    msg_str = msg_template % (
+        'http://zecontinha.com.br/b3/pair_stats/%s.SA/%s.SA' % (_x, _y), _x, _y,
+        120,
+        ps.model_params['120']['zscore'],
+        ps.model_params['120']['adf_pvalue'] * 100,
+        ps.model_params['120']['ang_coef'],
+        ps.model_params['120']['half_life'],
+        ps.model_params['120']['hurst'],
+      )
 
-    # Format all floats to two decimals
-    for key, value in list(values.items()):
-        if isinstance(value, float):
-            values[key] = f'{value:.2f}'
+    plot = get_plot(ps.ticker_x, ps.ticker_y)
 
-    return msg_template.format_map(values)
+    return msg_str, plot 
 
 def send_msg():
         
@@ -129,11 +120,11 @@ def send_msg():
             parse_mode=telegram.ParseMode.HTML)
 
     if plot:
+        plot.seek(0) # Bug do retorno do ponteiro
         bot.send_photo(
                 chat_id='@pythonfinancas',
                 message_thread_id=9973,
                 photo=plot)
-        plot.seek(0) # Bug do retorno do ponteiro
 
 if __name__ == '__main__':
     send_msg()
