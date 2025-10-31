@@ -23,13 +23,37 @@ chat_id_list = [
     -1001389579694, # "Python e Finanças"
 ]
 
-def select_pair(n):
-    # TODO: Revisar
-    qs = PairStats.objects.filter(
-      Q(model_params__120__adf_pvalue__lte=0.05) &
-      Q(model_params__120__hurst__lte=0.3) &
-      (Q(model_params__120__zscore__gte=2.0) | Q(model_params__120__zscore__lte=-2.0)))
-    return random.sample(set(qs), n)
+def get_pairs(
+    adf_pvalue_threshold=0.05,
+    hurst_threshold=0.3,
+    zscore_threshold=2.0,
+    periods=120,
+    order_by_field='hurst' # 'hurst', 'random'
+):
+    """
+    Select, filter and order PairStats objects based on statistical thresholds.
+    """
+    positive_z_filter = {f'model_params__{periods}__zscore__gte': zscore_threshold}
+    negative_z_filter = {f'model_params__{periods}__zscore__lte': -zscore_threshold}
+    exclude_adf_hurst_filter = {
+        f'model_params__{periods}__adf_pvalue__gte': adf_pvalue_threshold,
+        f'model_params__{periods}__hurst__gte': hurst_threshold,
+    }
+
+    queryset = PairStats.objects.filter(
+        Q(**positive_z_filter) | Q(**negative_z_filter)
+    ).exclude(**exclude_adf_hurst_filter)
+
+    order_by_queries = {
+        'hurst': f'model_params__{periods}__hurst',
+        'random': '?',
+    }
+
+    order_field = order_by_queries.get(order_by_field, order_by_queries['hurst'])
+    queryset = queryset.order_by(order_field)
+
+    return queryset if queryset.exists() else None
+
 
 def get_plot(x_ticker, y_ticker):
   from coint.cointegration import fp_savefig, _get_residuals_plot
@@ -44,7 +68,7 @@ def get_plot(x_ticker, y_ticker):
 
 def get_msg_plot(ps):
 
-    msg_template = "<b>Estudo Long&Short (v2):</b>\n" \
+    msg_template = "<b>Estudo Long&Short (v3):</b>\n" \
               'Par: <a href="%s">%s x %s</a>\n' \
               "N# Periodos: %d\n" \
               "Z-Score: %.2f\n" \
@@ -77,7 +101,10 @@ def send_msg():
             ps_qs = PairStats.objects.all()
             ps = ps_qs[0]
         else:
-            ps = select_pair(1)[0]
+            pairs = get_pairs(order_by_field='hurst')
+            if not pairs:
+                raise ValueError("No pairs found matching criteria")
+            ps = pairs.first()
         msg_str, plot = get_msg_plot(ps)
 
     except Exception as e:
