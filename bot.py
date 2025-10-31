@@ -1,6 +1,7 @@
 import os
 import sys
 import django
+from collections import defaultdict
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "vozdocu.settings")
 django.setup()
@@ -105,7 +106,8 @@ def send_msg():
             if not pairs:
                 raise ValueError("No pairs found matching criteria")
             ps = pairs.first()
-        msg_str, plot = get_msg_plot(ps)
+        msg_str = get_html_msg(ps)
+        plot = get_plot(ps.ticker_x, ps.ticker_y)
 
     except Exception as e:
         msg_str, plot = str(e), None
