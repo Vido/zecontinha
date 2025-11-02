@@ -91,9 +91,7 @@ def get_html_msg(ps):
         ps.model_params['120']['hurst'],
       )
 
-    plot = get_plot(ps.ticker_x, ps.ticker_y)
-
-    return msg_str, plot 
+    return msg_str
 
 def send_msg():
         
