@@ -67,7 +67,7 @@ def get_plot(x_ticker, y_ticker):
   r = coint_model(series_x[-120:], series_y[-120:])
   return fp_savefig(_get_residuals_plot(r['OLS']))
 
-def get_msg_plot(ps):
+def get_html_msg(ps):
 
     msg_template = "<b>Estudo Long&Short (v3):</b>\n" \
               'Par: <a href="%s">%s x %s</a>\n' \
