@@ -1,11 +1,10 @@
-version: "3.5"
 services:
   postgres:
     image: postgres:alpine
     container_name: postgres_zecontinha
     restart: always
     volumes:
-      - ./data/db:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
     env_file:
       - ./postgres.env
     #environment:
@@ -24,7 +23,7 @@ services:
     entrypoint: ./entrypoint.sh
     volumes:
       - .:/src/
-      - /var/logs/zecontinha:/srv/logs
+      - zecontinha_logs:/srv/logs
     ports:
       - "8000:8000"
     env_file:
@@ -65,6 +64,10 @@ services:
       resources:
         limits:
           cpus: '0.90'
+
+volumes:
+  postgres_data:
+  zecontinha_logs:
 
 networks:
   zecontinha_network:
