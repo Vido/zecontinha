@@ -1,7 +1,8 @@
 import os
-import sys
 import django
+import asyncio
 from collections import defaultdict
+from asgiref.sync import sync_to_async
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "vozdocu.settings")
 django.setup()
@@ -68,7 +69,6 @@ def get_plot(x_ticker, y_ticker):
   return fp_savefig(_get_residuals_plot(r['OLS']))
 
 def get_html_msg(ps):
-
     msg_template = "<b>Estudo Long&Short (v3):</b>\n" \
               'Par: <a href="%s">%s x %s</a>\n' \
               "N# Periodos: %d\n" \
@@ -93,20 +93,27 @@ def get_html_msg(ps):
 
     return msg_str
 
-def send_msg():
+def _get_msg_and_plot():
+    """
+    Asynchronously fetches cointegrated stock pair data, generates a plot;
+    """
+    if settings.DEBUG:
+        ps_qs = PairStats.objects.all()
+        ps = ps_qs[0]
+    else:
+        pairs = get_pairs(order_by_field='hurst')
+        if not pairs:
+            raise ValueError("No pairs found matching criteria")
+        ps = pairs.first()
         
-    try:
-        if settings.DEBUG:
-            ps_qs = PairStats.objects.all()
-            ps = ps_qs[0]
-        else:
-            pairs = get_pairs(order_by_field='hurst')
-            if not pairs:
-                raise ValueError("No pairs found matching criteria")
-            ps = pairs.first()
-        msg_str = get_html_msg(ps)
-        plot = get_plot(ps.ticker_x, ps.ticker_y)
+    msg_str = get_html_msg(ps)
+    plot = get_plot(ps.ticker_x, ps.ticker_y)
+    
+    return msg_str, plot
 
+async def send_msg():
+    try:
+        msg_str, plot = await sync_to_async(_get_msg_and_plot, thread_sensitive=True)()
     except Exception as e:
         msg_str, plot = str(e), None
 
@@ -115,7 +122,7 @@ def send_msg():
             #chat_id=-1001389579694, # "Python e Finanças"
             message_thread_id=9973,
             text=msg_str,
-            parse_mode=telegram.ParseMode.HTML)
+            parse_mode=telegram.constants.ParseMode.HTML)
 
     if plot:
         plot.seek(0) # Bug do retorno do ponteiro
@@ -125,4 +132,4 @@ def send_msg():
                 photo=plot)
 
 if __name__ == '__main__':
-    send_msg()
+    asyncio.run(send_msg())
