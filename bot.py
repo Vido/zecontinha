@@ -117,7 +117,7 @@ async def send_msg():
     except Exception as e:
         msg_str, plot = str(e), None
 
-    bot.send_message(
+    await bot.send_message(
             chat_id='@pythonfinancas',
             #chat_id=-1001389579694, # "Python e Finanças"
             message_thread_id=9973,
@@ -126,7 +126,7 @@ async def send_msg():
 
     if plot:
         plot.seek(0) # Bug do retorno do ponteiro
-        bot.send_photo(
+        await bot.send_photo(
                 chat_id='@pythonfinancas',
                 message_thread_id=9973,
                 photo=plot)
