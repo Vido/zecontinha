@@ -41,5 +41,5 @@ def generic_producer(pair, market, series_x, series_y):
     return copy.deepcopy(obj_pair)
 
 from itertools import permutations
-def gera_pares(carteira_tickers):
-    return permutations(carteira_tickers, 2)
+def generate_pairs(tickers):
+    return permutations(tickers, 2)
