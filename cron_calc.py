@@ -1,7 +1,7 @@
 import os
 import gc
-import sys
 import django
+import asyncio
 from multiprocessing import Pool
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "vozdocu.settings")
@@ -84,7 +84,7 @@ def main():
     cron_memory('BINANCE', binance_producer, BINANCE_FUTURES, size=250)
 
     # Telegram
-    send_msg()
+    asyncio.run(send_msg())
 
 if __name__ == '__main__':
     #asyncio.run(main())

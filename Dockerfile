@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.4
-FROM python:3.9.22-bullseye
+FROM python:3.12-bullseye
 
 # Cron
 # Add crontab file in the cron directory
