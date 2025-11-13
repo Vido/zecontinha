@@ -111,4 +111,4 @@ if __name__ == '__main__':
     msg_html = get_html_msg(obj)
     plot = get_plot(obj.ticker_x, obj.ticker_y)
 
-    asyncio.run(send_msg())
+    asyncio.run(send_msg(msg_html, plot))
