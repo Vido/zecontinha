@@ -81,11 +81,11 @@ def main():
     #cron_b3_fast()
 
     cron_memory('BOVESPA', b3_producer, ibrx_tickers)
-    cron_memory('BINANCE', binance_producer, BINANCE_FUTURES, size=250)
+    cron_memory('BINANCE', binance_producer, BINANCE_FUTURES, size=300)
 
     # Telegram
-    #asyncio.run(send_msg())
-    send_msg()
+    asyncio.run(send_msg())
+    #send_msg()
 
 if __name__ == '__main__':
     #asyncio.run(main())

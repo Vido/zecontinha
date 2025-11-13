@@ -1,4 +1,5 @@
 import os
+import asyncio
 from collections import defaultdict
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "vozdocu.settings")
@@ -76,7 +77,7 @@ def get_html_msg(obj, periods=120):
 
     return msg_str
 
-def send_msg():
+async def send_msg():
 
     if settings.DEBUG:
         qs = PairStats.objects.all()
@@ -91,19 +92,22 @@ def send_msg():
     msg_str = get_html_msg(obj)
     plot = get_plot(obj.ticker_x, obj.ticker_y)
 
-    bot.send_message(
-        chat_id='@pythonfinancas',
-        #chat_id=-1001389579694, # "Python e Finanças"
-        message_thread_id=9973,
-        text=msg_str,
-        parse_mode=telegram.constants.ParseMode.HTML)
+    async with bot:
+        await bot.send_message(
+            chat_id='@pythonfinancas',
+            #chat_id=-1001389579694, # "Python e Finanças"
+            message_thread_id=9973,
+            text=msg_str,
+            parse_mode=telegram.constants.ParseMode.HTML)
 
-    if plot:
+        if not plot:
+            return
+
         plot.seek(0) # Bug do retorno do ponteiro
-        bot.send_photo(
+        await bot.send_photo(
             chat_id='@pythonfinancas',
             message_thread_id=9973,
             photo=plot)
 
 if __name__ == '__main__':
-    send_msg()
+    asyncio.run(send_msg())
