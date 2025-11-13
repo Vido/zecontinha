@@ -8,6 +8,7 @@ import django
 django.setup()
 
 import telegram
+from telegram.constants import ParseMode
 from decouple import config
 from django.db.models import Q
 from django.conf import settings
@@ -23,8 +24,8 @@ def select_pairs(
     hurst_threshold=0.3,
     zscore_threshold=2.0,
     periods=120,
-    order_by='?'
-):
+    order_by='?'):
+
     positive_z_filter = {f'model_params__{periods}__zscore__gte': zscore_threshold}
     negative_z_filter = {f'model_params__{periods}__zscore__lte': -zscore_threshold}
     exclude_adf_hurst_filter = {
@@ -65,7 +66,7 @@ def get_html_msg(obj, periods=120):
     _y = obj.ticker_y.replace('.SA', '')
     _p = str(periods)
 
-    msg_str = msg_template % (
+    msg_html = msg_template % (
         f'https://zecontinha.com.br/b3/pair_stats/{_x}.SA/{_y}.SA',
         _x, _y, _p,
         obj.model_params[_p]['zscore'],
@@ -75,30 +76,16 @@ def get_html_msg(obj, periods=120):
         obj.model_params[_p]['hurst'],
       )
 
-    return msg_str
+    return msg_html
 
-async def send_msg():
-
-    if settings.DEBUG:
-        qs = PairStats.objects.all()
-    else:
-        qs = select_pairs(
-            order_by=f'model_params__120__hurst')
-
-    if not qs.exists():
-        raise ValueError("No pairs found matching criteria")
-
-    obj = qs.first()
-    msg_str = get_html_msg(obj)
-    plot = get_plot(obj.ticker_x, obj.ticker_y)
-
+async def send_msg(msg_html, plot):
     async with bot:
         await bot.send_message(
             chat_id='@pythonfinancas',
             #chat_id=-1001389579694, # "Python e Finanças"
             message_thread_id=9973,
-            text=msg_str,
-            parse_mode=telegram.constants.ParseMode.HTML)
+            text=msg_html,
+            parse_mode=ParseMode.HTML)
 
         if not plot:
             return
@@ -110,4 +97,18 @@ async def send_msg():
             photo=plot)
 
 if __name__ == '__main__':
+
+    if settings.DEBUG:
+        qs = PairStats.objects.all()
+    else:
+        qs = select_pairs(
+            order_by=f'model_params__120__hurst')
+
+    if not qs.exists():
+        raise ValueError("No pairs found matching criteria")
+
+    obj = qs.first()
+    msg_html = get_html_msg(obj)
+    plot = get_plot(obj.ticker_x, obj.ticker_y)
+
     asyncio.run(send_msg())
