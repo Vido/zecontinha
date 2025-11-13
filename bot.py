@@ -22,7 +22,7 @@ def select_pairs(
     hurst_threshold=0.3,
     zscore_threshold=2.0,
     periods=120,
-    order_by_field='hurst' # 'hurst', 'random'
+    order_by='?'
 ):
     positive_z_filter = {f'model_params__{periods}__zscore__gte': zscore_threshold}
     negative_z_filter = {f'model_params__{periods}__zscore__lte': -zscore_threshold}
@@ -35,13 +35,7 @@ def select_pairs(
         Q(**positive_z_filter) | Q(**negative_z_filter)
     ).exclude(**exclude_adf_hurst_filter)
 
-    order_by_queries = {
-        'hurst': f'model_params__{periods}__hurst',
-        'random': '?',
-    }
-
-    order_field = order_by_queries.get(order_by_field, order_by_queries['hurst'])
-    queryset = queryset.order_by(order_field)
+    return queryset.order_by(order_by)
 
 def get_plot(x_ticker, y_ticker, periods=120):
     from coint.cointegration import fp_savefig, _get_residuals_plot
@@ -87,7 +81,8 @@ def send_msg():
     if settings.DEBUG:
         qs = PairStats.objects.all()
     else:
-        qs = select_pairs(order_by_field='hurst')
+        qs = select_pairs(
+            order_by=f'model_params__120__hurst')
 
     if not qs.exists():
         raise ValueError("No pairs found matching criteria")

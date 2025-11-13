@@ -84,7 +84,8 @@ def main():
     cron_memory('BINANCE', binance_producer, BINANCE_FUTURES, size=250)
 
     # Telegram
-    asyncio.run(send_msg())
+    #asyncio.run(send_msg())
+    send_msg()
 
 if __name__ == '__main__':
     #asyncio.run(main())
