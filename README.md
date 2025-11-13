@@ -1,42 +1,80 @@
 # Zé Continha
 
-O Zé Continha é uma prova de conceito sobre PairTrading (a.k.a Long and Short), baseado em Cointegração.
+Zé Continha is a proof-of-concept project for **PairTrading (Long & Short)** based on **Cointegration**.
 
-* Nenhuma recomendação de compra ou venda é feita neste sistema.
-* Não garantimos que os dados apresentados estão corretos.
-* Não me responsabilizo pelo mal uso das informações.
+⚠️ **Disclaimer**:  
+* No buy/sell recommendations are given.  
+* Data accuracy is **not guaranteed**.  
+* Use the information at your own risk.  
 
-http://zecontinha.com.br/b3/pairs_ranking
+[http://zecontinha.com.br/b3/pairs_ranking](http://zecontinha.com.br/b3/pairs_ranking)
 
-## Instruções para rodar em Desenvolvimento:
-** Requisito ** : Python 3.6
-** Requisito ** : Postgres 10.12, 11.9 ou melhor
+---
 
-Recomendamos criar um database no Postgres, com as configurações típicas para o
-Django
+## ✅ Quick Start
 
-Recomendamos usar o pyenv para obter a versão correta do Python,
-e criar um virtualenv a partir do pyenv.
-
-Recomendamos exportar as seguintes variaveis:
-```
-# Requerido para o Django
-SECRET_KEY=xxx
-DATABASE_URL=postgres://user:password@host:5432/dbname
-
-# Requerido para a parte de Crypto
-BINANCE_APIKEY=xxx
-BINANCE_SECRETKEY=xxx
-
-# Requerido para o Bot de Telegram
-TELEGRAM_API_KEY=xxx
-
-# Requerido para o Postgres
-POSTGRES_DB=xxxx
-POSTGRES_USER=xxxx
-POSTGRES_PASSWORD=xxxx
+### 1. Clone the repository
+```bash
+git clone <your-repo-url>
+cd zecontinha
 ```
 
-Operação padrão Django normal: `manage.py`
+### 2. Set up environment variables
+Copy the examples and edit credentials:
+```bash
+cp postgres.env.example postgres.env
+cp zecontinha.env.example zecontinha.env
+```
 
-`python cron_calc.py` é o comando para gerar os dados do sistema
+**Edit the files** to match your database, API keys, and Telegram credentials.
+
+- `postgres.env`: Postgres database settings  
+- `zecontinha.env`: Django SECRET_KEY, Binance API keys, Telegram API key  
+
+---
+
+### 3. Run the project with Docker 🐋 (recommended)
+Bring up all services (images will be built automatically if needed, and migrations will run):
+```bash
+docker compose up --build -d
+```
+
+The Django project and all services will start automatically.
+
+---
+
+### 4. Running the cron task
+Open a shell in the app container:
+```bash
+docker compose run --rm app bash
+```
+
+Run the cron calculation script:
+```bash
+python cron_calc.py
+```
+
+---
+
+### 5. Run the project normally (without Docker)
+If you want to run the Django project directly on your machine (requires **Python 3.9+**):
+1. Create a virtual environment:
+```bash
+python3.9 -m venv venv
+source venv/bin/activate  # Linux/macOS
+venv\Scripts\activate     # Windows
+```
+2. Install dependencies with Poetry:
+```bash
+poetry install
+```
+3. Apply migrations:
+```bash
+python manage.py migrate
+```
+4. Run the development server:
+```bash
+python manage.py runserver 0.0.0.0:8000
+```
+Visit: [http://localhost:8000](http://localhost:8000)
+
