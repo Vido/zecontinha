@@ -49,13 +49,9 @@ def download_hquotes_binance(tickers_list):
             )
             q_list.append(k[4])
 
-        try:
-            obj = Quotes(market='BINANCE', ticker=ticker,
-                hquotes=q_list, htimestamps=ts_list)
-            obj_buffer.append(obj)
-        except Exception as e:
-            print(e)
-            raise
+        obj = Quotes(market='BINANCE', ticker=ticker,
+            hquotes=q_list, htimestamps=ts_list)
+        obj_buffer.append(obj)
 
     print('failed_tickers', failed_tickers)
     Quotes.objects.bulk_create(obj_buffer)

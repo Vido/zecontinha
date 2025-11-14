@@ -110,6 +110,9 @@ class BasePairStats(models.Model):
 
     timestamp = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return f'{self.ticker_x} x {self.ticker_y}'
+
     @classmethod
     def create(cls, pair, market, series_x=pd.Series([]), series_y=pd.Series([])):
 

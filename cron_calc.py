@@ -53,6 +53,8 @@ def cron_memory(market, producer, tickers_list, size=500):
     gera_pares = enumerate(permutations(tickers_list, 2))
     for idx, pair in gera_pares:
         obj = producer(idx, pair)
+        if not obj:
+            continue
         bulk_list.append(obj)
 
         # TODO: Maquina Heroku não aguenta 2000 - quase ocupa toda a memoria
@@ -81,14 +83,14 @@ def main():
         ibrx_tickers = [ "%s.SA" % s for s in CARTEIRA_IBRX]
         download_hquotes(ibrx_tickers)
         #cron_b3_fast()
-        cron_memory('BOVESPA', b3_producer, ibrx_tickers)
+        cron_memory('BOVESPA', b3_producer, ibrx_tickersi, size=700)
 
     if 'binance' in tasks:
         # TODO: Parametrize delete and download
         Quotes.objects.filter(market='BINANCE').delete()
         download_hquotes_binance(BINANCE_FUTURES)
         # TODO: Exclue tickers with insuficient data
-        cron_memory('BINANCE', binance_producer, BINANCE_FUTURES, size=500)
+        cron_memory('BINANCE', binance_producer, BINANCE_FUTURES, size=700)
 
     if 'cross-assets' in tasks:
         # TODO: Calculates B3xBinance (eg. PETR4 x BTCUSDT, VALE3 x ETHUSDT)

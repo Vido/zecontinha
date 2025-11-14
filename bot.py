@@ -31,6 +31,7 @@ def select_pairs(
     exclude_adf_hurst_filter = {
         f'model_params__{periods}__adf_pvalue__gte': adf_pvalue_threshold,
         f'model_params__{periods}__hurst__gte': hurst_threshold,
+        f'model_params__{periods}__success': False,
     }
 
     queryset = PairStats.objects.filter(
