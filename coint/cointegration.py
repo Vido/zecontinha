@@ -1,5 +1,5 @@
 import base64
-from io import StringIO
+from io import BytesIO
 
 import pandas
 import numpy as np
