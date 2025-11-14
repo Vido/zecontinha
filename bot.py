@@ -98,6 +98,7 @@ async def send_msg(msg_html, plot):
 
 if __name__ == '__main__':
 
+    # TODO: Allow Market as parameter
     if settings.DEBUG:
         qs = PairStats.objects.all()
     else:

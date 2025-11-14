@@ -1,5 +1,6 @@
 import os
 import gc
+import sys
 import django
 import asyncio
 from multiprocessing import Pool
@@ -20,21 +21,6 @@ from coint.binance_calc import producer as binance_producer
 from coint.common import gera_pares
 from dashboard.models import PairStats, CointParams, Quotes
 from bot import send_msg
-
-if settings.DEBUG:
-    CARTEIRA_IBRX = CARTEIRA_IBRX[:5] # DEBUG
-    BINANCE_FUTURES = BINANCE_FUTURES[:5] # DEBUG
-
-ibrx_tickers = [ "%s.SA" % s for s in CARTEIRA_IBRX]
-
-def download_b3():
-    # Limpa a Base
-    Quotes.objects.filter(market='BOVESPA').delete()
-    download_hquotes(ibrx_tickers)
-
-def download_binance():
-    Quotes.objects.filter(market='BINANCE').delete()
-    download_hquotes_binance(BINANCE_FUTURES)
 
 # TODO: cron_fast and cron_memory could be one functio - with parameters or a strategy pattern
 def cron_b3_fast():
@@ -75,13 +61,32 @@ def cron_memory(market, producer, tickers_list, size=500):
     del bulk_list
 
 def main():
+    tasks = ['b3', 'binance']
+    if len(sys.argv) > 1:
+        assert sys.argv[1] in tasks, f"sys.argv[1] must be: {'or '.join(tasks)}"
+        tasks = sys.argv[1]
 
-    download_b3()
-    download_binance()
-    #cron_b3_fast()
+    if settings.DEBUG:
+        CARTEIRA_IBRX = CARTEIRA_IBRX[:5] # DEBUG
+        BINANCE_FUTURES = BINANCE_FUTURES[:5] # DEBUG
 
-    cron_memory('BOVESPA', b3_producer, ibrx_tickers)
-    cron_memory('BINANCE', binance_producer, BINANCE_FUTURES, size=300)
+    if 'b3' in tasks:
+        # Limpa a Base
+        Quotes.objects.filter(market='BOVESPA').delete()
+        ibrx_tickers = [ "%s.SA" % s for s in CARTEIRA_IBRX]
+        download_hquotes(ibrx_tickers)
+        #cron_b3_fast()
+        cron_memory('BOVESPA', b3_producer, ibrx_tickers)
+
+    if 'binance' in tasks:
+        # TODO: Parametrize delete and download
+        Quotes.objects.filter(market='BINANCE').delete()
+        download_hquotes_binance(BINANCE_FUTURES)
+        cron_memory('BINANCE', binance_producer, BINANCE_FUTURES, size=300)
+
+    if 'cross-assets' in tasks:
+        # TODO: Calculates B3xBinance (eg. PETR4 x BTCUSDT, VALE3 x ETHUSDT)
+        raise NotImplemented
 
 if __name__ == '__main__':
     main()
