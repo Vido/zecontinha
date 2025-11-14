@@ -69,6 +69,8 @@ volumes:
   postgres_data:
   zecontinha_logs:
 
+
+# REMEMBER: docker network create zecontinha_network
 networks:
   zecontinha_network:
-    name: zecontinha_network
+    external: true

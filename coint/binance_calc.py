@@ -34,7 +34,7 @@ def download_hquotes_binance(tickers_list):
         try:
             # fetch weekly klines since it listed
             klines = client.get_historical_klines(
-                ticker, Client.KLINE_INTERVAL_1DAY, "9 Jul, 2020")
+                ticker, Client.KLINE_INTERVAL_1DAY, "9 Jul, 2023")
         except BinanceAPIException as e:
             failed_tickers.append(ticker)
             print(e)

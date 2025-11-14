@@ -1,6 +1,6 @@
 # http://www.b3.com.br/pt_br/market-data-e-indices/indices/indices-amplos/indice-brasil-100-ibrx-100-composicao-da-carteira.htm
 
-# Carteira dia 02/12/2023
+# Carteira dia 09/06/2025
 CARTEIRA_IBRX = [
     'ALOS3',
     'ABEV3',
