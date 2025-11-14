@@ -39,7 +39,3 @@ def generic_producer(pair, market, series_x, series_y):
         obj_pair.model_params[periodo] = model_to_dict(obj_data)
 
     return copy.deepcopy(obj_pair)
-
-from itertools import permutations
-def gera_pares(carteira_tickers):
-    return permutations(carteira_tickers, 2)

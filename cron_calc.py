@@ -4,13 +4,14 @@ import sys
 import django
 import asyncio
 from multiprocessing import Pool
+from itertools import permutations
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "vozdocu.settings")
 django.setup()
 
 from django.conf import settings
 #from coint.ibov import CARTEIRA_IBOV
-from coint.ibrx100 import  CARTEIRA_IBRX
+from coint.ibrx100 import CARTEIRA_IBRX
 from coint.b3_calc import download_hquotes
 from coint.b3_calc import producer as b3_producer
 
@@ -18,17 +19,23 @@ from coint.binance_futures import BINANCE_FUTURES
 from coint.binance_calc import download_hquotes_binance
 from coint.binance_calc import producer as binance_producer
 
-from coint.common import gera_pares
 from dashboard.models import PairStats, CointParams, Quotes
 from bot import send_msg
+
+if settings.DEBUG:
+    CARTEIRA_IBRX = CARTEIRA_IBRX[:5] # DEBUG
+    BINANCE_FUTURES = BINANCE_FUTURES[:5] # DEBUG
+    #BINANCE_FUTURES += ['SRMUSDT', 'DOTUSDT', 'QTUMUSDT']
 
 # TODO: cron_fast and cron_memory could be one functio - with parameters or a strategy pattern
 def cron_b3_fast():
     """
     Funcao bastante rapida, porem usa muita memoria do Heroku (640Mb / 512Mb)
     """
+
+    gera_pares = enumerate(permutations(ibrx_tickers, 2))
     with Pool(2) as p:
-        bulk_list = p.starmap(b3_producer, enumerate(gera_pares(ibrx_tickers)))
+        bulk_list = p.starmap(b3_producer, gera_pares)
 
     # Grava dados no Banco
     PairStats.objects.filter(market='BOVESPA').delete()
@@ -42,7 +49,9 @@ def cron_memory(market, producer, tickers_list, size=500):
     # Limpa a Base
     PairStats.objects.filter(market=market).delete()
     bulk_list = []
-    for idx, pair in enumerate(gera_pares(tickers_list)):
+
+    gera_pares = enumerate(permutations(tickers_list, 2))
+    for idx, pair in gera_pares:
         obj = producer(idx, pair)
         bulk_list.append(obj)
 
@@ -66,10 +75,6 @@ def main():
         assert sys.argv[1] in tasks, f"sys.argv[1] must be: {'or '.join(tasks)}"
         tasks = sys.argv[1]
 
-    if settings.DEBUG:
-        CARTEIRA_IBRX = CARTEIRA_IBRX[:5] # DEBUG
-        BINANCE_FUTURES = BINANCE_FUTURES[:5] # DEBUG
-
     if 'b3' in tasks:
         # Limpa a Base
         Quotes.objects.filter(market='BOVESPA').delete()
@@ -82,7 +87,8 @@ def main():
         # TODO: Parametrize delete and download
         Quotes.objects.filter(market='BINANCE').delete()
         download_hquotes_binance(BINANCE_FUTURES)
-        cron_memory('BINANCE', binance_producer, BINANCE_FUTURES, size=300)
+        # TODO: Exclue tickers with insuficient data
+        cron_memory('BINANCE', binance_producer, BINANCE_FUTURES, size=500)
 
     if 'cross-assets' in tasks:
         # TODO: Calculates B3xBinance (eg. PETR4 x BTCUSDT, VALE3 x ETHUSDT)

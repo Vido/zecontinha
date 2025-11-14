@@ -1,7 +1,7 @@
 import base64
 from io import StringIO
-from io import BytesIO
 
+import pandas
 import numpy as np
 import yfinance as yf
 import matplotlib.pyplot as mplt
@@ -9,10 +9,13 @@ import statsmodels.api as sm
 from statsmodels.tsa.stattools import adfuller
 
 def drop_nan(a):
-    return a[~np.isnan(a)]
+    try:
+        return a[~np.isnan(a)]
+    except:
+        return pandas.Series([], [])
 
 def clean_timeseries(x, y):
-    x, y = drop_nan(x), drop_nan(y),
+    x, y = drop_nan(x), drop_nan(y)
     intersc = list(set.intersection(set(x.index), set(y.index)))
     newx = x[intersc].sort_index()
     newy = y[intersc].sort_index()
