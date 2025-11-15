@@ -32,13 +32,13 @@ ibrx_tickers = [ "%s.SA" % s for s in CARTEIRA]
 
 
 def producer(idx, pair, market='BOVESPA'):
-
+    """ Uses data from global market_data variable
+        TODO: This should be called: producer_memory
+    """
     print(idx, pair)
-
     _x = market_data[('Close', pair[0])]
     _y = market_data[('Close', pair[1])]
     series_x, series_y = clean_timeseries(_x, _y)
-
     return generic_producer(pair, market, series_x, series_y)
 
 market_data = None
@@ -46,12 +46,12 @@ market_data = None
 def download_hquotes(carteira_tickers):
     global market_data
 
+    # TODO: Review
     # Faz Download 5y
     data = get_market_data(carteira_tickers, '5y', '1d')
     market_data = data[-260:]
 
-    # Faz o calculo
-    obj_buffer = []
+    obj_buffer, failed_tickers = [], []
     for idx, ticker in enumerate(carteira_tickers):
         series_x = data[('Close', ticker)]
         try:
@@ -59,9 +59,10 @@ def download_hquotes(carteira_tickers):
                 hquotes=series_x.values.tolist(), htimestamps=series_x.index.tolist())
             obj_buffer.append(obj)
         except Exception as e:
-            print(e)
+            failed_tickers.append(ticker)
+            print(ticker, e)
             #raise
+            continue
 
+    print('failed_tickers', failed_tickers)
     Quotes.objects.bulk_create(obj_buffer)
-
-    #return market_data

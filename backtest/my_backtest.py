@@ -22,7 +22,7 @@ from dashboard.forms import PERIODOS_CALCULO
 from backtest.models import PairStats
 
 from coint.cointegration import coint_model, beta_rotation, clean_timeseries
-from coint.binance_calc import download_hquotes_binance
+from coint.binance_calc import download_hquotes as download_hquotes_binance
 
 # Objetos carregado em memória
 qsquotes = Quotes.objects.all()

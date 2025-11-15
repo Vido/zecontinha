@@ -11,7 +11,8 @@ from coint.cointegration import coint_model
 
 def generic_producer(pair, market, series_x, series_y):
 
-    if 40 >= len(series_x) or 40 >= len(series_y):
+    n = min(PERIODOS_CALCULO, default=60)
+    if n >= len(series_x) or n >= len(series_y):
         # zero-size array to reduction operation maximum which has no identity
         # Series length must be greater or equal to min_sample=40
         return None

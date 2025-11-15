@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import os
 import gc
 import sys
@@ -16,7 +18,7 @@ from coint.b3_calc import download_hquotes
 from coint.b3_calc import producer as b3_producer
 
 from coint.binance_futures import BINANCE_FUTURES
-from coint.binance_calc import download_hquotes_binance
+from coint.binance_calc import download_hquotes as download_hquotes_binance
 from coint.binance_calc import producer as binance_producer
 
 from dashboard.models import PairStats, CointParams, Quotes
@@ -25,7 +27,6 @@ from bot import send_msg
 if settings.DEBUG:
     CARTEIRA_IBRX = CARTEIRA_IBRX[:5] # DEBUG
     BINANCE_FUTURES = BINANCE_FUTURES[:5] # DEBUG
-    #BINANCE_FUTURES += ['SRMUSDT', 'DOTUSDT', 'QTUMUSDT']
 
 # TODO: cron_fast and cron_memory could be one functio - with parameters or a strategy pattern
 def cron_b3_fast():
@@ -45,6 +46,16 @@ def cron_b3_fast():
 def cron_memory(market, producer, tickers_list, size=500):
     """
     Funcao que prioriza o uso limitado da memoria.
+
+    History:
+    - First version: Heroku (Free)
+    - Max batch 2000
+
+    - Secound Version: DigitalOcean (1cpu and 2Gb RAM)
+    - This server was shared with other aplications
+    - There is ~ 1.2Gb RAM used
+    - Early max batch 500 - 800 was too much
+    - Current 700
     """
     # Limpa a Base
     PairStats.objects.filter(market=market).delete()
@@ -57,9 +68,6 @@ def cron_memory(market, producer, tickers_list, size=500):
             continue
         bulk_list.append(obj)
 
-        # TODO: Maquina Heroku não aguenta 2000 - quase ocupa toda a memoria
-        # TODO: Digital Ocean não tanka 800
-        # django.db.utils.OperationalError: FATAL:  the database system is in recovery mode
         if len(bulk_list) > size:
             # Grava dados no Banco
             PairStats.objects.bulk_create(bulk_list)
@@ -83,7 +91,7 @@ def main():
         ibrx_tickers = [ "%s.SA" % s for s in CARTEIRA_IBRX]
         download_hquotes(ibrx_tickers)
         #cron_b3_fast()
-        cron_memory('BOVESPA', b3_producer, ibrx_tickersi, size=700)
+        cron_memory('BOVESPA', b3_producer, ibrx_tickers, size=700)
 
     if 'binance' in tasks:
         # TODO: Parametrize delete and download

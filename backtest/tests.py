@@ -1,7 +1,7 @@
 from django.test import TestCase
 
 # Create your tests here.
-from coint.binance_calc import download_hquotes_binance
+from coint.binance_calc import download_hquotes as download_hquotes_binance
 
 
 class BacktestTestCase(TestCase):

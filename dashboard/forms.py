@@ -8,6 +8,8 @@ from coint import cointegration
 drop_nan = cointegration.drop_nan
 clean_timeseries = cointegration.clean_timeseries
 
+# TODO: Move this variables to coint/config.py
+
 #PERIODO_YFINANCE = ['1d', '5d', '1mo', '3mo', '6mo', '1y', '2y', '5y', '10y', 'ytd', 'max']
 PERIODO_YFINANCE = ['1mo', '3mo', '6mo', '1y']
 # DADOS INTRADAY VEM COM NAN POR CAUSA DO LEILAO
@@ -26,9 +28,9 @@ BINANCE_ATIVOS_CHOICE = list(zip(BINANCE_FUTURES, BINANCE_FUTURES))
 
 
 class InputForm(forms.Form):
-    # Todo fazer autocomplete
+    # TODO: fazer autocomplete
     ativo_x = forms.ChoiceField(choices=B3_ATIVOS_CHOICE)
-    # Todo fazer autocomplete
+    # TODO: fazer autocomplete
     ativo_y = forms.ChoiceField(choices=B3_ATIVOS_CHOICE)
     periodo = forms.ChoiceField(choices=PERIODO_CHOICE)
     intervalo = forms.ChoiceField(choices=INTERVALO_CHOICE)
@@ -96,7 +98,7 @@ class FilterForm(forms.Form):
         label='Número Periodos Cointegrados',
         #default=0.1,
         required=False,
-        max_value=11,
+        max_value=len(PERIODOS_CALCULO),
         min_value=0,
         initial=5,
         widget=forms.NumberInput(attrs={'id': 'form_npercoint', 'step': "1"})
@@ -137,7 +139,7 @@ class StatsForm(forms.Form):
     zscore = forms.FloatField(
         label='|Z-Score|',
         required=True,
-        max_value=6,
+        max_value=5,
         min_value=0,
         initial=2.0,
         widget=forms.NumberInput(attrs={'id': 'form_pavalue', 'step': "0.1"})

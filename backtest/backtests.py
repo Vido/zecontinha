@@ -8,7 +8,7 @@ import pandas as pd
 from backtesting import Backtest, Strategy
 
 from dashboard.models import Quotes
-from coint.binance_calc import download_hquotes_binance
+from coint.binance_calc import download_hquotes as download_hquotes_binance
 from coint.cointegration import clean_timeseries
 
 class PairTradingCointegration(Strategy):
