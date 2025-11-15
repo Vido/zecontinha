@@ -20,7 +20,6 @@ services:
     image: zecontinha_base
     # RFC 1034/1035 -> No _ on hostname
     container_name: zecontinha
-    entrypoint: ./entrypoint.sh
     volumes:
       - .:/src/
       - zecontinha_logs:/srv/logs
@@ -48,7 +47,7 @@ services:
     image: zecontinha_base
     container_name: cron_zecontinha
     restart: unless-stopped
-    entrypoint: ./entrypoint_cron.sh
+    command: cron -f
     volumes:
       - .:/src/
     env_file:
@@ -68,7 +67,6 @@ services:
 volumes:
   postgres_data:
   zecontinha_logs:
-
 
 # REMEMBER: docker network create zecontinha_network
 networks:
