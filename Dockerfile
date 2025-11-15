@@ -1,37 +1,35 @@
 # syntax=docker/dockerfile:1.4
 FROM python:3.12-bookworm
 
-# Cron
-# Add crontab file in the cron directory
-ADD ./cron.d/tasks-cron /etc/cron.d/tasks-cron
-# Give execution rights on the cron job
-RUN chmod 0644 /etc/cron.d/tasks-cron
-# Create the log file to be able to run tail
-RUN touch /var/log/cron.log
-
-# Install Cron
-RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
-    apt-get -y install cron && \
-    pip install --upgrade pip
-
-# # Run the command on container startup
-# RUN cron && tail -f /var/log/cron.log
-
 WORKDIR /src
-ADD ./ /src
 
-# POETRY
+ENV DEBIAN_FRONTEND=noninteractive
 ENV POETRY_VIRTUALENVS_CREATE=false
-RUN pip install poetry && \
-    poetry config virtualenvs.create false && \
-    poetry install --no-interaction --no-ansi --no-root
+ENV PYTHONPATH="/src/bin:${PYTHONPATH}"
 
-# SEC hardening
-RUN DEBIAN_FRONTEND=noninteractive apt-get remove --purge -y build-essential g++ && \
-	apt-get autoremove -y && \
-	apt-get clean && rm -rf /var/lib/apt/lists/* && \
-	pip cache purge
-	# pip uninstall -y build-dependency
+# TODO: make a ./src in to store the project files
+COPY ./ /src
+
+RUN apt-get update && \
+    apt-get -y install cron && \
+    pip install --upgrade pip && \
+    pip install poetry && \
+    poetry config virtualenvs.create false && \
+    poetry install --no-interaction --no-ansi --no-root && \
+    apt-get remove --purge -y build-essential gcc g++ && \
+    apt-get autoremove -y && \
+    apt-get clean && rm -rf /var/lib/apt/lists/* && \
+    pip cache purge
+    # pip uninstall -y build-dependency
+
+
+# Cron
+RUN ln -sf /src/bin/cron_calc.py /usr/local/bin/cron_calc && \
+    ln -sf /src/bin/bot.py /usr/local/bin/bot && \
+    ln -sf /src/cron.d/tasks-cron /etc/cron.d/tasks-cron && \
+    chmod +x /src/bin/*.py  && \
+    chmod 0644 /etc/cron.d/tasks-cron && \
+    touch /var/log/cron.log
 
 ENTRYPOINT ["./bin/entrypoint.sh"]
 

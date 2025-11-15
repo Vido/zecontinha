@@ -44,14 +44,10 @@ The Django project and all services will start automatically.
 ---
 
 ### 4. Running the cron task
-Open a shell in the app container:
 ```bash
-docker compose run --rm app bash
-```
-
-Run the cron calculation script:
-```bash
-python cron_calc.py
+docker exec -it cron_zecontinha cron_calc
+# docker exec -it cron_zecontinha cron_calc b3
+# docker exec -it cron_zecontinha cron_calc binance
 ```
 
 ---

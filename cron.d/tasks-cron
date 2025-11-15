@@ -7,10 +7,9 @@ BASH_ENV=/container.env
 
 # B3 Rodar depois do fechamento do Brasil
 # Servidor nos EUA está 3 horas na frente do Brasil
-30 21 * * * root /usr/local/bin/python /src/cron_calc.py b3 >> /var/log/cron.log 2>&1 && /usr/local/bin/python /src/bot.py >> /var/log/cron.log 2>&1
+30 21 * * * root cron_calc.py b3 >> /var/log/cron.log 2>&1 && bot.py >> /var/log/cron.log 2>&1
 
 # Binance pode rodar qualquer horaŕio
-30 09 * * * root /usr/local/bin/python /src/cron_calc.py binance >> /var/log/cron.log 2>&1 && /usr/local/bin/python /src/bot.py >> /var/log/cron.log 2>&1
-
+30 09 * * * root cron_calc.py binance >> /var/log/cron.log 2>&1 && bot.py >> /var/log/cron.log 2>&1
 
 # Don't remove the empty line at the end of this file. It is required to run the cron job

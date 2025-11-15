@@ -1,0 +1,38 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtualenvs
+venv/
+.env/
+.venv/
+
+# Editor junk
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Docker
+Dockerfile*
+docker-compose*
+
+# Django
+staticfiles/
+media/
+*.sqlite3
+
+# Posttgres
+data/*
+
+# Tests / temp
+coverage/
+pytest_cache/
+tmp/
+

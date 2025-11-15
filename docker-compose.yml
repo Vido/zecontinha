@@ -1,10 +1,10 @@
 services:
   postgres:
-    image: postgres:alpine
+    image: postgres:17-alpine
     container_name: postgres_zecontinha
     restart: always
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ./data/db:/var/lib/postgresql/data
     env_file:
       - ./postgres.env
     #environment:
@@ -21,22 +21,13 @@ services:
     # RFC 1034/1035 -> No _ on hostname
     container_name: zecontinha
     volumes:
-      - .:/src/
-      - zecontinha_logs:/srv/logs
+      #  - .:/src/
+      #  TODO: Fix logs - Make a volume
+      - /var/logs/zecontinha:/srv/logs
     ports:
       - "8000:8000"
     env_file:
       - ./zecontinha.env
-    #environment:
-    #  - DATABASE_URL="postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}"
-    #  - SECRET_KEY
-    #  - DATABASE_URL
-    #  - BINANCE_APIKEY
-    #  - BINANCE_SECRETKEY
-    #  - TELEGRAM_API_KEY
-    #  - ENV
-    #  - G_RECAPTCHA_SITE_KEY
-    #  - G_RECAPTCHA_SECRET_KEY
     links:
       - postgres
     depends_on:
@@ -47,9 +38,10 @@ services:
     image: zecontinha_base
     container_name: cron_zecontinha
     restart: unless-stopped
+    entrypoint: bin/cron_entrypoint.sh
     command: cron -f
-    volumes:
-      - .:/src/
+    #volumes:
+    #- .:/src/
     env_file:
       - ./zecontinha.env
     links:
@@ -63,10 +55,6 @@ services:
       resources:
         limits:
           cpus: '0.90'
-
-volumes:
-  postgres_data:
-  zecontinha_logs:
 
 # REMEMBER: docker network create zecontinha_network
 networks:
