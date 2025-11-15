@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: postgres:17-alpine
+    image: postgres:15-alpine
     container_name: postgres_zecontinha
     restart: always
     volumes:
@@ -17,7 +17,7 @@ services:
       - zecontinha_network
   app:
     build: .
-    image: zecontinha_base
+    image: zecontinha_base:latest
     # RFC 1034/1035 -> No _ on hostname
     container_name: zecontinha
     volumes:
@@ -28,14 +28,12 @@ services:
       - "8000:8000"
     env_file:
       - ./zecontinha.env
-    links:
-      - postgres
     depends_on:
       - postgres
     networks:
       - zecontinha_network
   cron:
-    image: zecontinha_base
+    image: zecontinha_base:latest
     container_name: cron_zecontinha
     restart: unless-stopped
     entrypoint: bin/cron_entrypoint.sh
@@ -44,8 +42,6 @@ services:
     #- .:/src/
     env_file:
       - ./zecontinha.env
-    links:
-      - postgres
     depends_on:
       - app
       - postgres
