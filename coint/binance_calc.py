@@ -63,7 +63,6 @@ def producer(idx, pair, market='BINANCE'):
 
         TODO: This should be called: producer_db
     """
-    print(idx, pair)
     try:
         _x = Quotes.objects.get(ticker=pair[0]).get_series()
         _y = Quotes.objects.get(ticker=pair[1]).get_series()

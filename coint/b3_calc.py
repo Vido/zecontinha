@@ -35,7 +35,7 @@ def producer(idx, pair, market='BOVESPA'):
     """ Uses data from global market_data variable
         TODO: This should be called: producer_memory
     """
-    print(idx, pair)
+    # print(idx, pair)
     _x = market_data[('Close', pair[0])]
     _y = market_data[('Close', pair[1])]
     series_x, series_y = clean_timeseries(_x, _y)

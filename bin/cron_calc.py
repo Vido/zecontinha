@@ -51,11 +51,14 @@ def cron_memory(market, producer, tickers_list, size=500):
     - First version: Heroku (Free)
     - Max batch 2000
 
-    - Secound Version: DigitalOcean (1cpu and 2Gb RAM)
+    - Second Version: DigitalOcean (1cpu and 2Gb RAM)
     - This server was shared with other aplications
     - There is ~ 1.2Gb RAM used
-    - Early max batch 500 - 800 was too much
-    - Current 700
+    - Early max batch 500 -> 800 was too much
+    - After some improvements: 700
+
+    - Third Version
+    - After Docker refactor ~ 0.9Gb RAM used
     """
     # Limpa a Base
     PairStats.objects.filter(market=market).delete()
@@ -69,6 +72,7 @@ def cron_memory(market, producer, tickers_list, size=500):
         bulk_list.append(obj)
 
         if len(bulk_list) > size:
+            print(idx, pair)
             # Grava dados no Banco
             PairStats.objects.bulk_create(bulk_list)
             del bulk_list

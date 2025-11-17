@@ -1,15 +1,20 @@
 # Minute Hour Day of Month Month Day of Week Command
 # (0-59)(0-23) (1-31)(1-12 or Jan-Dec)(0-6 or Sun-Sat)
 
-# Chosing shell and loading .env variables
 SHELL=/bin/bash
-BASH_ENV=/container.env
+PATH=/usr/local/bin:/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin
+
+# For debuggin:
+#* * * * * root echo "I'm"  >> /proc/1/fd/1 2>&1 && echo "still alive" >> /proc/1/fd/1 2>&1
+# * * * * * root env | sort >> /proc/1/fd/1 2>&1
+# * * * * * root sanity_check >> /proc/1/fd/1 2>&1
+#* * * * * root date >> /proc/1/fd/1 2>&1
+#* * * * * root date "+\%Y-\%m-\%d \%H:\%M:\%S \%Z" >> /proc/1/fd/1 2>&1
 
 # B3 Rodar depois do fechamento do Brasil
-# Servidor nos EUA está 3 horas na frente do Brasil
-30 21 * * * root cron_calc.py b3 >> /var/log/cron.log 2>&1 && bot.py >> /var/log/cron.log 2>&1
+30 19 * * * root cron_calc.py b3 >> /proc/1/fd/1 2>&1 && bot.py >> /proc/1/fd/1 2>&1
 
 # Binance pode rodar qualquer horaŕio
-30 09 * * * root cron_calc.py binance >> /var/log/cron.log 2>&1 && bot.py >> /var/log/cron.log 2>&1
+00 07 * * * root cron_calc.py binance >> /proc/1/fd/1 2>&1 && bot.py >> /proc/1/fd/1 2>&1
 
 # Don't remove the empty line at the end of this file. It is required to run the cron job
