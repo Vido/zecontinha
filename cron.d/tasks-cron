@@ -12,9 +12,10 @@ PATH=/usr/local/bin:/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin
 #* * * * * root date "+\%Y-\%m-\%d \%H:\%M:\%S \%Z" >> /proc/1/fd/1 2>&1
 
 # B3 Rodar depois do fechamento do Brasil
-30 19 * * * root cron_calc.py b3 >> /proc/1/fd/1 2>&1 && bot.py >> /proc/1/fd/1 2>&1
+30 19 * * * root cron_calc b3 >> /proc/1/fd/1 2>&1 && bot >> /proc/1/fd/1 2>&1
 
 # Binance pode rodar qualquer horaŕio
-00 07 * * * root cron_calc.py binance >> /proc/1/fd/1 2>&1 && bot.py >> /proc/1/fd/1 2>&1
+00 07 * * * root cron_calc binance >> /proc/1/fd/1 2>&1 && bot >> /proc/1/fd/1 2>&1
 
 # Don't remove the empty line at the end of this file. It is required to run the cron job
+
