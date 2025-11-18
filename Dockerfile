@@ -1,13 +1,10 @@
 # syntax=docker/dockerfile:1.4
 FROM python:3.12-bookworm
 
+ENV PYTHONPATH="/src/bin:/src" LANG=en_US.UTF-8 LANGUAGE=en_US.UTF-8 LC_ALL=en_US.UTF-8
+
 WORKDIR /src
-
-ENV PYTHONPATH="/src/bin:/src"
-ENV LANG=en_US.UTF-8 LANGUAGE=en_US.UTF-8 LC_ALL=en_US.UTF-8
-
-# TODO: make a ./src in to store the project files
-COPY ./ /src
+COPY ./poetry.lock ./pyproject.toml /src/
 
 RUN DEBIAN_FRONTEND=noninteractive POETRY_VIRTUALENVS_CREATE=false && \
     apt-get update && \
@@ -23,13 +20,14 @@ RUN DEBIAN_FRONTEND=noninteractive POETRY_VIRTUALENVS_CREATE=false && \
     pip cache purge
     # pip uninstall -y build-dependency
 
+COPY ./cron.d/tasks-cron /etc/cron.d/tasks-cron
+COPY ./src /src
 
 RUN for f in /src/bin/*.py; do \
         base=$(basename "$f" .py); \
         ln -sf "$f" "/usr/local/bin/$base"; \
     done && \
     chmod +x /src/bin/*.py && \
-    ln -sf /src/cron.d/tasks-cron /etc/cron.d/tasks-cron && \
     chmod 0644 /etc/cron.d/tasks-cron
 
 ENTRYPOINT ["./bin/entrypoint.sh"]

@@ -86,8 +86,8 @@ def cron_memory(market, producer, tickers_list, size=500):
 def main():
     tasks = ['b3', 'binance']
     if len(sys.argv) > 1:
-        assert sys.argv[1] in tasks, f"sys.argv[1] must be: {'or '.join(tasks)}"
-        tasks = sys.argv[1]
+        assert sys.argv[1].lower() in tasks, f"sys.argv[1] must be: {'or '.join(tasks)}"
+        tasks = sys.argv[1].lower()
 
     if 'b3' in tasks:
         # Limpa a Base

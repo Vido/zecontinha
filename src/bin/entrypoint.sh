@@ -7,12 +7,12 @@ set -euo pipefail
 #if [[ "${ENV:-}" == "development" ]]; then
 if [[ "${DEBUG:-0}" == "True" ]]; then
     echo "Starting DEVELOPMENT server"
-    exec python manage.py runserver 0.0.0.0:8000
+    exec manage runserver 0.0.0.0:8000
     # bypasses the default CMD
 fi
 
 echo "Running Django collectstatics..."
-python manage.py collectstatic --noinput
+manage collectstatic --noinput
 
 echo "Entrypoint End"
 exec "$@"

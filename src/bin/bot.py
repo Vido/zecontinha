@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import sys
 import asyncio
 from collections import defaultdict
 
@@ -22,23 +23,24 @@ bot = telegram.Bot(telegram_api_key)
 #chat_id = config('TELEGRAM_CHAT_ID', '@pythonfinancas')
 
 def select_pairs(
+    market,
     adf_pvalue_threshold=0.05,
     hurst_threshold=0.3,
     zscore_threshold=2.0,
     periods=120,
     order_by='?'):
 
-    positive_z_filter = {f'model_params__{periods}__zscore__gte': zscore_threshold}
-    negative_z_filter = {f'model_params__{periods}__zscore__lte': -zscore_threshold}
-    exclude_adf_hurst_filter = {
-        f'model_params__{periods}__adf_pvalue__gte': adf_pvalue_threshold,
-        f'model_params__{periods}__hurst__gte': hurst_threshold,
-        f'model_params__{periods}__success': False,
-    }
+    positive_z = Q(**{f'model_params__{periods}__zscore__gte':  zscore_threshold})
+    negative_z = Q(**{f'model_params__{periods}__zscore__lte': -zscore_threshold})
+    z_filter = positive_z | negative_z
+
+    success = Q(**{f'model_params__{periods}__success': False})
+    adf_pvalue = Q(**{f'model_params__{periods}__adf_pvalue__gte': adf_pvalue_threshold})
+    hurst = Q(**{f'model_params__{periods}__hurst__gte': hurst_threshold})
 
     queryset = PairStats.objects.filter(
-        Q(**positive_z_filter) | Q(**negative_z_filter)
-    ).exclude(**exclude_adf_hurst_filter)
+            Q(market=market) & z_filter
+        ).exclude(success | adf_pvalue | hurst)
 
     return queryset.order_by(order_by)
 
@@ -101,11 +103,19 @@ async def send_msg(msg_html, plot):
 
 if __name__ == '__main__':
 
-    # TODO: Allow Market as parameter
+    market = 'BOVESPA'
+    market_map = {'b3': 'BOVESPA', 'binance': 'BINANCE'}
+    if len(sys.argv) > 1:
+        assert sys.argv[1].lower() in market_map.keys(), f"sys.argv[1] must be: {'or '.join(tasks)}"
+        market = market_map.get(sys.argv[1], market)
+
+    if 'BOVESPA' in market:
+        Quotes.objects.filter(market='BOVESPA').delete()
+
     if settings.DEBUG:
-        qs = PairStats.objects.all()
+        qs = PairStats.objects.filter(market=market)
     else:
-        qs = select_pairs(
+        qs = select_pairs(market=market,
             order_by=f'model_params__120__hurst')
 
     if not qs.exists():
