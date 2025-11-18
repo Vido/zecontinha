@@ -45,9 +45,9 @@ The Django project and all services will start automatically.
 
 ### 4. Running the cron task
 ```bash
-docker exec -it cron_zecontinha cron_calc
-# docker exec -it cron_zecontinha cron_calc b3
-# docker exec -it cron_zecontinha cron_calc binance
+docker exec -it cron-zecontinha cron_calc
+# docker exec -it cron-zecontinha cron_calc b3
+# docker exec -it cron-zecontinha cron_calc binance
 ```
 
 ---
