@@ -109,9 +109,6 @@ if __name__ == '__main__':
         assert sys.argv[1].lower() in market_map.keys(), f"sys.argv[1] must be: {'or '.join(tasks)}"
         market = market_map.get(sys.argv[1], market)
 
-    if 'BOVESPA' in market:
-        Quotes.objects.filter(market='BOVESPA').delete()
-
     if settings.DEBUG:
         qs = PairStats.objects.filter(market=market)
     else:

@@ -46,9 +46,7 @@ market_data = None
 def download_hquotes(carteira_tickers):
     global market_data
 
-    # TODO: Review
-    # Faz Download 5y
-    data = get_market_data(carteira_tickers, '5y', '1d')
+    data = get_market_data(carteira_tickers, '2y', '1d')
     market_data = data[-260:]
 
     obj_buffer, failed_tickers = [], []

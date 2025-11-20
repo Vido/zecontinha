@@ -3,26 +3,25 @@
 import os
 import gc
 import sys
-import django
 import asyncio
 from multiprocessing import Pool
 from itertools import permutations
 
+import django
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "vozdocu.settings")
 django.setup()
 
 from django.conf import settings
 #from coint.ibov import CARTEIRA_IBOV
 from coint.ibrx100 import CARTEIRA_IBRX
-from coint.b3_calc import download_hquotes
+from coint.b3_calc import download_hquotes as download_b3
 from coint.b3_calc import producer as b3_producer
 
 from coint.binance_futures import BINANCE_FUTURES
-from coint.binance_calc import download_hquotes as download_hquotes_binance
+from coint.binance_calc import download_hquotes as download_binance
 from coint.binance_calc import producer as binance_producer
 
 from dashboard.models import PairStats, CointParams, Quotes
-from bot import send_msg
 
 if settings.DEBUG:
     CARTEIRA_IBRX = CARTEIRA_IBRX[:5] # DEBUG
@@ -90,18 +89,16 @@ def main():
         tasks = sys.argv[1].lower()
 
     if 'b3' in tasks:
-        # Limpa a Base
         Quotes.objects.filter(market='BOVESPA').delete()
-        ibrx_tickers = [ "%s.SA" % s for s in CARTEIRA_IBRX]
-        download_hquotes(ibrx_tickers)
+        ibrx_tickers = [ f'{t}.SA' for t in CARTEIRA_IBRX]
+        download_b3(ibrx_tickers)
         #cron_b3_fast()
         cron_memory('BOVESPA', b3_producer, ibrx_tickers, size=700)
 
     if 'binance' in tasks:
         # TODO: Parametrize delete and download
         Quotes.objects.filter(market='BINANCE').delete()
-        download_hquotes_binance(BINANCE_FUTURES)
-        # TODO: Exclue tickers with insuficient data
+        download_binance(BINANCE_FUTURES)
         cron_memory('BINANCE', binance_producer, BINANCE_FUTURES, size=700)
 
     if 'cross-assets' in tasks:
