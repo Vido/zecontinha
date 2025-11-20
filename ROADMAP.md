@@ -17,4 +17,5 @@
 ### Bugs
 * Filters don't work
 * FIX: error checking context: can't stat '/home/lvido/workspace/lvido/zecontinha/data/db'
-* bot b3 -> dashboard.models.Quotes.DoesNotExist: Quotes matching query does not exist.
+* ~~bot b3 -> dashboard.models.Quotes.DoesNotExist: Quotes matching query does not exist.~~
+* Scrap data for `CARTEIRA_IBRX` and `BINANCE_FUTURES`
