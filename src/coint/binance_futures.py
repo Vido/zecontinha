@@ -52,7 +52,7 @@ BINANCE_FUTURES = [
     "MKRUSDT",
     "SNXUSDT",
     "DOTUSDT",
-    "DEFIUSDT",
+    #"DEFIUSDT",
     "YFIUSDT",
     "BALUSDT",
     "CRVUSDT",

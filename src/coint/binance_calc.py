@@ -8,6 +8,7 @@ from multiprocessing import Pool
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "vozdocu.settings")
 django.setup()
 
+import pandas as pd
 from decouple import config
 from binance.client import Client
 from binance.exceptions import BinanceAPIException
@@ -20,7 +21,14 @@ from dashboard.forms import PERIODOS_CALCULO
 from coint.cointegration import clean_timeseries
 from coint.common import generic_producer
 
+# TODO:
+# This data does not require Binance Credentials
+# https://data.binance.vision/?prefix=data/spot/daily/klines/
+
+binance_data = None
+
 def download_hquotes(tickers_list):
+    global binance_data
 
     client = Client(
         config('BINANCE_APIKEY'),
@@ -28,7 +36,7 @@ def download_hquotes(tickers_list):
         #tld='us'
     )
 
-    obj_buffer, failed_tickers = [], []
+    obj_buffer, df_buffer, failed_tickers = [], [], []
     for idx, ticker in enumerate(tickers_list):
         print(idx, ticker)
         try:
@@ -51,18 +59,24 @@ def download_hquotes(tickers_list):
 
         obj = Quotes(market='BINANCE', ticker=ticker,
             hquotes=q_list, htimestamps=ts_list)
+        df = pd.DataFrame(q_list, index=pd.to_datetime(ts_list),
+                columns=pd.MultiIndex.from_product([["Close"], [ticker]]))
         obj_buffer.append(obj)
+        df_buffer.append(df)
 
     print('failed_tickers', failed_tickers)
     Quotes.objects.bulk_create(obj_buffer)
 
-def producer(idx, pair, market='BINANCE'):
-    """ Uses data from global market_data variable
-        TODO: Use the same producer as b3 - from global
-        -> better performace - no DB queries
+    binance_data = pd.concat(df_buffer, axis=1, sort=True)
+    binance_data.columns.names = ['Price', 'Ticker']
 
-        TODO: This should be called: producer_db
-    """
+def producer_mem(idx, pair, market='BINANCE'):
+    _x = binance_data[('Close', pair[0])]
+    _y = binance_data[('Close', pair[1])]
+    series_x, series_y = clean_timeseries(_x, _y)
+    return generic_producer(pair, market, series_x, series_y)
+
+def producer_db(idx, pair, market='BINANCE'):
     try:
         _x = Quotes.objects.get(ticker=pair[0]).get_series()
         _y = Quotes.objects.get(ticker=pair[1]).get_series()
@@ -71,5 +85,4 @@ def producer(idx, pair, market='BINANCE'):
         print(pair, mde)
         #raise
         return None
-
     return generic_producer(pair, market, series_x, series_y)

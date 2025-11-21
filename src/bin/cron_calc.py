@@ -19,7 +19,7 @@ from coint.b3_calc import producer as b3_producer
 
 from coint.binance_futures import BINANCE_FUTURES
 from coint.binance_calc import download_hquotes as download_binance
-from coint.binance_calc import producer as binance_producer
+from coint.binance_calc import producer_mem as binance_producer
 
 from dashboard.models import PairStats, CointParams, Quotes
 
