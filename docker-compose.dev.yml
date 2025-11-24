@@ -1,0 +1,8 @@
+services:
+  app:
+    volumes:
+      - ./src:/src
+
+  cron:
+    volumes:
+      - ./src:/src
