@@ -14,21 +14,18 @@ django.setup()
 from django.conf import settings
 #from coint.ibov import CARTEIRA_IBOV
 from coint.ibrx100 import CARTEIRA_IBRX
+from bin.crawler_ibrx100_tickers import load_ibrx100
 from coint.b3_calc import download_hquotes as download_b3
 from coint.b3_calc import producer as b3_producer
 
 from coint.binance_futures import BINANCE_FUTURES
+from bin.load_binance_tickers import load_binance_futures
 from coint.binance_calc import download_hquotes as download_binance
 from coint.binance_calc import producer_mem as binance_producer
 
-from dashboard.models import PairStats, CointParams, Quotes
+from dashboard.models import PairStats, Quotes
 
-if settings.DEBUG:
-    CARTEIRA_IBRX = CARTEIRA_IBRX[:5] # DEBUG
-    BINANCE_FUTURES = BINANCE_FUTURES[:5] # DEBUG
-
-# TODO: cron_fast and cron_memory could be one functio - with parameters or a strategy pattern
-def cron_b3_fast():
+def cron_b3_fast(ibrx_tickers):
     """
     Funcao bastante rapida, porem usa muita memoria do Heroku (640Mb / 512Mb)
     """
@@ -88,13 +85,29 @@ def main():
         assert sys.argv[1].lower() in tasks, f"sys.argv[1] must be: {'or '.join(tasks)}"
         tasks = sys.argv[1].lower()
 
+    # --------------------------------------
+    # Getting B3 and Binance Tickers
+    # --------------------------------------
+    TICKERS_IBRX = asyncio.run(load_ibrx100())
+    BINANCE_FUTURES = asyncio.run(load_binance_futures(limit=100, exclude=["BTCSTUSDT", "GAIBUSDT"]))
+
+    if settings.DEBUG:
+        TICKERS_IBRX = TICKERS_IBRX[:5]
+        BINANCE_FUTURES = BINANCE_FUTURES[:5]
+
+    # --------------------------------------
+    # Processing IBRX (B3 100 tickers) 
+    # --------------------------------------  
     if 'b3' in tasks:
         Quotes.objects.filter(market='BOVESPA').delete()
-        ibrx_tickers = [ f'{t}.SA' for t in CARTEIRA_IBRX]
+        ibrx_tickers = [f'{t}.SA' for t in TICKERS_IBRX]
         download_b3(ibrx_tickers)
-        #cron_b3_fast()
+        #cron_b3_fast(ibrx_tickers)
         cron_memory('BOVESPA', b3_producer, ibrx_tickers, size=700)
 
+    # --------------------------------------
+    # Processing Binance Futures
+    # --------------------------------------
     if 'binance' in tasks:
         # TODO: Parametrize delete and download
         Quotes.objects.filter(market='BINANCE').delete()
