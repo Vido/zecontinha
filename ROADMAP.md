@@ -12,7 +12,7 @@
 * Migrate from Poetry to UV
 * ~~Application source should be inside `{$PROJECT_PATH}/src`~~
 * ~~Docker should `COPY` only the `{$PROJECT_PATH}/src` dir - NOT `./`~~
-* Allow developement to mount ./src into /src
+* ~~Allow developement to mount ./src into /src~~
 
 ### Bugs
 * Filters don't work
