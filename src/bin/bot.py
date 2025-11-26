@@ -48,7 +48,7 @@ def select_pairs(
 def select_top_pairs(qs, periods=120, top_n=3):
     """
     Lower is better: |zscore|, adf, half-life
-    Higher is better: hurst (mean reversion measure)
+    Higher is better: hurst
 
     Returns the top N objects (default 3).
     """
