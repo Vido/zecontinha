@@ -138,6 +138,10 @@ async def load_ibrx100() -> list[str]:
     # Validate
     if not tickers:
         return DEFAULT_TICKERS
+    
+    # Always including "BOVA11"
+    if "BOVA11" not in tickers:
+        tickers.append("BOVA11")
 
     return tickers
 
