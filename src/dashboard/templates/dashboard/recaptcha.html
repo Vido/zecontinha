@@ -1,6 +1,6 @@
     <div class="g-recaptcha" data-sitekey="{{ g_recaptcha_site_key }}" data-callback="{{ btn_callback }}"></div>
     <br/>
-{% if user.is_superuser %}
+{% if True %}
     <button type="submit" value="Submit" id="form_btn">{{ submit_label }}</button> 
 {% else %}
     <button disabled type="submit" value="Submit" id="form_btn">{{ submit_label }}</button>

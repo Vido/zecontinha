@@ -5,7 +5,7 @@
 ### Interface
 * Find better names for `cron_calc.py` and `bot.py`
 * ~~`bot.py` should allow for MARKET~~
-* `bot.py` should send a new msg with top3 pairs 
+~~* `bot.py` should send a new msg with top3 pairs~~ 
 *  `cron_calc.py` and `bot.py` should be `manage.py` commands
 
 ### Docker and Build
