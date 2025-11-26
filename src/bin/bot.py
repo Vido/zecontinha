@@ -44,6 +44,48 @@ def select_pairs(
 
     return queryset.order_by(order_by)
 
+
+def select_top_pairs(qs, periods=120, top_n=3):
+    """
+    Lower is better: |zscore|, adf, half-life
+    Higher is better: hurst (mean reversion measure)
+
+    Returns the top N objects (default 3).
+    """
+
+    scored = []
+
+    for obj in qs:
+        params = obj.model_params.get(str(periods), {})
+        if not params:
+            continue
+
+        try:
+            z = abs(params.get("zscore", 999))
+            adf = params.get("adf_pvalue", 1)
+            ang = abs(params.get("ang_coef", 999))
+            hl = params.get("half_life", 999)
+            hurst = params.get("hurst", 0)
+        except Exception:
+            continue
+
+        # ---- Ranking formula ----
+        score = (
+            z * 2.0 +
+            adf * 5.0 +
+            hl * 0.1 +
+            ang * 0.5 -
+            hurst * 3.0
+        )
+        # Lower score = better pair
+
+        scored.append((score, obj))
+
+    # Sort by score ascending
+    scored.sort(key=lambda x: x[0])
+
+    return [o for _, o in scored[:top_n]]
+
 def get_plot(x_ticker, y_ticker, periods=120):
     from coint.cointegration import fp_savefig, _get_residuals_plot
     from coint.cointegration import coint_model, clean_timeseries
@@ -101,6 +143,22 @@ async def send_msg(msg_html, plot):
             message_thread_id=9973,
             photo=plot)
 
+def build_top_pairs_message(qs, periods=120, top_n=3):
+    top = select_top_pairs(qs, periods=periods, top_n=top_n)
+
+    ranks = ["🥇", "🥈", "🥉"]
+    lines = [f"TOP {top_n} Melhores Pares:"]
+
+    for idx, obj in enumerate(top):
+        x = obj.ticker_x.replace(".SA", "")
+        y = obj.ticker_y.replace(".SA", "")
+        link = f"https://zecontinha.com.br/b3/pair_stats/{x}.SA/{y}.SA"
+
+        prefix = ranks[idx] if idx < 3 else f"{idx+1}."
+        lines.append(f'{prefix} <a href="{link}">{x} x {y}</a>')
+
+    return "\n".join(lines)
+
 if __name__ == '__main__':
 
     market = 'BOVESPA'
@@ -117,6 +175,9 @@ if __name__ == '__main__':
 
     if not qs.exists():
         raise ValueError("No pairs found matching criteria")
+
+    top3_message = build_top_pairs_message(qs, periods=120, top_n=3)
+    asyncio.run(send_msg(top3_message, plot=None))
 
     obj = qs.first()
     msg_html = get_html_msg(obj)
