@@ -46,7 +46,7 @@ sqlparse==0.3.1
 statsmodels==0.11.1
 tornado==6.0.4
 traitlets==4.3.2
-urllib3==1.25.3
+urllib3==2.6.0
 virtualenv==16.6.2
 virtualenv-clone==0.5.3
 wcwidth==0.1.7
