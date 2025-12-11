@@ -44,6 +44,66 @@ def select_pairs(
 
     return queryset.order_by(order_by)
 
+
+def select_top_pairs(queryset, periods=120, top_n=3):
+    """
+    Lower is better: |zscore|, adf, half-life
+    Higher is better: hurst
+
+    Returns the top N objects (default 3).
+    """
+
+    ranked = []
+
+    for obj in queryset:
+        params = obj.model_params.get(str(periods), {})
+        if not params:
+            continue
+
+        # Extract metrics
+        z          = abs(params.get("zscore", 999))
+        adf        = params.get("adf_pvalue", 1)
+        half_life  = params.get("half_life", 999)
+        slope      = abs(params.get("ang_coef", 999))
+        hurst      = params.get("hurst", 0)
+
+        # --------------------------
+        #   Penalty Construction
+        # --------------------------
+
+        # 1. Z-Score: reward deviations |z| > 1
+        z_penalty = max(0, z - 1)
+
+        # 2. ADF: lower p-value = stronger cointegration
+        adf_penalty = adf * 10
+
+        # 3. Half-life: lower is better for mean reversion
+        half_life_penalty = half_life * 0.05
+
+        # 4. Slope: smaller slopes yield more stable spreads
+        slope_penalty = slope * 0.3
+
+        # 5. Hurst: penalize distance from ideal 0.35 level
+        hurst_penalty = abs(hurst - 0.35) * 5
+
+        # Final Score
+        score = (
+            z_penalty +
+            adf_penalty +
+            half_life_penalty +
+            slope_penalty +
+            hurst_penalty
+        )
+
+        ranked.append((score, obj))
+
+    # Sort pairs by ascending score (lower = better)
+    ranked.sort(key=lambda x: x[0])
+
+    # Return Model objects
+    return [pair for _, pair in ranked[:top_n]]
+
+
 def get_plot(x_ticker, y_ticker, periods=120):
     from coint.cointegration import fp_savefig, _get_residuals_plot
     from coint.cointegration import coint_model, clean_timeseries
@@ -101,6 +161,22 @@ async def send_msg(msg_html, plot):
             message_thread_id=9973,
             photo=plot)
 
+def build_top_pairs_message(qs, periods=120, top_n=3):
+    top = select_top_pairs(qs, periods=periods, top_n=top_n)
+
+    ranks = ["🥇", "🥈", "🥉"]
+    lines = [f"TOP {top_n} Melhores Pares:"]
+
+    for idx, obj in enumerate(top):
+        x = obj.ticker_x.replace(".SA", "")
+        y = obj.ticker_y.replace(".SA", "")
+        link = f"https://zecontinha.com.br/b3/pair_stats/{x}.SA/{y}.SA"
+
+        prefix = ranks[idx] if idx < 3 else f"{idx+1}."
+        lines.append(f'{prefix} <a href="{link}">{x} x {y}</a>')
+
+    return "\n".join(lines)
+
 if __name__ == '__main__':
 
     market = 'BOVESPA'
@@ -117,6 +193,9 @@ if __name__ == '__main__':
 
     if not qs.exists():
         raise ValueError("No pairs found matching criteria")
+
+    top3_message = build_top_pairs_message(qs, periods=120, top_n=3)
+    asyncio.run(send_msg(top3_message, plot=None))
 
     obj = qs.first()
     msg_html = get_html_msg(obj)
