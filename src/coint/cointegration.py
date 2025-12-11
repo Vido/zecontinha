@@ -11,7 +11,9 @@ from statsmodels.tsa.stattools import adfuller
 def drop_nan(a):
     try:
         return a[~np.isnan(a)]
-    except:
+    except Exception as e:
+        print(e)
+        # raise
         return pandas.Series([], [])
 
 def clean_timeseries(x, y):

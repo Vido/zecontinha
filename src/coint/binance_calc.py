@@ -55,7 +55,7 @@ def download_hquotes(tickers_list):
             ts_list.append(
                 datetime.fromtimestamp(int(k[0])/1000)
             )
-            q_list.append(k[4])
+            q_list.append(float(k[4]))
 
         obj = Quotes(market='BINANCE', ticker=ticker,
             hquotes=q_list, htimestamps=ts_list)
