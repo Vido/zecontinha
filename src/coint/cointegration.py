@@ -12,6 +12,7 @@ def drop_nan(a):
     try:
         return a[~np.isnan(a)]
     except Exception as e:
+        print(a)
         print(e)
         # raise
         return pandas.Series([], [])
