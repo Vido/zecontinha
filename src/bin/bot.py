@@ -101,19 +101,39 @@ async def send_msg(msg_html, plot):
             message_thread_id=9973,
             photo=plot)
 
-def build_top_pairs_message(qs, periods=120, top_n=3):
+def normalize_ticker(ticker):
+    """Remove any market suffix from the ticker."""
+    return ticker.replace(".SA", "")
 
-    top = qs[1:top_n+1]
+def market_ticker(ticker, market):
+    """Apply market suffix only when required."""
+    base = normalize_ticker(ticker)
+    return f"{base}.SA" if market == "BOVESPA" else base
+
+def market_path(market):
+    """Return the correct site path based on market."""
+    return "b3" if market == "BOVESPA" else "crypto"
+
+def build_top_pairs_message(qs, periods=120, top_n=3):
+    top = qs[:top_n]
     ranks = ["🥇", "🥈", "🥉"]
-    lines = [f"TOP {top_n} Melhores Pares:"]
+
+    lines = [f"<b>TOP {top_n} Best Pairs:</b>"]
 
     for idx, obj in enumerate(top):
-        x = obj.ticker_x.replace(".SA", "")
-        y = obj.ticker_y.replace(".SA", "")
-        link = f"https://zecontinha.com.br/b3/pair_stats/{x}.SA/{y}.SA"
+        x_display = normalize_ticker(obj.ticker_x)
+        y_display = normalize_ticker(obj.ticker_y)
 
-        prefix = ranks[idx] if idx < 3 else f"{idx+1}."
-        lines.append(f'{prefix} <a href="{link}">{x} x {y}</a>')
+        x_link = market_ticker(obj.ticker_x, obj.market)
+        y_link = market_ticker(obj.ticker_y, obj.market)
+
+        path = market_path(obj.market)
+        link = f"https://zecontinha.com.br/{path}/pair_stats/{x_link}/{y_link}"
+
+        prefix = ranks[idx] if idx < len(ranks) else f"{idx + 1}."
+        lines.append(
+            f'{prefix} <a href="{link}">{x_display} x {y_display}</a>'
+        )
 
     return "\n".join(lines)
 
