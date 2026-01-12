@@ -41,7 +41,7 @@ def download_hquotes(tickers_list):
         print(idx, ticker)
         try:
             # fetch weekly klines since it listed
-            klines = client.get_historical_klines(
+            klines = client.futures_historical_klines(
                 ticker, Client.KLINE_INTERVAL_1DAY, "1 year ago UTC")
         except BinanceAPIException as e:
             failed_tickers.append(ticker)
@@ -71,6 +71,16 @@ def download_hquotes(tickers_list):
     binance_data.columns.names = ['Price', 'Ticker']
 
 def producer_mem(idx, pair, market='BINANCE'):
+    # Ignore this ticker: its historical data is not present in binance_data
+    if ('Close', pair[0]) not in binance_data.columns:
+        print(f"[producer_mem] Skipping {pair[0]}: no data available.")
+        return None
+
+    # Ignore this ticker: it failed during download and has no column
+    if ('Close', pair[1]) not in binance_data.columns:
+        print(f"[producer_mem] Skipping {pair[1]}: no data available.")
+        return None
+
     _x = binance_data[('Close', pair[0])]
     _y = binance_data[('Close', pair[1])]
     series_x, series_y = clean_timeseries(_x, _y)
