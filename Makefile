@@ -3,75 +3,76 @@
 # ============================
 
 .DEFAULT_GOAL := up
+DOCKER_COMPOSE := $(shell docker compose version >/dev/null 2>&1 && echo "docker compose" || echo "docker-compose")
 
 # ----------------------------
 #        DOCKER BUILD
 # ----------------------------
 
 build:
-	docker compose build
+	$(DOCKER_COMPOSE) build
 
 build-no-cache:
-	docker compose build --no-cache
+	$(DOCKER_COMPOSE) build --no-cache
 
 # ----------------------------
 #        START SERVICES
 # ----------------------------
 
 up:
-	docker compose up --build -d --remove-orphans
+	$(DOCKER_COMPOSE) up --build -d --remove-orphans
 
 up-dev:
-	docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build -d --remove-orphans
+	$(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.dev.yml up --build --remove-orphans
 
 up-db:
-	docker compose --profile db up -d --remove-orphans
+	$(DOCKER_COMPOSE) --profile db up -d --remove-orphans
 
 up-cron:
-	docker compose --profile cron up -d --remove-orphans
+	$(DOCKER_COMPOSE) --profile cron up -d --remove-orphans
 
 # ----------------------------
 #        STOP SERVICES
 # ----------------------------
 
 down:
-	docker compose down --remove-orphans
+	$(DOCKER_COMPOSE) down --remove-orphans
 
 stop:
-	docker compose stop
+	$(DOCKER_COMPOSE) stop
 
 restart:
-	docker compose down --remove-orphans
-	docker compose up -d --remove-orphans
+	$(DOCKER_COMPOSE) down --remove-orphans
+	$(DOCKER_COMPOSE) up -d --remove-orphans
 
 # ----------------------------
 #        LOGS
 # ----------------------------
 
 logs:
-	docker compose logs -f
+	$(DOCKER_COMPOSE) logs -f
 
 logs-app:
-	docker compose logs -f app
+	$(DOCKER_COMPOSE) logs -f app
 
 logs-dev:
-	docker compose --profile dev logs -f
+	$(DOCKER_COMPOSE) --profile dev logs -f
 
 logs-db:
-	docker compose logs -f postgres
+	$(DOCKER_COMPOSE) logs -f postgres
 
 logs-cron:
-	docker compose logs -f cron
+	$(DOCKER_COMPOSE) logs -f cron
 
 # ----------------------------
 #        EXEC INTO CONTAINERS
 # ----------------------------
 
 bash:
-	docker exec -it web-zecontinha bash || docker exec -it web-zecontinha sh
+	docker exec -it web-zecontinha bash && docker exec -it web-zecontinha sh
 
 bash-dev:
-	docker exec -it dev-zecontinha bash || docker exec -it dev-zecontinha sh
+	docker exec -it dev-zecontinha bash && docker exec -it dev-zecontinha sh
 
 bash-cron:
 	docker exec -it cron-zecontinha sh
@@ -99,6 +100,9 @@ cron-calc-binance:
 migrate:
 	docker exec -it web-zecontinha python /src/bin/manage.py migrate
 
+makemigrations:
+	docker exec -it web-zecontinha python /src/bin/manage.py makemigrations
+
 shell:
 	docker exec -it web-zecontinha python /src/bin/manage.py shell
 
@@ -110,7 +114,7 @@ collectstatic:
 # ----------------------------
 
 clean:
-	docker compose down -v --remove-orphans
+	$(DOCKER_COMPOSE) down -v --remove-orphans
 
 clean-all:
 	docker system prune -af --volumes
