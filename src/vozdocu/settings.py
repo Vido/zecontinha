@@ -10,13 +10,15 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
-import dj_database_url
+from pathlib import Path
+
+#import dj_database_url
 #import django_heroku
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 
+# Build paths inside the project
+BASE_DIR = Path(__file__).resolve().parent.parent
+PROJECT_ROOT = Path(__file__).resolve().parent
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
@@ -50,7 +52,7 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -61,7 +63,7 @@ ROOT_URLCONF = 'vozdocu.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -84,20 +86,32 @@ WSGI_APPLICATION = 'vozdocu.wsgi.application'
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'vozdocu',
-        'USER': 'vozdocu',
-        'PASSWORD': 'vozdocu',
-        'HOST': 'localhost',
-        'PORT': '5432',
-        'TEST': {
-            #'MIRROR': 'default',
-            'NAME': 'vozdocu_backtest',
-            'DEPENDENCIES': [],
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / 'data'/ "db.sqlite3",
+        "TEST": {
+            "NAME": ":memory:",
         },
-    },
+    }
+
+    #'default': {
+    #    'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    #    'NAME': 'vozdocu',
+    #    'USER': 'vozdocu',
+    #    'PASSWORD': 'vozdocu',
+    #    'HOST': 'localhost',
+    #    'PORT': '5432',
+    #    'TEST': {
+    #        #'MIRROR': 'default',
+    #        'NAME': 'vozdocu_backtest',
+    #        'DEPENDENCIES': [],
+    #    },
+    #},
 }
+
+# Change 'default' database configuration with $DATABASE_URL.
+# DATABASES['default'].update(dj_database_url.config(conn_max_age=500, ssl_require=False))
+
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -123,9 +137,6 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
-# Change 'default' database configuration with $DATABASE_URL.
-DATABASES['default'].update(dj_database_url.config(conn_max_age=500, ssl_require=False))
-
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
@@ -135,12 +146,12 @@ ALLOWED_HOSTS = ['*']
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
-STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
+STATIC_ROOT = PROJECT_ROOT / 'staticfiles'
 STATIC_URL = '/static/'
 
 # Extra places for collectstatic to find static files.
 STATICFILES_DIRS = [
-    os.path.join(PROJECT_ROOT, 'static'),
+    PROJECT_ROOT / 'static',
 ]
 
 # Simplified static file serving.

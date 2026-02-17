@@ -52,15 +52,21 @@ def download_hquotes(tickers_list):
         ts_list, q_list = [], []
         for k in klines:
             # https://github.com/binance-exchange/binance-official-api-docs/blob/master/rest-api.md#general-api-information
-            ts_list.append(
-                datetime.fromtimestamp(int(k[0])/1000)
-            )
+            ts_list.append(int(k[0])//1000)
             q_list.append(float(k[4]))
 
-        obj = Quotes(market='BINANCE', ticker=ticker,
-            hquotes=q_list, htimestamps=ts_list)
-        df = pd.DataFrame(q_list, index=pd.to_datetime(ts_list),
-                columns=pd.MultiIndex.from_product([["Close"], [ticker]]))
+        obj = Quotes(
+            market='BINANCE',
+            ticker=ticker,
+            hquotes=q_list,
+            htimestamps=ts_list
+        )
+        
+        df = pd.DataFrame(
+            q_list,
+            index=pd.to_datetime(ts_list, unit="s"),
+            columns=pd.MultiIndex.from_product([["Close"], [ticker]])
+        )
         obj_buffer.append(obj)
         df_buffer.append(df)
 

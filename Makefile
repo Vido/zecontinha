@@ -103,6 +103,9 @@ migrate:
 makemigrations:
 	docker exec -it web-zecontinha python /src/bin/manage.py makemigrations
 
+showmigrations:
+	docker exec -it web-zecontinha python /src/bin/manage.py showmigrations
+
 shell:
 	docker exec -it web-zecontinha python /src/bin/manage.py shell
 

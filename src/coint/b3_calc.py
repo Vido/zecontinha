@@ -53,8 +53,14 @@ def download_hquotes(carteira_tickers):
     for idx, ticker in enumerate(carteira_tickers):
         series_x = data[('Close', ticker)]
         try:
-            obj = Quotes(market='BOVESPA', ticker=ticker,
-                hquotes=series_x.values.tolist(), htimestamps=series_x.index.tolist())
+            obj = Quotes(
+                market='BOVESPA',
+                ticker=ticker,
+                hquotes=series_x.values.tolist(),
+                htimestamps=[
+                    int(ts.timestamp()) for ts in series_x.index
+                ]
+            )
             obj_buffer.append(obj)
         except Exception as e:
             failed_tickers.append(ticker)

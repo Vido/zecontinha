@@ -78,8 +78,8 @@ class Quotes(models.Model):
         return self.ticker + " [%d]" % len(self.hquotes)
 
     def get_series(self):
-        return pd.Series(self.hquotes, index=self.htimestamps)
-
+        index = pd.to_datetime(self.htimestamps, unit="s")
+        return pd.Series(self.hquotes, index=index)
 
 
 class BasePairStats(models.Model):

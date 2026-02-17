@@ -1,35 +1,36 @@
 services:
-  postgres:
-    image: postgres:15-alpine
-    container_name: db-zecontinha
-    restart: always
-    volumes:
-      - ./data/db:/var/lib/postgresql/data
-    env_file:
-      - ./postgres.env
-    #environment:
-    #  - POSTGRES_DB
-    #  - POSTGRES_USER
-    #  - POSTGRES_PASSWORD
-    #ports:
-    #  - 5432:5432
-    networks:
-      - zecontinha_network
+
+  #postgres:
+  #  image: postgres:15-alpine
+  #  container_name: db-zecontinha
+  #  restart: always
+  #  volumes:
+  #    - ./data/db:/var/lib/postgresql/data
+  #  env_file:
+  #    - ./postgres.env
+  #  #environment:
+  #  #  - POSTGRES_DB
+  #  #  - POSTGRES_USER
+  #  #  - #POSTGRES_PASSWORD
+  #  #ports:
+  #  #  - 5432:5432
+  #  networks:
+  #    - zecontinha_network
+
   app:
     build: .
     image: zecontinha_base:latest
     # RFC 1034/1035 -> No _ on hostname
     container_name: web-zecontinha
     volumes:
-      #- ./src:/src/
-      #  TODO: Fix logs - Make a volume
+      - ./data:/src/data
       - /var/logs/zecontinha:/srv/logs
     ports:
       - "8000:8000"
     env_file:
       - ./zecontinha.env
-    depends_on:
-      - postgres
+    # depends_on:
+    # - postgres
     networks:
       - zecontinha_network
   cron:
@@ -38,14 +39,15 @@ services:
     restart: unless-stopped
     entrypoint: bin/cron_entrypoint.sh
     command: cron -f
-    #volumes:
-    #  - ./src:/src/
+    volumes:
+      - ./data:/src/data
+      - /var/logs/zecontinha:/srv/logs
     environment:
       - TZ=${TZ:-America/Sao_Paulo}
     env_file:
       - ./zecontinha.env
-    depends_on:
-      - postgres
+    # depends_on:
+    #  - postgres
     networks:
       - zecontinha_network
     deploy:

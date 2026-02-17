@@ -11,8 +11,8 @@ printenv \
 
 syslogd -n -O /proc/1/fd/1 &
 
-echo "Checking database"
-check_db --service-name postgres --ip postgres --port 5432
+#echo "Checking database"
+#check_db --service-name postgres --ip postgres --port 5432
 
 echo "Running Django migrations..."
 manage migrate --noinput
