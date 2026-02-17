@@ -7,10 +7,16 @@ bind = "0.0.0.0:8000"
 #proxy_protocol = True  # Enable proxy support
 
 # Worker Settings
-import multiprocessing
-workers = 2 * multiprocessing.cpu_count() + 1  # Dynamically determine the optimal workers
+#import multiprocessing
+#workers = 2 * multiprocessing.cpu_count() + 1  # Dynamically determine the optimal workers
 #worker_class = 'eventlet'
 #worker_connections = 2000
+
+# Less memory-hog
+workers = 2
+threads = 2
+worker_class = "gthread"
+
 
 loglevel = "info"
 accesslog = "-"  # Log to stdout

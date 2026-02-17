@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth import get_user_model
-from django.contrib.postgres.fields import ArrayField
 
 from dashboard.models import MARKET_CHOICES, Quotes
 from dashboard.forms import PERIODO_CHOICE
@@ -18,7 +17,7 @@ class Trade(models.Model):
 
     periodo = models.IntegerField(choices=PERIODO_CHOICE)
     model_params = models.JSONField(default=dict)
-    beta_rotation = ArrayField(models.FloatField(), blank=True, null=True)
+    beta_rotation = models.JSONField(default=list, blank=True, null=True)
 
     ativo_x = models.CharField(max_length=32)
     ativo_y = models.CharField(max_length=32)

@@ -30,6 +30,6 @@ RUN for f in /src/bin/*.py; do \
     chmod +x /src/bin/*.py && \
     chmod 0644 /etc/cron.d/tasks-cron
 
-ENTRYPOINT ["./bin/entrypoint.sh"]
+ENTRYPOINT ["/src/bin/entrypoint.sh"]
 
 CMD ["gunicorn", "vozdocu.wsgi", "-c", "vozdocu/gunicorn_conf.py"]

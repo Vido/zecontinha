@@ -1,7 +1,5 @@
 import pandas as pd
-
 from django.db import models
-from django.contrib.postgres.fields import ArrayField
 
 
 class CointParams(models.Model):
@@ -73,8 +71,8 @@ class Quotes(models.Model):
     )
 
     ticker = models.CharField(max_length=32)
-    hquotes = ArrayField(models.FloatField(), blank=True)
-    htimestamps = ArrayField(models.DateField(), blank=True)
+    hquotes = models.JSONField(default=list, blank=True)
+    htimestamps = models.JSONField(default=list, blank=True)
 
     def __str__(self):
         return self.ticker + " [%d]" % len(self.hquotes)
@@ -106,7 +104,7 @@ class BasePairStats(models.Model):
     y_quote = models.FloatField(null=True, blank=True)
 
     model_params = models.JSONField(default=dict)
-    beta_rotation = ArrayField(models.FloatField(), blank=True, null=True)
+    beta_rotation = models.JSONField(default=list, blank=True, null=True)
 
     timestamp = models.DateTimeField(auto_now_add=True)
 

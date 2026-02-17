@@ -21,7 +21,7 @@ services:
     # RFC 1034/1035 -> No _ on hostname
     container_name: web-zecontinha
     volumes:
-      #  - .:/src/
+      #- ./src:/src/
       #  TODO: Fix logs - Make a volume
       - /var/logs/zecontinha:/srv/logs
     ports:
@@ -39,7 +39,7 @@ services:
     entrypoint: bin/cron_entrypoint.sh
     command: cron -f
     #volumes:
-    #- .:/src/
+    #  - ./src:/src/
     environment:
       - TZ=${TZ:-America/Sao_Paulo}
     env_file:
