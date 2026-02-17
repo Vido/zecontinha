@@ -18,7 +18,7 @@ python-telegram-bot = "^20.5"
 python-binance = "1.0.17"
 matplotlib = "3.9.4"
 psycopg2-binary = "2.9.10"
-psycopg-binary = "3.2.9"
+#psycopg-binary = "3.2.9"
 statsmodels = "0.14.5"
 hurst = {git = "https://github.com/Mottl/hurst.git", rev = "master"}
 whitenoise = "4.1.4"
