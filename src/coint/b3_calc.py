@@ -17,11 +17,13 @@ from django.db.models import Q
 #from coint.ibov import CARTEIRA_IBOV as CARTEIRA
 from coint.ibrx100 import  CARTEIRA_IBRX as _CARTEIRA
 
-from coint.cointegration import get_market_data, clean_timeseries
-from coint.common import generic_producer
+from coint.cointegration import (
+        get_market_data,
+        clean_timeseries
+)
 
+from coint.common import generic_producer
 from dashboard.models import PairStats, CointParams, Quotes
-from dashboard.forms import PERIODOS_CALCULO
 
 from bot import send_msg
 

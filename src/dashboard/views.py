@@ -69,7 +69,7 @@ class GenericListView(RecaptchaMixin, FormListView):
         pvalue = form.cleaned_data['pvalue']
         ticker = form.cleaned_data['ticker']
         zscore = form.cleaned_data['zscore']
-        zscore = form.cleaned_data['hurst']
+        hurst = form.cleaned_data['hurst']
         #n_per_coint = form.cleaned_data['n_per_coint']
         periodo = form.cleaned_data['periodo']
 
@@ -77,17 +77,15 @@ class GenericListView(RecaptchaMixin, FormListView):
         self.adf_pvalue = pvalue
 
         qs = PairStats.objects.filter(market=self.market)
-
-        qs = qs.filter(**{'model_params__%s__adf_pvalue__lte' % periodo: pvalue})
-        qs = qs.filter(**{'model_params__%s__hurst__lte' % periodo: pvalue})
-        qs = qs.filter(Q(**{'model_params__%s__zscore__gte' % periodo: zscore})
-                     | Q(**{'model_params__%s__zscore__lte' % periodo: -zscore}))
+        qs = qs.filter(**{f'model_params__{periodo}__adf_pvalue__lte': pvalue})
+        qs = qs.filter(**{f'model_params__{periodo}__hurst__lte': hurst})
+        qs = qs.filter(Q(**{f'model_params__{periodo}__zscore__gte': zscore})
+                     | Q(**{'model_params__{periodo}__zscore__lte': -zscore}))
 
         if ticker != 'TODOS':
             qs = qs.filter(pair__icontains=ticker)
 
-        # TODO
-        #n_per_coint
+        # TODO n_per_coint
 
         return qs
 

@@ -10,6 +10,10 @@ def g_recaptcha_site_key_processor(request):
 class RecaptchaMixin():
 
     def form_valid(self, form):
+
+        # Skip g_recaptcha
+        return
+
         if self.request.user.is_superuser:
             print("Superuser: Pulando o Recaptcha...")
             return

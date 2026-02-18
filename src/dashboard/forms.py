@@ -3,6 +3,8 @@ from django import forms
 from coint.ibrx100 import  CARTEIRA_IBRX
 from coint.binance_futures import BINANCE_FUTURES
 from coint import cointegration
+from coint.common import PERIODOS_CALCULO
+
 
 # para facilitar a vida
 drop_nan = cointegration.drop_nan
@@ -18,7 +20,6 @@ INTERVALO_YFINANCE = ['1d', '1h']
 
 PERIODO_CHOICE = zip(PERIODO_YFINANCE, PERIODO_YFINANCE)
 INTERVALO_CHOICE = zip(INTERVALO_YFINANCE, INTERVALO_YFINANCE)
-PERIODOS_CALCULO = list(range(60,260,20))
 PERIODOS_CHOICE = list(zip(PERIODOS_CALCULO, PERIODOS_CALCULO))
 
 TICKERS_YFINANCE = [t+'.SA' for t in CARTEIRA_IBRX]

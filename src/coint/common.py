@@ -1,13 +1,14 @@
 import copy
 
 from statsmodels.tools.sm_exceptions import MissingDataError
-from django.forms.models import model_to_dict
 
-from dashboard.forms import PERIODOS_CALCULO
+from django.forms.models import model_to_dict
 from dashboard.models import PairStats, CointParams, Quotes
 
 from coint.analysis import beta_rotation, analysis_model
 from coint.cointegration import coint_model
+
+PERIODOS_CALCULO = list(range(60,260,20))
 
 def generic_producer(pair, market, series_x, series_y):
 

@@ -16,10 +16,9 @@ from binance.exceptions import BinanceAPIException
 from statsmodels.tools.sm_exceptions import MissingDataError
 
 from dashboard.models import PairStats, CointParams, Quotes
-from dashboard.forms import PERIODOS_CALCULO
-
 from coint.cointegration import clean_timeseries
 from coint.common import generic_producer
+
 
 # TODO:
 # This data does not require Binance Credentials
