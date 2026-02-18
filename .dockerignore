@@ -28,8 +28,8 @@ staticfiles/
 media/
 *.sqlite3
 
-# Posttgres
-data/*
+# Postgres
+data/
 
 # Tests / temp
 coverage/

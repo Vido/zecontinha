@@ -1,22 +1,15 @@
 services:
 
-  #postgres:
-  #  image: postgres:15-alpine
-  #  container_name: db-zecontinha
-  #  restart: always
-  #  volumes:
-  #    - ./data/db:/var/lib/postgresql/data
-  #  env_file:
-  #    - ./postgres.env
-  #  #environment:
-  #  #  - POSTGRES_DB
-  #  #  - POSTGRES_USER
-  #  #  - #POSTGRES_PASSWORD
-  #  #ports:
-  #  #  - 5432:5432
-  #  networks:
-  #    - zecontinha_network
-
+  postgres:
+    image: postgres:15-alpine
+    container_name: db-zecontinha
+    restart: always
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    env_file:
+      - ./postgres.env
+    networks:
+      - zecontinha_network
   app:
     build: .
     image: zecontinha_base:latest

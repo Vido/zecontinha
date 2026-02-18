@@ -6,7 +6,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('dashboard', '0010_auto_20190811_1802'),
+        ('dashboard', '0009_quotes_htimestamps'),
     ]
 
     operations = [

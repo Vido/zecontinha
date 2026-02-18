@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'dashboard',
     'papertrading',
-    'backtest',
+    # 'backtest', # TODO
 ]
 
 MIDDLEWARE = [
@@ -86,31 +86,32 @@ WSGI_APPLICATION = 'vozdocu.wsgi.application'
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
 DATABASES = {
-    "default": {
+    "future": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / 'data'/ "db.sqlite3",
         "TEST": {
             "NAME": ":memory:",
         },
-    }
+    },
 
-    #'default': {
-    #    'ENGINE': 'django.db.backends.postgresql_psycopg2',
-    #    'NAME': 'vozdocu',
-    #    'USER': 'vozdocu',
-    #    'PASSWORD': 'vozdocu',
-    #    'HOST': 'localhost',
-    #    'PORT': '5432',
-    #    'TEST': {
-    #        #'MIRROR': 'default',
-    #        'NAME': 'vozdocu_backtest',
-    #        'DEPENDENCIES': [],
-    #    },
-    #},
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'vozdocu',
+        'USER': 'vozdocu',
+        'PASSWORD': 'vozdocu',
+        'HOST': 'localhost',
+        'PORT': '5432',
+        'TEST': {
+            #'MIRROR': 'default',
+            'NAME': 'vozdocu_backtest',
+            'DEPENDENCIES': [],
+        },
+    },
 }
 
 # Change 'default' database configuration with $DATABASE_URL.
-# DATABASES['default'].update(dj_database_url.config(conn_max_age=500, ssl_require=False))
+import dj_database_url
+DATABASES['default'].update(dj_database_url.config(conn_max_age=500, ssl_require=False))
 
 
 AUTH_PASSWORD_VALIDATORS = [
