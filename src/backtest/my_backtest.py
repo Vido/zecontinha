@@ -20,7 +20,7 @@ from dashboard.models import CointParams, Quotes
 from backtest.models import PairStats
 from coint.cointegration import coint_model, beta_rotation, clean_timeseries
 from coint.binance_calc import download_hquotes as download_hquotes_binance
-from coint.common import PERIODOS_CALCULO
+from dashboard.models import PERIODOS_CALCULO
 
 # Objetos carregado em memória
 qsquotes = Quotes.objects.all()

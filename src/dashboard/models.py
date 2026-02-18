@@ -1,8 +1,18 @@
 import pandas as pd
 from django.db import models
 
+PERIODOS_CALCULO = list(range(60,260,20))
+PERIODOS_CHOICE = list(zip(PERIODOS_CALCULO, PERIODOS_CALCULO))
 
 class CointParams(models.Model):
+
+    pair = models.ForeignKey(
+        'PairStats',
+        related_name='coint_params',
+        on_delete=models.CASCADE
+    )
+
+    period = models.IntegerField(choices=PERIODOS_CHOICE)
 
     adf_pvalue = models.FloatField(null=True, blank=True)
     resid_std = models.FloatField(null=True, blank=True)
@@ -13,18 +23,26 @@ class CointParams(models.Model):
     half_life = models.FloatField(null=True, blank=True)
     hurst = models.FloatField(null=True, blank=True)
     n_observ = models.IntegerField(null=True, blank=True)
+
     timestamp_calc = models.DateTimeField(auto_now_add=True)
     success = models.BooleanField(default=False)
 
-    #TODO: Marcar o periodo
+    class Meta:
+        unique_together = ('pair', 'period')
+        indexes = [
+            models.Index(fields=['pair', 'period']),
+        ]
 
-    # class Meta:
-    #     abstract = True
+    def __str__(self):
+        return f'{self.pair} [{self.period}]'
 
     @classmethod
-    def create(cls, success, test_params={}, analysis_params={}):
+    def create(cls, pair, period, success, test_params=None, analysis_params=None):
+        test_params = test_params or {}
+        analysis_params = analysis_params or {}
 
-        obj = CointParams(success=success)
+        obj = cls(pair=pair, period=period, success=success)
+
         if not success:
             return obj
 
@@ -36,12 +54,10 @@ class CointParams(models.Model):
             obj.intercept = test_params['OLS'].params.const
             obj.n_observ = len(test_params['OLS'].resid)
             obj.zscore = obj.last_resid / obj.resid_std
-        except Exception as e:
-            print(e)
-            obj.success = False
-            #raise
-        else:
             obj.success = True
+        except Exception as e:
+            obj.success = False
+            print(e)
 
         try:
             obj.half_life = analysis_params['OUHL']
@@ -54,6 +70,7 @@ class CointParams(models.Model):
             print(e)
 
         return obj
+
 
 MARKET_CHOICES = (
     ('N/A', 'N/A'),
@@ -71,6 +88,7 @@ class Quotes(models.Model):
     )
 
     ticker = models.CharField(max_length=32)
+    # TODO: Normalize
     hquotes = models.JSONField(default=list, blank=True)
     htimestamps = models.JSONField(default=list, blank=True)
 
@@ -82,13 +100,14 @@ class Quotes(models.Model):
         return pd.Series(self.hquotes, index=index)
 
 
+# There must be this base abstract class - because of how backtests work
 class BasePairStats(models.Model):
-    """
-        Essa tabela é recalculado todos os dias com os dados de fechamento
-    """
 
     class Meta:
         abstract = True
+
+    # Subclass MUST define:
+    # pair = models.CharField(...)
 
     market = models.CharField(
         max_length=32,
@@ -99,22 +118,30 @@ class BasePairStats(models.Model):
     ticker_x = models.CharField(max_length=32)
     ticker_y = models.CharField(max_length=32)
 
-    # Ultima cotação
+    # Last Quote - Denormalized
     x_quote = models.FloatField(null=True, blank=True)
     y_quote = models.FloatField(null=True, blank=True)
 
-    model_params = models.JSONField(default=dict)
+    # TODO: Normalize
     beta_rotation = models.JSONField(default=list, blank=True, null=True)
-
-    timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f'{self.ticker_x} x {self.ticker_y}'
 
     @classmethod
-    def create(cls, pair, market, series_x=pd.Series([]), series_y=pd.Series([])):
+    def create(cls, pair, market, series_x=None, series_y=None):
+        """
+        Subclass must define 'pair' field.
+        """
+        if not hasattr(cls, 'pair'):
+            raise AttributeError(
+                f"{cls.__name__} must define a 'pair' field"
+            )
 
-        obj = PairStats(
+        series_x = series_x or pd.Series(dtype=float)
+        series_y = series_y or pd.Series(dtype=float)
+
+        obj = cls(
             pair = " ".join(pair),
             market = market,
             ticker_x = pair[0],
@@ -130,44 +157,42 @@ class BasePairStats(models.Model):
         return obj
 
     def display_pair(self):
-        return self.pair.replace('.SA', '').replace(' ', 'x')
+        if hasattr(self, 'pair'):
+            return self.pair.replace('.SA', '').replace(' ', 'x')
+        return f'{self.ticker_x}x{self.ticker_y}'
 
     def n_p_coint(self, pvalue):
-        """ Número de Periodos Cointegrados """
-        counter = 0
-        for key, obj in self.model_params.items():
-            if not obj.get('success', False):
-                continue
-            if obj.get('adf_pvalue', '') < pvalue:
-                counter += 1
-        return counter
+        """Number of cointegrated periods """
+        return self.coint_params.filter(
+            success=True,
+            adf_pvalue__lt=pvalue
+        ).count()
 
-def _get_update(qs, _callable='latest'):
-        ts_update = None
-        try:
-            _latest = getattr(qs, _callable)('timestamp')
-            ts_update = _latest.timestamp
-        except PairStats.DoesNotExist as e:
-            print(e)
-            pass
-
-        return ts_update
 
 class PairStats(BasePairStats):
+    """
+        This table stores daily calculations results
+    """
     pair = models.CharField(max_length=32, unique=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 
     @classmethod
     def last_update(cls, market):
-        qs = PairStats.objects.filter(market=market)
-        return _get_update(qs)
+        qs = cls.objects.filter(market=market)
+        try:
+            latest = qs.latest('timestamp')
+            return latest.timestamp
+        except cls.DoesNotExist:
+            return None
 
     @classmethod
     def estimated_time(cls, market):
         stats = {}
-        qs = PairStats.objects.filter(market=market)
+        qs = cls.objects.filter(market=market)
         try:
-            duration = _get_update(qs, _callable='latest') - _get_update(qs, _callable='earliest')
+            latest = qs.latest('timestamp').timestamp
+            earliest = qs.earliest('timestamp').timestamp
+            duration = latest - earliest
             seconds = duration.total_seconds()
             stats = {
                     'duration': duration,

@@ -3,9 +3,9 @@ from django import forms
 from coint.ibrx100 import  CARTEIRA_IBRX
 from coint.binance_futures import BINANCE_FUTURES
 from coint import cointegration
-from coint.common import (
-        PERIODOS_CALCULO,
-        PERIODOS_CHOICE
+from dashboard.models import (
+    PERIODOS_CALCULO,
+    PERIODOS_CHOICE
 )
 
 

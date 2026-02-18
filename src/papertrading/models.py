@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth import get_user_model
 
 from dashboard.models import MARKET_CHOICES, Quotes
-from coint.common import PERIODOS_CHOICE
+from dashboard.models import PERIODOS_CHOICE
 
 class Trade(models.Model):
 
