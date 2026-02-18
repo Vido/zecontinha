@@ -78,7 +78,7 @@ class Quotes(models.Model):
         return self.ticker + " [%d]" % len(self.hquotes)
 
     def get_series(self):
-        index = pd.to_datetime(self.htimestamps, unit="s")
+        index = pd.to_datetime(self.htimestamps, errors="coerce")
         return pd.Series(self.hquotes, index=index)
 
 

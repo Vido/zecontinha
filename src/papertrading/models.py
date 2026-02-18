@@ -45,6 +45,16 @@ class Trade(models.Model):
             ticker=self.ativo_y).get_series()[-1]
         return "%.2f x %.2f" % (x_quote, y_quote)
 
+    def display_quote(self):
+        try:
+            x_quote = self.exit_x if self.exit_x is not None else Quotes.objects.get(
+                ticker=self.ativo_x).get_series()[-1]
+            y_quote = self.exit_y if self.exit_y is not None else Quotes.objects.get(
+                ticker=self.ativo_y).get_series()[-1]
+            return "%.2f x %.2f" % (x_quote, y_quote)
+        except Exception:
+            return "N/A"
+
     def display_pair(self):
         pair = "%s x %s" % (self.ativo_x, self.ativo_y)
         return pair.replace('.SA', '')
