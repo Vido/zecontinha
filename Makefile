@@ -69,10 +69,10 @@ logs-cron:
 # ----------------------------
 
 bash:
-	docker exec -it web-zecontinha bash && docker exec -it web-zecontinha sh
+	docker exec -it web-zecontinha bash
 
 bash-dev:
-	docker exec -it dev-zecontinha bash && docker exec -it dev-zecontinha sh
+	docker exec -it dev-zecontinha bash
 
 bash-cron:
 	docker exec -it cron-zecontinha sh

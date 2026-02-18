@@ -3,7 +3,10 @@ from django import forms
 from coint.ibrx100 import  CARTEIRA_IBRX
 from coint.binance_futures import BINANCE_FUTURES
 from coint import cointegration
-from coint.common import PERIODOS_CALCULO
+from coint.common import (
+        PERIODOS_CALCULO,
+        PERIODOS_CHOICE
+)
 
 
 # para facilitar a vida
@@ -18,9 +21,8 @@ PERIODO_YFINANCE = ['1mo', '3mo', '6mo', '1y']
 #INTERVALO_YFINANCE = ['1m', '2m', '5m', '15m', '30m', '60m', '90m', '1h', '1d', '5d', '1wk', '1mo', '3mo']
 INTERVALO_YFINANCE = ['1d', '1h']
 
-PERIODO_CHOICE = zip(PERIODO_YFINANCE, PERIODO_YFINANCE)
+PERIODO_YF_CHOICE = zip(PERIODO_YFINANCE, PERIODO_YFINANCE)
 INTERVALO_CHOICE = zip(INTERVALO_YFINANCE, INTERVALO_YFINANCE)
-PERIODOS_CHOICE = list(zip(PERIODOS_CALCULO, PERIODOS_CALCULO))
 
 TICKERS_YFINANCE = [t+'.SA' for t in CARTEIRA_IBRX]
 
@@ -33,7 +35,7 @@ class InputForm(forms.Form):
     ativo_x = forms.ChoiceField(choices=B3_ATIVOS_CHOICE)
     # TODO: fazer autocomplete
     ativo_y = forms.ChoiceField(choices=B3_ATIVOS_CHOICE)
-    periodo = forms.ChoiceField(choices=PERIODO_CHOICE)
+    periodo = forms.ChoiceField(choices=PERIODO_YF_CHOICE)
     intervalo = forms.ChoiceField(choices=INTERVALO_CHOICE)
 
     def get_context(self):

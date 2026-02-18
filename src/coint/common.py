@@ -9,6 +9,7 @@ from coint.analysis import beta_rotation, analysis_model
 from coint.cointegration import coint_model
 
 PERIODOS_CALCULO = list(range(60,260,20))
+PERIODOS_CHOICE = list(zip(PERIODOS_CALCULO, PERIODOS_CALCULO))
 
 def generic_producer(pair, market, series_x, series_y):
 
